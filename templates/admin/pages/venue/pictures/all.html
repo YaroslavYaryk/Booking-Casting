@@ -22,6 +22,7 @@
       <table class="table  table-striped overflow-hidden">
         <thead>
           <tr >
+            <th scope="col">Id</th>
             <th scope="col">Venue</th>
             <th scope="col">Picture path</th>
             <th style="float:right; margin-right: 6%;"   scope="col">Action</th>
@@ -32,10 +33,19 @@
           <tr class="align-middle" >
             <td class="text-nowrap">
               <div class="d-flex align-items-center">
-                <div class="ms-2"><a href="{% url 'admin_change_details_venue_picture' picture.id %}">{{picture.venue}}</a></div>
+                <div class="ms-2"><a href="{% url 'admin_change_details_venue_picture' picture.id %}">{{picture.id}}</a></div>
               </div>
             </td>
-            <td>{{picture.file}}</td>
+            <td class="text-nowrap">
+              <div class="d-flex align-items-center">
+                <div class="ms-2"><a href="{% url 'admin_change_details_venue' picture.venue.id %}">{{picture.venue}}</a></div>
+              </div>
+            </td>
+            <td class="text-nowrap">
+              <div class="d-flex align-items-center">
+                <div class="ms-2"><a href="{{picture.file.url}}">{{picture.file}}</a></div>
+              </div>
+            </td>
             
 
             <td style="float:right" ><a class="btn btn-danger"  href="{% url 'admin_delete_venue_picture' picture.id %}">delete</a></tr>

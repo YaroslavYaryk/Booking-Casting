@@ -22,12 +22,11 @@
       <table class="table  table-striped overflow-hidden">
         <thead>
           <tr >
+            <th scope="col">Id</th>
             <th scope="col">Artist</th>
             <th scope="col">Requestor</th>
             <th scope="col">Owner</th>
             <th scope="col">Granted</th>
-            <th scope="col">Done</th>
-
 
             <th style="float:right; margin-right: 6%;"   scope="col">Action</th>
           </tr>
@@ -37,7 +36,12 @@
           <tr class="align-middle" >
             <td class="text-nowrap">
               <div class="d-flex align-items-center">
-                <div class="ms-2"><a href="{% url 'admin_change_details_artist_request_storage' request.id %}">{{request.artist}}</a></div>
+                <div class="ms-2"><a href="{% url 'admin_change_details_artist_request_storage' request.id %}">{{request.id}}</a></div>
+              </div>
+            </td>
+            <td class="text-nowrap">
+              <div class="d-flex align-items-center">
+                <div class="ms-2"><a href="{% url 'admin_change_details_artist' request.artist.id %}">{{request.artist.name}}</a></div>
               </div>
             </td>
             <td>{{request.requester}}</td>
@@ -46,11 +50,6 @@
               <td><span class="badge badge rounded-pill d-block p-2 badge-soft-success">granted<span class="ms-1 fas fa-check" data-fa-transform="shrink-2"></span></span></td>
             {% else %}
               <td><span class="badge badge rounded-pill d-block p-2 badge-soft-danger">refuse<span class="ms-1 fas fa-times" data-fa-transform="shrink-2"></span></span></td>
-            {% endif %}
-            {% if request.done %}
-              <td><span class="badge badge rounded-pill d-block p-2 badge-soft-success">yes<span class="ms-1 fas fa-check" data-fa-transform="shrink-2"></span></span></td>
-            {% else %}
-              <td><span class="badge badge rounded-pill d-block p-2 badge-soft-danger">no<span class="ms-1 fas fa-times" data-fa-transform="shrink-2"></span></span></td>
             {% endif %}
 
             <td style="float:right" ><a class="btn btn-danger"  href="{% url 'admin_delete_artist_request_storage' request.id %}">delete</a></tr>

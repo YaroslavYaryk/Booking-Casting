@@ -22,11 +22,11 @@
       <table class="table table-hover table-striped overflow-hidden">
         <thead>
           <tr>
+            <th scope="col">Id</th>
             <th scope="col">Email</th>
             <th scope="col">First Name</th>
             <th scope="col">Last Name</th>
             <th scope="col">Active</th>
-            <th></th>
             <th></th>
 
             <th scope="col">Action</th>
@@ -37,7 +37,12 @@
           <tr class="align-middle">
             <td class="text-nowrap">
               <div class="d-flex align-items-center">
-                <div class="ms-2"><a href="{% url 'admin_change_details_venue_contacts' contact.id %}">{{contact.epost}}</a></div>
+                <div class="ms-2"><a href="{% url 'admin_change_details_venue_contacts' contact.id %}">{{contact.id}}</a></div>
+              </div>
+            </td>
+            <td class="text-nowrap">
+              <div class="d-flex align-items-center">
+                <div class="ms-2">{{contact.epost}}</div>
               </div>
             </td>
             <td class="text-nowrap"> {{contact.first_name}} </td>
@@ -49,7 +54,6 @@
               <td><span class="badge badge rounded-pill d-block p-2 badge-soft-danger">disabled<span class="ms-1 fas fa-times" data-fa-transform="shrink-2"></span></span></td>
             {% endif %}
             <td></td>
-            <th></th>
 
             <td><a class="btn btn-danger"  href="{% url 'admin_delete_venue_contacts' contact.id %}">delete</a></tr>
           </tr>

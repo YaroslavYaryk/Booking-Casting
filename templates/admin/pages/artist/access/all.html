@@ -22,6 +22,7 @@
       <table class="table table-hover table-striped overflow-hidden">
         <thead>
           <tr>
+            <th scope="col">Id</th>
             <th scope="col">Artist</th>
             <th scope="col">User</th>
             
@@ -39,10 +40,19 @@
           <tr class="align-middle">
             <td class="text-nowrap">
               <div class="d-flex align-items-center">
-                <div class="ms-2"><a href="{% url 'admin_change_details_artist_access' ac.id %}">{{ac.artist.name}}</a></div>
+                <div class="ms-2"><a href="{% url 'admin_change_details_artist_access' ac.id %}">{{ac.id}}</a></div>
               </div>
             </td>
-            <td>{{ ac.access.email }}</td>
+            <td class="text-nowrap">
+              <div class="d-flex align-items-center">
+                <div class="ms-2"><a href="{% url 'admin_change_details_artist' ac.artist.id %}">{{ac.artist.name}}</a></div>
+              </div>
+            </td>
+            <td class="text-nowrap">
+              <div class="d-flex align-items-center">
+                <div class="ms-2"><a href="{% url 'admin_change_details_user' ac.access.id %}">{{ ac.access.email }}</a></div>
+              </div>
+            </td>
 
             {% if ac.admin %}
             <td><span class="badge badge rounded-pill d-block p-2 badge-soft-success">yes<span class="ms-1 fas fa-check" data-fa-transform="shrink-2"></span></span></td>
