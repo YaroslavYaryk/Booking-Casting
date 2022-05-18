@@ -1,0 +1,58 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+{% block link %}
+    <script src="{% static 'falcon/vendors/tinymce/tinymce.min.js' %} "></script>
+    <link rel="stylesheet" href="{% static 'css/event.css' %}">
+
+{% endblock link %}
+
+{% block content %}
+
+
+
+
+    <div class="card mb-3">
+        <div class="card-header"  style="display: flex; justify-content: space-between; align-items: center">
+            <h5 class="mb-0">Edit Event Product </h5>
+        </div>
+        <div class="row">
+            <div class="col-lg-14 mb-4 mb-lg-0">
+                <div class="card" style="padding: 20px;">
+                <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="col-lg-12" >
+                        <label class="form-label" for="show_duration">Name</label>
+                        <input type="text" name="name" value="{{product.rental_products.name}}" class="form-control">
+                    </div>
+                    <br>
+                    <div class="col-lg-12" >
+                        <label class="form-label" for="show_duration">File: <a href="{{product.rental_products.picture.url}}">{{product.rental_products.picture.url}}</a></label>
+                        <input type="file" name="picture"  class="form-control">
+                        <p></p>
+                    </div>
+                    <br>
+                    <div class="col-lg-12" >
+                        <label class="form-label" for="show_duration">Price:</label>
+                        <input type="number" name="price" value="{{product.price}}" class="form-control">
+                    </div>
+                    <br>
+                    <div class="col-lg-12 reponsibilities" >
+                        <label class="form-label" for="email1">Count:</label>
+                        <input type="number" name="count" value="{{product.count}}" class="form-control">
+                    </div>
+                    <br>
+                    <div class="button_add_user d-flex justify-content-between">
+                        <div class="block"></div>
+                        <button class="btn btn-primary" type="submit">SAVE</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}

@@ -1,0 +1,363 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+{% block content %}
+
+    <!-- ===============================================-->
+    <!--    Main Content-->
+    <!-- ===============================================-->
+    <main class="main" id="top">
+      <div class="container" data-layout="container">
+        <script>
+          var isFluid = JSON.parse(localStorage.getItem('isFluid'));
+          if (isFluid) {
+            var container = document.querySelector('[data-layout]');
+            container.classList.remove('container');
+            container.classList.add('container-fluid');
+          }
+        </script>
+       
+          <div class="row">
+            <div class="col-12">
+              <div class="card mb-3 btn-reveal-trigger">
+                <div class="card-header position-relative min-vh-25 mb-8">
+                  <div class="cover-image">
+                    <div class="bg-holder rounded-3 rounded-bottom-0" style="background-image:url({% static 'bg_customer.jpg' %});">
+                    </div>
+                    <!--/.bg-holder-->
+
+                    <input class="d-none" id="upload-cover-image" type="file" />
+                    <label class="cover-image-file-input" for="upload-cover-image"><span class="fas fa-camera me-2"></span><span>Change cover photo</span></label>
+                  </div>
+                  <div class="avatar avatar-5xl avatar-profile shadow-sm img-thumbnail rounded-circle">
+                    <div class="h-100 w-100 rounded-circle overflow-hidden position-relative"> 
+                        <img src={% static 'd_user.png' %} width="200" alt="" data-dz-thumbnail="data-dz-thumbnail" />
+                      <input class="d-none" id="profile-image" type="file" />
+                      <label class="mb-0 overlay-icon d-flex flex-center" for="profile-image"><span class="bg-holder overlay overlay-0"></span><span class="z-index-1 text-white dark__text-white text-center fs--1"><span class="fas fa-camera"></span><span class="d-block">Edit</span></span></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row g-0">
+            <div class="col-lg-8 pe-lg-2">
+              <div class="card mb-3">
+                <div class="block d-flex justify-content-between align-items-center">
+                  <div class="card-header">
+                    <h5 class="mb-0">Customer Settings</h5>
+                  </div>
+                  {% if  not user.is_staff or not is_allowed_to_change %}
+                  <div class="send_request_button" style=" margin-right: 20px">
+                    <a class="btn btn-primary" href="{% url 'send_request_to_change_customer' customer.id %}" >Ask permission to change</a>
+                  </div>
+                  {% endif %}
+              </div>
+                <div class="card-body bg-light">
+                  <form class="row g-3">
+                    <div class="col-lg-6">
+                      <label class="form-label" for="first-name">Organization Number</label>
+                      <p>{{customer.organization_number}}</p>
+                    </div>
+                    <div class="col-lg-6" style="align-items: center" >
+                            <label class="form-label" for="last-name">Name </label>
+                        <p>{{ customer.name }}</p>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="form-label" for="email1">Address</label>
+                      <p>{{ customer.address }}</p>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="form-label" >Zip Code</label>
+                    <p>{{customer.zip_code}}</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="form-label" for="email1">City</label>
+                        <p>{{ customer.city }}</p>
+                      </div>
+                      <div class="col-lg-6">
+                        <label class="form-label" for="email1">Active - </label>
+                        {% if customer.active %}
+                            <span style="color: green; font-size: 20px;" class="far fa-check-circle"></span>
+                        {% else %}
+                            <span style="color: red; font-size: 20px;" class="far fa-times-circle"></span>
+                        {% endif %}
+                        </div>
+                    {% if user.is_staff and is_allowed_to_change %}
+                    <div style=" width: 90%" class="button-edit-delete d-flex justify-content-start">                    
+                      <div class="col-12 ">
+                        <a class="btn btn-danger" href="{% url 'delete_customer' customer.id %}" type="submit">Delete </a>
+                      </div>
+                      <div class="col-12 ">
+                        <a class="btn btn-primary" href="{% url 'change_details_customer' customer.id %}" type="submit">Edit </a>
+                      </div>
+                    </div>
+
+                    {% endif %}
+                  </form>
+                </div>
+              </div>
+
+              <div class="card mb-3">
+                {% if contacts_exists and customer_contacts.active or is_allowed_to_change %}
+                <div class="card-header">
+                  <h5 class="mb-0">Customer contact info</h5>
+                </div>
+                {% endif %}
+                {% if   user.is_staff and  is_allowed_to_change %}
+                <div class="card-body bg-light">
+                  <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                      <div class="col-lg-6">
+                        <label class="form-label" for="first-name">First Name</label>
+                        <p>{{form.first_name|add_class:'form-control'}}</p>
+                      </div>
+                      <div class="col-lg-6" style="align-items: center" >
+                              <label class="form-label" for="last-name">Last Name </label>
+                          <p>{{ form.last_name|add_class:'form-control' }}</p>
+                      </div>
+                      <div class="col-lg-6">
+                        <label class="form-label" for="email1">Phone</label>
+                        <p>{{ form.phone|add_class:'form-control' }}</p>
+                      </div>
+                      <div class="col-lg-6">
+                        <label class="form-label" >Email</label>
+                        <p>{{form.email|add_class:'form-control'}}</p>
+                      </div>
+                      <div class="col-lg-6">
+                        <label class="form-label" for="email1">Role</label>
+                        <p>{{ form.role|add_class:'form-control' }}</p>
+                      </div>
+                      <div class="col-lg-6">
+                        <label class="form-label" >Birthdate</label>
+                        <p>{{form.birthdate|add_class:'form-control'}}</p>
+                      </div>
+                      
+                      <div class="col-lg-6">
+                        <div class="form-check form-switch">{{ form.signatory_rights|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Signatory Rights</label></div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-check form-switch">{{ form.active|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active </label></div>
+                      </div>
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                  </form>                  
+                </div>
+                {% else %}
+                  {% if contacts_exists and customer_contacts.active %}
+                  <div class="card-body bg-light">
+                      
+                      <div class="row g-3">
+                        <div class="col-lg-6">
+                          <label class="form-label" for="first-name">First Name</label>
+                          <p>{{customer_contacts.first_name}}</p>
+                        </div>
+                        <div class="col-lg-6" style="align-items: center" >
+                              <label class="form-label" for="last-name">Last Name </label>
+                            <p>{{ customer_contacts.last_name}}</p>
+                        </div>
+                        <div class="col-lg-6">
+                          <label class="form-label" for="email1">Phone</label>
+                          <p>{{ customer_contacts.phone }}</p>
+                        </div>
+                        <div class="col-lg-6">
+                          <label class="form-label" >Email</label>
+                          <p>{{customer_contacts.email}}</p>
+                        </div>
+                        <div class="col-lg-6">
+                          <label class="form-label" for="email1">Role</label>
+                          <p>{{ customer_contacts.role}}</p>
+                        </div>
+                        <div class="col-lg-6">
+                          <label class="form-label" >Birthdate</label>
+                          <p>{{customer_contacts.birthdate}}</p>
+                        </div>
+                        <div class="col-lg-6" style="align-items: center" >
+                          <label class="form-label" for="last-name">Signatory Rights - </label>
+                          {% if customer_contacts.signatory_rights %}
+                              <span style="color: green; font-size: 20px;" class="far fa-check-circle"></span>
+                          {% else %}
+                              <span style="color: red; font-size: 20px;" class="far fa-times-circle"></span>
+                          {% endif %}
+                        </div>
+                        <div class="col-lg-6" style="align-items: center" >
+                          <label class="form-label" for="last-name">Active - </label>
+                          {% if customer_contacts.active %}
+                              <span style="color: green; font-size: 20px;" class="far fa-check-circle"></span>
+                          {% else %}
+                              <span style="color: red; font-size: 20px;" class="far fa-times-circle"></span>
+                          {% endif %}
+                        </div>
+                      </div>
+                      <br>
+                  </div>
+                  {% endif %}
+                {% endif %}
+              </div>
+              {% if is_allowed_to_change and users_have_access %}          
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h5 class="mb-0">Users that has access</h5>
+                  </div>
+                  <div class="card-body bg-light">
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th scope="col">User</th>
+                          <th class="text-center" scope="col">Can edit</th>
+                          <th class="text-center">Action</th>
+                          <th class="text-center">Delete</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for user_for in users_have_access %}
+
+                          <tr>
+                            <td>{{user_for.access.email}}</td>
+                            <td class="text-center">
+                              {% if user_for.admin %}
+                                <div class="align-center form-check form-switch"><input class="form-check-input" checked id={{user_for.id}} type="checkbox"  /><label class="form-check-label" for="flexSwitchCheckChecked"></label></div>
+                              {% else %}
+                                <div class="align-center form-check form-switch"><input class="form-check-input" id={{user_for.id}} type="checkbox"  /><label class="form-check-label" for="flexSwitchCheckChecked"></label></div>
+                              {% endif %} 
+                            </td>
+                            <td>
+
+                              <div class="my-box text-center" id="userChange" name={{user_for.id}} style="width:100%">
+                                <a class="btn btn-info" name={{user_for.id}} href="#popup1">Change</a>
+                              </div>
+                              
+                            </td>
+                            <td><div class="my-box text-center" style="width:100%">
+                              
+                              <a href="{% url 'delete_user_from_customer_changeble' customer.id user_for.id  %}" class="btn btn-danger">Delete</a>
+                            </div></td>
+                          </tr>
+                          
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                
+                </div>
+              {% endif %}  
+              
+             
+              
+            </div>
+            {% if is_allowed_to_change %}
+            <div class="col-lg-4 ps-lg-2">
+              <div class="sticky-sidebar">
+                <div class="card mb-3 overflow-hidden">
+                  <div class="card-header">
+                    <h5 class="mb-0">User Has Access</h5>
+                  </div>
+
+                  <form class="form_add_user" action="" style="height:150px; align-items:center; padding:20px" >
+                    {% csrf_token %}
+                    <input type="text" list="users" style="width:90%" required class="form-control" name="users_for_adding" id="users_for_adding">
+                    <datalist id="users" >
+                        {% for us in aval_users %}
+                            <option value="{{us.email}}">
+                        {% endfor %}
+                    </datalist>
+                    <div class="block_add_user" style="display: flex; gap:100px; margin-top: 10px;">
+                     
+                      <div class="form-check form-switch"><input class="form-check-input" id="flexSwitchCheckChecked" type="checkbox" checked="" /><label class="form-check-label" for="flexSwitchCheckChecked">Can change?</label></div>
+                      <button type="submit" class='btn btn-primary' >ADD</button>
+                    </div>
+                  </form>
+                
+              </div>
+            </div>
+
+            {% endif %}
+            <div class="col-lg-4 ps-lg-2 company_events">
+              <div class="sticky-sidebar">
+                <div class="card mb-3 overflow-hidden">
+                  <div class="card-header" style="display: flex; justify-content: space-between; align-items:center">
+                    <h5 class="mb-0">Customer Events</h5>
+                    <a href="{% url 'get_all_customer_events' customer.id %}" class="btn btn-success">All Events</a>
+                  </div>
+                  {% if my_events %}
+                  <div class="table-responsive scrollbar">
+                    <table class="table table-striped overflow-hidden">
+                      <thead>
+                        <tr class="btn-reveal-trigger">
+                          <th scope="col">Name</th>
+                          <th scope="col">Date</th>
+                          <th class="text-end" scope="col">Contract</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for event in my_events %}
+                        <tr class="btn-reveal-trigger">
+                          <td><a href="">{{event.name}}</a></td>
+                          <td>{{event.date}}</td>
+                          <td class="text-end">
+                            <a href="{% url 'load_contract_for_event' event.id %}">Contract</a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+
+                      </tbody>
+                    </table>
+                  </div>
+                  {% else %}
+                    <p  style="padding-top: 10px; margin-bottom: 5px; text-align:center">This customer does not participate in any event</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+    </main>
+    <!-- ===============================================-->
+    <!--    End of Main Content-->
+    <!-- ===============================================-->
+
+
+  
+    <script type="text/javascript">
+      // add user to ones who can change
+      var  customerId = "{{ customer.id }}"
+      var myForm = document.querySelector(".form_add_user")
+      myForm.onsubmit = (e) =>{
+        e.preventDefault()
+        var addedUserEmail = document.getElementById("users_for_adding").value
+        var radioInputChecked = document.getElementById("flexSwitchCheckChecked").checked
+        var url = "{% url 'add_user_permission_to_change_or_see_customer' %}";
+        document.location.href = url + customerId + '/' + addedUserEmail + "/" + radioInputChecked + "/"
+        
+      }
+
+    // change user permissions
+    var changeButtons = document.querySelectorAll("#userChange")
+    for(var i=0; i<changeButtons.length; i++){
+      changeButtons[i].onclick = (e) =>{
+        var checkInput = document.getElementById(e.target.name)
+        var url = "{% url 'change_user_permission_to_change_or_see_customer' %}"
+        document.location.href = url + e.target.name + '/' + checkInput.checked + '/'
+        }
+    } 
+
+    var customer_events = document.querySelector(".company_events")
+    var is_allowed_to_change = "{{is_allowed_to_change}}";
+    if (is_allowed_to_change === "True"){
+      customer_events.style.cssText = `
+        width:101%; 
+        margin-left: -1%;
+      `;
+    } 
+
+    </script>
+
+
+{% endblock %}

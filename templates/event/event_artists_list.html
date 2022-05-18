@@ -1,0 +1,130 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+{% block link %}
+    <script src="{% static 'falcon/vendors/tinymce/tinymce.min.js' %} "></script>
+    <link rel="stylesheet" href="{% static 'css/event.css' %}">
+
+{% endblock link %}
+
+{% block content %}
+
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+
+
+
+<div class="card" id="toggleBlock">
+    <div class="card-header">
+      <div class="row flex-between-center">
+        <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+          <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">{{event.name}}</h5>
+        </div>
+          {% if has_perm %}
+              <div class="col-8 col-sm-auto text-end ps-2">
+                  <a href="{% url 'add_new_event' %}" class="btn btn-falcon-default btn-sm me-1 mb-1">
+                  <span class="fas fa-plus me-1" data-fa-transform="shrink-3"></span>Add Event
+                  </a>
+              </div>
+          {% endif %}
+      </div>
+    </div>
+    <div class="card-body bg-light pb-0">
+      <div class="table-responsive scrollbar body_class">
+        {% if artists|length %} 
+
+        <div class="blockDisplayList mb-3"  >
+            <div class="blockItemHead" style="font-weight: bold; display: grid; grid-template-columns: repeat(4, 1fr);">
+                <p>Id</p>
+                <p>Name</a>
+                <p >Show Duration</p>
+                <p>Price</p> 
+            </div>
+            {% for obj in artists %}
+                <div class="full_block">
+                    <div class="blockItemHeader" id="{{obj.id}}"  style="display: grid; grid-template-columns: repeat(4, 1fr);">
+                        <p>{{obj.id}}</p>
+                        <a > {{obj.artist.name}}</a>
+                        <p> {{obj.show_duration}}</p>
+                        <a> {{obj.price}}</a> 
+                    </div>
+                    <div style="display: none;" class="card-body bg-light inner_block" id="{{obj|get_ev_artist_id}}">
+                        <div class="block_dropdown" >
+                            <div class="cust_responsib_block">
+                                
+                                <ul type="none" class="cust_responsib_block_list">
+                                    {% for el  in obj.customers_responsibility %}
+                                        <li class="cust_responsib_block_list__item">{{el}}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="block_delete_update" style="display: flex; gap:10px; justify-content:end; align-items: center">
+                                <a href="{% url 'edit_event_artist' obj.event.id  obj.id %}" class="btn btn-info">Edit</a>
+                                <a href="{% url 'delete_artist_from_event' obj.event.id obj.artist.id %}" class="btn btn-danger">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: none;" class="card-body bg-light inner_block_form" id="{{obj|get_ev_artist_form_id}}">
+                        <form action="">
+                            {% csrf_token %}
+
+                            <button class="btn btn-primary" type="submit">Save</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+         
+        {% else %}
+          
+            <p>There is no company yet, try to add some</p>
+          
+        {% endif %}
+      </div>
+    </div>
+    
+    </div>
+
+    <script>
+
+        document.cookie = "username=John Doe";
+
+
+        var blockList = document.querySelector(".blockDisplayList")
+        blockList.onclick = (e)=>{
+            var elem = e.target.closest(".blockItemHeader")
+            if (elem){
+
+                element = document.getElementById(`object_artist_${elem.id}`)
+            }
+            if(element){
+                if (element.style.display === "block"){
+                    element.style.display = "none"
+                }else{
+                    element.style.display = "block"
+                }
+            }
+        }
+        
+    </script>
+
+
+
+{% endblock %}

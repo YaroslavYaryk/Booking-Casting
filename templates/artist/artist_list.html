@@ -1,0 +1,63 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="row flex-between-center">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">All artists</h5>
+      </div>
+    
+  
+    </div>
+  </div>
+  <div class="card-body bg-light pb-0">
+    <div class="table-responsive scrollbar">
+      {% if artists|length %}
+      <table class="table table-hover table-striped overflow-hidden">
+        <thead>
+          <tr>
+            <th scope="col">Photo</th>
+            <th scope="col">Name</th>
+            <th scope="col">Technical raider</th>
+            <th scope="col">Hospitality raider</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for artist in artists %}
+          <tr class="align-middle">
+            {% if artist|check_image %}
+              <td><img src="{{artist|get_image}}" style="width:35px" alt=""></td>
+            {% else %}
+              <td><img src="{% static 'default_contact_img.png' %}" style="width:35px" alt=""></td>
+            {% endif %}
+            <td class="text-nowrap">
+              <div class="d-flex align-items-center">
+                <div class="ms-2"><a href="{% url 'artist_details' artist.id %}">{{artist.name}}</a></div>
+              </div>
+            </td>
+            <td class="text-nowrap"> {{artist.technical_raider}} </td>
+            <td class="text-nowrap"> {{artist.hospitality_raider}} </td>
+            
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% else %}
+      {% if has_perm %}
+        <p>There is no artist yet, try to <span><a href="{% url 'add_artist' %}">add</a></span> some</p>
+        
+        {% else %}
+          <p>There is no artist yet</p>
+        {% endif %}
+
+      {% endif %}
+    </div>
+  </div>
+  
+  </div>
+{% endblock %}

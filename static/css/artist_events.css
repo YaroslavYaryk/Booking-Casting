@@ -1,0 +1,6 @@
+.cust_reapons_list__item::before {
+    content: "☑ ";
+    color: green;
+}
+
+.cust_reapons_list__item {}

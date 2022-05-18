@@ -1,0 +1,24 @@
+{% extends 'base/auth_base.html' %} {% load static %} 
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="block">
+    {% if body == 'customer' %}
+        <h4>Request from <span class="badge badge-soft-secondary">{{requester.get_full_name}}</span></span><span class="mx-1">&ndash;</span><span> to change {{body}} '{{customer.name}}'</h4>
+    
+    {% elif body == 'artist' %}
+        <h4>Request from <span class="badge badge-soft-secondary">{{requester.get_full_name}}</span></span><span class="mx-1">&ndash;</span><span> to change {{body}} '{{artist.name}}'</h4>
+    {% endif %}
+    <form  method="POST">
+        {% csrf_token %}
+        {% if is_choice %}
+        <div class="col-12 mb-3">
+            <div class="form-check form-switch">{{ form.choice|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active artist</label></div>
+        </div>
+        {% endif %}
+        <button type="submit" name="accept" class="btn btn-primary me-1 mb-1" >Accept</button>
+        <button type="submit"  class="btn btn-danger me-1 mb-1" name="disclaime">Disclaime</button>
+
+    </form>
+</div>
+{% endblock content %}

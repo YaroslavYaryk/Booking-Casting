@@ -1,0 +1,86 @@
+{% extends 'base/admin_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+
+
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+{% if messages %}
+ {% for message in messages %}
+       <div class="alert alert-primary">
+           <strong>{{ message }}</strong>
+       </div>
+ {% endfor %}
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">{% csrf_token %}
+<div class="row g-0">
+  <div class="col-lg-8 pe-lg-2">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center" >
+        <h5 class="mb-0">New Venue Contacts</h5>
+        <div class="add_ability d-flex justify-content-between align-items-center" 
+            >
+        </div>
+        
+      </div>
+      <div class="card-body bg-light">
+        <div class="row g-3">
+          <div class="col-lg-12">
+            <label class="form-label" for="email1">Venue</label>
+            <p>{{ form.venue|add_class:'form-control' }}</p>
+          </div>
+          <div class="col-lg-6">
+            <label class="form-label" for="first-name">First Name</label>
+            <p>{{form.first_name|add_class:'form-control'}}</p>
+          </div>
+          <div class="col-lg-6" style="align-items: center" >
+                  <label class="form-label" for="last-name">Last Name </label>
+              <p>{{ form.last_name|add_class:'form-control' }}</p>
+          </div>
+          <div class="col-lg-6">
+            <label class="form-label" for="email1">Phone</label>
+            <p>{{ form.phone|add_class:'form-control' }}</p>
+          </div>
+          <div class="col-lg-6">
+            <label class="form-label" >Email</label>
+            <p>{{form.epost|add_class:'form-control'}}</p>
+          </div>
+          <div class="col-lg-12">
+            <label class="form-label" for="email1">Role</label>
+            <p>{{ form.role|add_class:'form-control' }}</p>
+          </div>
+          
+          <div class="block" style="display: flex; justify-content:space-between">
+            <div class="col-lg-6">
+              <div class="form-check form-switch">{{ form.active|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active </label></div>
+            </div>
+            <button class="btn btn-primary" type="submit">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base/admin_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block link %}
+    <script src="{% static 'falcon/vendors/tinymce/tinymce.min.js' %} "></script>
+    <link rel="stylesheet" href="{% static 'css/event.css' %}">
+{% endblock link %}
+
+{% block content %}
+
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+<form method="post">{% csrf_token %}
+<div class="row g-0">
+  <div class="col-lg-8 pe-lg-2">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center" >
+        <h5 class="mb-0">Edit Event</h5>
+        <div class="add_ability d-flex justify-content-between align-items-center" 
+            >
+        </div>
+      </div>
+      <div class="card-body bg-light">
+          <div class="row gx-2">
+            <div class="row gx-2">
+                <div class="mb-3 col-sm-12">
+                    <label class="form-label" for="name">Event</label>
+                    {{ form.event|add_class:'form-control'  }}
+                </div>
+            </div>
+            <div class="row gx-2">
+                <div class="mb-3 col-sm-12">
+                    <label class="form-label" for="opening">User</label>
+                    {{ form.user|add_class:'form-control '  }}
+                </div>
+            </div>
+            <div class="row gx-2">
+                <div class="mb-3 col-sm-12">
+                    <label class="form-label" for="opening">Role</label>
+                    {{ form.role|add_class:'form-control '  }}
+                </div>
+            </div>
+
+            <button class="btn btn-primary me-1 mb-1 ml-1" type="submit">Save</button>
+          </div>
+      </div>
+    </div>
+    
+    
+</div>
+
+
+</div>
+
+</form>
+
+
+{% endblock %}

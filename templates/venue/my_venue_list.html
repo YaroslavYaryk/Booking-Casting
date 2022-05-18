@@ -1,0 +1,72 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="row flex-between-center">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">My Venues</h5>
+      </div>
+      {% if has_perm %}
+      <div class="col-8 col-sm-auto text-end ps-2">
+        <a href="{% url 'add_new_venue' %}" class="btn btn-falcon-default btn-sm me-1 mb-1">
+          <span class="fas fa-plus me-1" data-fa-transform="shrink-3"></span>Add Venue
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card-body bg-light pb-0">
+    <div class="table-responsive scrollbar">
+      {% if venue_access|length %}
+        <table class="table table-hover table-striped overflow-hidden">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Address</th>
+                <th scope="col">City</th>
+                <th scope="col">Capacity</th>
+                <th scope="col">Age limit</th>
+
+                <th scope="col">Active</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for access in venue_access %}
+                <tr class="align-middle mb-10" id="table_row">
+    
+                  <td class="text-nowrap"> 
+                    <div class="d-flex align-items-center">
+                      <div class=""><a href="{% url 'get_venue_details' access.venue.id %}">{{access.venue.name}}</a></div>
+                  </td>
+                  <td class="text-nowrap"> {{access.venue.address}} </td>
+                  <td class="text-nowrap"> {{access.venue.city}} </td>
+                  <td class="text-nowrap"> {{access.venue.capacity}} </td>
+                  <td class="text-nowrap"> {{access.venue.age_limit}} </td>
+
+
+                  {% if access.venue.active %}
+                    <td><span class="badge badge rounded-pill d-block p-2 badge-soft-success">active<span class="ms-1 fas fa-check" data-fa-transform="shrink-2"></span></span></td>
+                  {% else %}
+                    <td><span class="badge badge rounded-pill d-block p-2 badge-soft-danger">not active<span class="ms-1 fas fa-times" data-fa-transform="shrink-2"></span></span></td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+            {% if has_perm %}
+              <p>There is no customer yet, try to add some</p>
+          
+            {% else %}
+              <p>There is no customer yet and you are not allowed to add some</p>
+            {% endif %}
+          {% endif %}
+    </div>
+  </div>
+  
+  </div>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+
+<form method="POST" enctype="multipart/form-data">{% csrf_token %}
+<div class="row g-0">
+  <div class="col-lg-8 pe-lg-2">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center" >
+        <h5 class="mb-0">Bruker informasjon</h5>
+        <div class="add_ability d-flex justify-content-between align-items-center" 
+            >
+          
+
+        </div>
+        
+      </div>
+      <div class="card-body bg-light">
+          <div class="row gx-2">
+            <div class="col-12 mb-3">
+              <label class="form-label" for="first_name">Fornavn</label>
+              {{ form.first_name|add_class:'form-control'}}
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label" for="last_name">Fornavn</label>
+              {{ form.last_name|add_class:'form-control'}}
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label" for="email">E-postadresse</label>
+              {{ form.email|add_class:'form-control text-lowercase'}}
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label" for="first_name">Phone</label>
+              {{ form.phone|add_class:'form-control'}}
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label" for="first_name">Driver licens classes</label>
+              {{ form.driver_licens_classes|add_class:'form-control'}}
+            </div>
+            <div class="col-12 mb-3" id="image-picker">
+                <label class="form-label" for="picture">Picture</label>
+                <br>
+                {{ form.picture|add_class:'form-control' }}
+              </div>
+              <div class="col-12 mb-3" id="date-picker">
+                <label class="form-label" for="birthdate">birth date</label>
+                {{ form.birthdate|add_class:'form-control datetimepicker'}}
+              </div>
+            <button class="btn btn-primary me-1 mb-1" type="submit">Lagre</button>
+          </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-lg-4 ps-lg-2">
+    <div class="card mb-lg-0">
+      <div class="card-header">
+        <h5 class="mb-0">Profilbilde</h5>
+      </div>
+      <div class="card-body bg-light">
+        <div class="card-body bg-light">
+            {% if user.picture %}
+
+            <script type="text/javascript">
+              var imagess = document.getElementById("image-picker")
+              imagess.innerHTML = `<label class="form-label" for="picture">Picture</label>
+                <input type="file" name="picture" accept="image/*" class="form-control" id="id_picture">`
+            </script>
+
+            <div style="display: block;margin-left: auto;margin-right: auto;width: 50%;height: 50%;" class="avatar avatar-5xl shadow-sm img-thumbnail rounded-circle ">
+              <div class="h-150 w-150 rounded-circle overflow-hidden position-relative"> <img id="Contact_img" src={{user.picture.url}} width="200" height="200" alt="" data-dz-thumbnail="data-dz-thumbnail" />
+              </div>
+            </div>
+            {% else %}
+            <div style="display: block;margin-left: auto;margin-right: auto;width: 50%;height: 50%;" class="avatar avatar-5xl shadow-sm img-thumbnail rounded-circle ">
+                <div class="h-150 w-150 rounded-circle overflow-hidden position-relative"> <img id="Contact_img" src="{%static 'default_contact_img.png' %}" width="200" height="200" alt="" data-dz-thumbnail="data-dz-thumbnail" />
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        
+    </div>
+</div>
+
+</form>
+<div class="addAbility d-flex justify-content-between mt-4"  >
+  <form method="GET" style="display: flex; align-items: center">
+    <input type="text" class="form-control" name="ability" id="ability", placeholder="ability">
+    <a href="" style="margin-left: 10px;" class="addAbilityButton" >add<a/>
+  </form>
+</div>
+
+
+<div class="user-bilities">
+  <div class="table-responsive scrollbar">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">Ability</th>
+          <th class="text-end" scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for action in userActions %}
+          <tr>
+            <td>{{action.ability}}</td>
+            <td class="text-end">
+              <div><a href="{% url 'delete_ability' action.id %}" class="btn p-0 ms-2"  data-bs-placement="top" title="Delete"><span class="text-500 fas fa-trash-alt"></span></a></div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+
+  <script type="text/javascript">
+
+    var userAilities = document.querySelector(".user-bilities")
+    var allAbilities = ("{{userActions|escapejs}}")
+    if (allAbilities.length === 13){
+      userAilities.style.display = "none"
+    }
+
+    var imagess = document.getElementById("image-picker")
+
+    imagess.onchange = (e) =>{
+        var image = document.getElementById("Contact_img");
+        image.src = URL.createObjectURL(e.target.files[0])
+  };
+
+
+  var addAbilityButton = document.querySelector(".addAbilityButton")
+  console.log(addAbilityButton)
+  
+  addAbilityButton.onclick = (e) =>{
+    e.preventDefault()
+    inputField = document.getElementById("ability")
+    var value = inputField.value
+    var url = "{% url 'add_ability' %}";
+    document.location.href = url + value
+
+  }
+
+
+
+  </script>
+
+
+
+{% endblock %}

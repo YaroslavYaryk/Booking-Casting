@@ -1,0 +1,70 @@
+{% extends 'base/admin_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="row flex-between-center">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Event Rental Products</h5>
+      </div>
+
+      <div class="col-8 col-sm-auto text-end ps-2">
+        <a href="{% url 'add_new_event_rental_product' %}" class="btn btn-falcon-default btn-sm me-1 mb-1">
+          <span class="fas fa-plus me-1" data-fa-transform="shrink-3"></span>Add Event Products
+        </a>
+      </div>
+        
+    </div>
+  </div>
+  <div class="card-body bg-light pb-0">
+    <div class="table-responsive scrollbar">
+      {% if rental_products|length %}
+      <table class="table table-hover table-striped overflow-hidden">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Event</th>
+            <th scope="col">Product</th>
+            <th scope="col">Price</th>
+            <th scope="col">Count</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in rental_products %}
+          <tr class="align-middle">
+            <td class="text-nowrap" >
+              <div class="d-flex align-items-center"  > 
+                <div class="ms-2"><a  href="{% url 'admin_change_event_product' product.id %}">{{product.id}}</a></div>
+              </div>
+            </td>
+            <td class="text-nowrap">
+              <div class="d-flex align-items-center">
+                <div class="ms-2"><a href="{% url 'admin_update_event' product.event.id %}">{{product.event.name}}</a></div>
+              </div>
+            </td>
+            <td class="text-nowrap">
+              <div class="d-flex align-items-center">
+                <div class="ms-2"><a href="{% url 'admin_change_rental_product' product.rental_products.id %}">{{product.rental_products.name}}</a></div>
+              </div>
+            </td>
+            <td>{{product.price}}</td>
+            <td>{{product.count}}</td>
+            
+             <td><a class="btn btn-danger" style="text-align:center"  href="{% url 'admin_admin_delete_event_product' product.id %}">delete</a></tr>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        
+          <p>There is no product yet, try to add some</p>
+        
+      {% endif %}
+    </div>
+  </div>
+  
+  </div>
+{% endblock %}

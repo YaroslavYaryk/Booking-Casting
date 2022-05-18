@@ -1,0 +1,38 @@
+.blockItemHeader,
+.blockItemHead {
+    padding: 30px;
+}
+
+.blockItemHeader:hover {
+    background: #f0f0f0;
+}
+
+.block_dropdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(3fr, 300px));
+    /* grid-template-columns: 1fr 500px; */
+}
+
+.cust_responsib_block_list {
+    margin-left: -20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.cust_responsib_block_list::before {
+    content: "Customers Responsibility:  ";
+    color: #444449;
+    font-weight: 600;
+    position: relative;
+    right: 10px;
+}
+
+.cust_responsib_block_list__item::before {
+    content: "✅ ";
+    position: relative;
+}
+
+.cust_responsib_block {
+    margin: 0;
+    padding: 0;
+}

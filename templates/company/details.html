@@ -1,0 +1,184 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+
+{% block link %}
+  <link href="{% static 'css/popup.css' %}" rel="stylesheet">
+{% endblock link %}
+
+
+{% block content %}
+
+    <!-- ===============================================-->
+    <!--    Main Content-->
+    <!-- ===============================================-->
+    <main class="main" id="top">
+      <div class="container" data-layout="container">
+        <script>
+          var isFluid = JSON.parse(localStorage.getItem('isFluid'));
+          if (isFluid) {
+            var container = document.querySelector('[data-layout]');
+            container.classList.remove('container');
+            container.classList.add('container-fluid');
+          }
+        </script>
+       
+          <div class="row">
+            <div class="col-12">
+              <div class="card mb-3 btn-reveal-trigger">
+                <div class="card-header position-relative min-vh-25 mb-8">
+                  <div class="cover-image" >
+                    <div class="bg-holder rounded-3 rounded-bottom-0" style="background-image:url({% static 'bg.jpg' %});">
+                    </div>
+                    <!--/.bg-holder-->
+
+                    <input class="d-none" id="upload-cover-image" type="file" />
+                    <label class="cover-image-file-input" for="upload-cover-image"><span class="fas fa-camera me-2"></span><span></span></label>
+                  </div>
+                  <div class="avatar avatar-5xl avatar-profile shadow-sm img-thumbnail rounded-circle">
+                    <div class="h-100 w-100 rounded-circle overflow-hidden position-relative" > 
+
+                      {% comment %} {% if artist|check_image %} {% endcomment %}
+                        <img src="{% static 'd_user.png' %}" width="200" alt="" data-dz-thumbnail="data-dz-thumbnail" />
+                      {% comment %} {% else %} {% endcomment %}
+                        {% comment %} <img src={% static 'default_contact_img.png' %} width="200" alt="" data-dz-thumbnail="data-dz-thumbnail" /> {% endcomment %}
+                      {% comment %} {% endif %} {% endcomment %}
+                      <input class="d-none" id="profile-image" type="file" />
+                      <label class="mb-0 overlay-icon d-flex flex-center" for="profile-image"><span class="bg-holder overlay overlay-0"></span><span class="z-index-1 text-white dark__text-white text-center fs--1"><span class="fas fa-camera"></span><span class="d-block">Edit</span></span></label>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row g-0">
+            <div class="col-lg-8 pe-lg-2">
+              <div class="card mb-3">
+                <div class="block d-flex justify-content-between align-items-center">
+                  <div class="card-header">
+                    <h5 class="mb-0">Company Settings</h5>
+                  </div>
+                  
+              </div>
+                <div class="card-body bg-light">
+                  <form class="row g-3">
+                    <div class="col-lg-6">
+                        <label class="form-label" for="first-name">Organization Number</label>
+                        <p>{{company.organization_number}}</p>
+                      </div>
+                      <div class="col-lg-6" style="align-items: center" >
+                              <label class="form-label" for="last-name">Name </label>
+                          <p>{{ company.name }}</p>
+                      </div>
+                      <div class="col-lg-6">
+                        <label class="form-label" for="email1">Address</label>
+                        <p>{{ company.address }}</p>
+                      </div>
+                      <div class="col-lg-6">
+                        <label class="form-label" >Zip Code</label>
+                      <p>{{company.zip_code}}</p>
+                      </div>
+                      <div class="col-lg-6">
+                          <label class="form-label" for="email1">City</label>
+                          <p>{{ company.city }}</p>
+                        </div>
+                        <div class="col-lg-6">
+                          <label class="form-label" for="email1">Active - </label>
+                          {% if company.active %}
+                              <span style="color: green; font-size: 20px;" class="far fa-check-circle"></span>
+                          {% else %}
+                              <span style="color: red; font-size: 20px;" class="far fa-times-circle"></span>
+                          {% endif %}
+                          </div>
+
+                          <div style=" width: 90%" class="button-edit-delete d-flex justify-content-start">                    
+                            <div class="col-12 ">
+                              <a class="btn btn-danger" href="{% url 'completely_delete_company' company.id %}" type="submit">Delete </a>
+                            </div>
+                            <div class="col-12 ">
+                              <a class="btn btn-primary" href="{% url 'change_company_details' company.id %}" type="submit">Edit </a>
+                            </div>
+                          </div>
+
+                  </form>
+                </div>
+                
+              </div>
+             
+              
+          </div>
+          <div class="col-lg-4 ps-lg-2 customer_events">
+            <div class="sticky-sidebar">
+              <div class="card mb-3 overflow-hidden">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items:center">
+                  <h5 class="mb-0">Company Events</h5>
+                  <a href="{% url 'get_all_company_events' company.id %}" class="btn btn-success">All Events</a>
+                </div>
+                {% if my_events %}
+                <div class="table-responsive scrollbar">
+                  <table class="table table-striped overflow-hidden">
+                    <thead>
+                      <tr class="btn-reveal-trigger">
+                        <th scope="col">Name</th>
+                        <th scope="col">Date</th>
+                        <th class="text-end" scope="col">Contract</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for event in my_events %}
+                      <tr class="btn-reveal-trigger">
+                        <td><a href="">{{event.name}}</a></td>
+                        <td>{{event.date}}</td>
+                        <td class="text-end">
+                          <a href="{% url 'load_contract_for_event' event.id %}">Contract</a>
+                        </td>
+                      </tr>
+                    {% endfor %}
+  
+                    </tbody>
+                  </table>
+                </div>
+                {% else %}
+                  <p  style="padding-top: 10px; margin-bottom: 5px; text-align:center">This customer does not participate in any event</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- ===============================================-->
+    <!--    End of Main Content-->
+    <!-- ===============================================-->
+
+
+    <script type="text/javascript">
+      // add user to ones who can change
+      var  artist_id = "{{ artist.id }}"
+      var myForm = document.querySelector(".form_add_user")
+      myForm.onsubmit = (e) =>{
+        e.preventDefault()
+        var addedUserEmail = document.getElementById("users_for_adding").value
+        var radioInputChecked = document.getElementById("flexSwitchCheckChecked").checked
+        var url = "{% url 'add_user_permission_to_change_or_see' %}";
+        document.location.href = url + artist_id + '/' + addedUserEmail + "/" + radioInputChecked + "/"
+        
+      }
+
+    // change user permissions
+    var changeButtons = document.querySelectorAll("#userChange")
+    for(var i=0; i<changeButtons.length; i++){
+      changeButtons[i].onclick = (e) =>{
+        var checkInput = document.getElementById(e.target.name)
+        var url = "{% url 'change_user_permission_to_change_or_see' %}"
+        document.location.href = url + e.target.name + '/' + checkInput.checked + '/'
+        }
+    }
+
+    </script>
+
+
+{% endblock %}

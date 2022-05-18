@@ -1,0 +1,66 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-header">
+    <div class="row flex-between-center">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">All Customers</h5>
+      </div>
+    
+  
+    </div>
+  </div>
+  <div class="card-body bg-light pb-0">
+    <div class="table-responsive scrollbar">
+      {% if customers|length %}
+        <table class="table table-hover table-striped overflow-hidden">
+          <thead>
+            <tr>
+              <th scope="col">Owner image</th>
+              <th scope="col">Name</th>
+              <th scope="col">Address</th>
+              <th scope="col">City</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for customer in customers %}
+
+            
+
+              <tr class="align-middle mb-10" id="table_row">
+
+                {% if customer|check_image %}
+                  <td><a href="{% url 'customer_details' customer.id %}"><img src="{{customer|get_image}}" style="width:35px" alt=""></a></td>
+                {% else %}
+                  <td><a href="{% url 'customer_details' customer.id %}"><img src="{% static 'default_contact_img.png' %}" style="width:35px" alt=""></a></td>
+                {% endif %}
+
+                <td class="text-nowrap"> 
+                  <div class="d-flex align-items-center">
+                    <div class="">{{customer.name}}</div>
+                </td>
+                <td class="text-nowrap"> {{customer.address}} </td>
+                <td class="text-nowrap"> {{customer.city}} </td>
+                
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        {% if has_perm %}
+          <p>There is no customer yet, try to <span><a href="{% url 'add_new_customer' %}">add</a></span> some</p>
+        
+        {% else %}
+          <p>There is no artist yet</p>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+  
+  </div>
+{% endblock %}

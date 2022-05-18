@@ -1,0 +1,99 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static  'css/artist_events.css' %}">
+{% endblock link %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="row flex-between-center">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">All Products</h5>
+      </div>
+    
+  
+    </div>
+  </div>
+  <div class="card-body bg-light pb-0">
+    <div class="table-responsive scrollbar">
+      {% if products|length %}
+      <div class="container">
+        <div class="row" id="main">
+            {% for product in products %}
+
+            <div class="card mb-3" style="max-width: 1800px;">
+                <div class="row g-0" id="row_row">
+                    <div class="col-md-4 col_header_image" id="col_header col_header_image " style="margin-bottom: 30px;">
+                        <div class="card-header">
+                            Event: <i>{{product.event.name}}</i>
+                        </div>
+                        <div class="col_image">
+                            <img src="{{ product.rental_products.picture.url }}" width="600px"  class="img-fluid rounded-start image_preview" alt="...">
+                        </div>
+                    </div>
+            
+                    <div class="col-md-8">
+            
+                        <div class="card-body" >
+                            <h5 class="card-title">{{product.rental_products.name}}</h5>
+                            <br>
+                            <div class="block">
+                                <div class="col-lg-12">
+                                    <label style=" color:black" class="form-label" for="show_duration">Price:</label>
+                                    <p>{{product.price}}</p>
+                                  </div>
+                                  <div class="col-lg-6">
+                                    <label style=" color:black" class="form-label" for="price">Count:</label>
+                                    <p>{{product.count}}</p>
+                                  </div>
+                                  
+                                  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a class="btn btn-primary" href="{% url 'get_event_details' product.event.id %}">Read more</a>
+                                    <a class="btn btn-info" href="{% url 'edit_event_product' product.event.id product.id %}">Edit</a>
+                                    <a class="btn btn-danger" href="{% url 'delete_event_product' product.event.id product.rental_products.id %}">Delete</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+      {% else %}
+        <p>This user does not participate in any event</p>
+
+      {% endif %}
+    </div>
+  </div>
+  
+  </div>
+
+
+  <script>
+
+        const HEIGHT = 250;
+        const WIDTH = 375;
+        
+        var image_preview = document.querySelectorAll(".image_preview")
+        image_preview.forEach(element =>{
+            var elHeight = element.height
+            element.width *= HEIGHT/element.height;
+            element.height = WIDTH;
+            if (elHeight > HEIGHT){
+                let imageBlock = element.closest(".col_image")
+                imageBlock.style.cssText = `
+                  text-align: center;
+                `;
+              }
+        })
+  </script>
+
+
+{% endblock %}

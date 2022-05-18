@@ -1,0 +1,17 @@
+#imagePreviewBlock {
+    position: relative;
+    text-align: center;
+}
+
+.top-right {
+    color: #F41434;
+    font-size: 30px;
+    position: absolute;
+    top: 8px;
+    font-weight: 900;
+    right: 16px;
+}
+
+.top-right:hover {
+    color: #9C2435;
+}

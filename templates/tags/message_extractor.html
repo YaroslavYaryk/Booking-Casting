@@ -1,0 +1,41 @@
+    <div class="row border-bottom border-200 hover-actions-trigger hover-shadow py-2 px-1 mx-0 bg-white dark__bg-dark" data-href="../../app/email/email-detail.html">
+                
+    <div class="col col-md-9 col-xxl-10">
+        <div class="row">
+            <div class="col-md-4 col-xl-3 col-xxl-2 ps-md-0 mb-1 mb-md-0">
+                <div class="d-flex position-relative">
+                    {% if message.requester == user %}
+                    <div class="flex-1 ms-2"><a class="fw-bold stretched-link inbox-link" >{{message.owner.first_name}}</a><span class="badge badge-soft-success badge-pill ms-2">NEW</span>
+                    </div>
+                    {% else %}
+                        <div class="flex-1 ms-2"><a class="fw-bold stretched-link inbox-link" >{{message.requester.first_name}}</a><span class="badge badge-soft-success badge-pill ms-2">NEW</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if message.requester == user and not message.done %}
+                <div class="col"><a class="d-block inbox-link" ><span class="fw-bold">Sent request to {{message.owner.get_full_name}}</span><span class="mx-1">&ndash;</span><span>Request to change {{type_of_user}} '{{message.artist.name}}'...</span></a>
+                </div>
+            {% elif message.requester == user and  message.done and message.granted %}
+                <div class="col"><a class="d-block inbox-link" ><span class="fw-bold"> Request to {{message.owner.get_full_name}} is granted</span></a>
+                </div>
+            
+            {% elif message.requester == user and  message.done and not message.granted %}
+                <div class="col"><a class="d-block inbox-link" ><span class="fw-bold"> Unfortunatelly request to {{message.owner.get_full_name}} is disclaimed</span></a>
+                </div>
+            
+              {% elif message.owner == user and message.done %}
+                <div class="col"><a class="d-block inbox-link"><span class="fw-bold">Request from {{message.requester.get_full_name}} closed</span></a>
+                </div>
+
+            {% elif message.owner == user  %}
+                <div class="col"><a class="d-block inbox-link" href="{% url link message_type_id %}"><span class="fw-bold">Request from {{message.requester.email}}</span><span class="mx-1">&ndash;</span><span>Request to change artist '{{message.artist.name}}'...</span></a>
+                </div>
+
+            
+            {% endif %}
+
+        </div>
+    </div>
+    <div class="col-auto ms-auto d-flex flex-column justify-content-between"><span class="fw-bold">{{ message.created_at }}</span><span class="fas text-warning fa-star ms-auto mb-2 d-sm-none" data-fa-transform="down-7"></span></div>
+    </div>

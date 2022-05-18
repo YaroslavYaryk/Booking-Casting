@@ -1,0 +1,63 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="row flex-between-center">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Companies</h5>
+      </div>
+      {% if has_perm %}
+        <div class="col-8 col-sm-auto text-end ps-2">
+          <a href="{% url 'add_new_company' %}" class="btn btn-falcon-default btn-sm me-1 mb-1">
+            <span class="fas fa-plus me-1" data-fa-transform="shrink-3"></span>Add Company
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card-body bg-light pb-0">
+    <div class="table-responsive scrollbar">
+      {% if companies|length %}
+      <table class="table table-hover table-striped overflow-hidden">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Address</th>
+            <th scope="col">Zip Code</th> 
+            <th scope="col">City</th> 
+            <th scope="col">Active</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for company in companies %}
+          <tr class="align-middle">
+            <td class="text-nowrap">
+              <div class="d-flex align-items-center">
+                <div class="ms-2"><a href="{% url 'get_company_details' company.id %}">{{company.name}}</a></div>
+              </div>
+            </td>
+             <td class="text-nowrap"> {{company.address}} </td>
+             <td class="text-nowrap"> {{company.zip_code}} </td>
+             <td class="text-nowrap"> {{company.city}} </td>
+            {% if company.active %}
+                <td><span class="badge badge rounded-pill d-block p-2 badge-soft-success">active<span class="ms-1 fas fa-check" data-fa-transform="shrink-2"></span></span></td>
+            {% else %}
+                <td><span class="badge badge rounded-pill d-block p-2 badge-soft-danger">disabled<span class="ms-1 fas fa-times" data-fa-transform="shrink-2"></span></span></td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        
+          <p>There is no company yet, try to add some</p>
+        
+      {% endif %}
+    </div>
+  </div>
+  
+  </div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base/admin_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+
+
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+{% if messages %}
+ {% for message in messages %}
+       <div class="alert alert-primary">
+           <strong>{{ message }}</strong>
+       </div>
+ {% endfor %}
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">{% csrf_token %}
+<div class="row g-0">
+  <div class="col-lg-8 pe-lg-2">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center" >
+        <h5 class="mb-0">New Artist Access</h5>
+        <div class="add_ability d-flex justify-content-between align-items-center" 
+            >
+        </div>
+        
+      </div>
+      <div class="card-body bg-light">
+          <div class="row gx-2">
+            <div class="col-12 mb-3">
+              <label class="form-label" for="first_name">Name</label>
+              {{ form.name|add_class:'form-control'}}
+            </div>
+            <div class="col-12 mb-3 file_block">
+              <label class="form-label" for="last_name">File</label>
+              {{ form.file|add_class:'form-control'}}
+            </div>
+
+              {% if type == "update" %}
+                {% if f.file %}
+                  <p style="margin-top: -20px;">Chosen file: <a target="blank" href="{{f.file.url}}">{{f.file.url}}</a> </p>
+                
+                {% endif %}
+              {% endif %}
+            
+            
+            <button class="btn btn-primary me-1 mb-1" type="submit">Save</button>
+          </div>
+      </div>
+    </div>
+
+  </div>
+
+  
+</div>
+
+
+  <script type="text/javascript">
+
+    var fileField = document.querySelector(".file_block")
+    fileField.innerHTML = `<div class="col-12 mb-3 file_block">
+      <label class="form-label" for="last_name">File</label>
+      <input type="file" name="file" class="form-control" id="id_file">
+    </div>`
+
+  </script>
+
+
+
+{% endblock %}
