@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls.base import reverse
+from django.utils.decorators import method_decorator
 from django.views.generic.list import ListView
 from users.services import user_actions, user_handle
 
@@ -17,6 +18,7 @@ from company.services import handle_company
 from .forms import CompanyForm
 
 
+@method_decorator(user_has_perm_to_change, name='dispatch')
 class CompanyListView(LoginRequiredMixin, ListView):
     
     model = Company
@@ -55,6 +57,7 @@ def add_new_company(request):
 
 
 @login_required(login_url='login')
+@user_has_perm_to_change
 def get_company_details(request, company_id):
     
     try:

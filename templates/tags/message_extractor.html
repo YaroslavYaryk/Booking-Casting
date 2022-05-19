@@ -17,7 +17,7 @@
                 <div class="col"><a class="d-block inbox-link" ><span class="fw-bold">Sent request to {{message.owner.get_full_name}}</span><span class="mx-1">&ndash;</span><span>Request to change {{type_of_user}} '{{message.artist.name}}'...</span></a>
                 </div>
             {% elif message.requester == user and  message.done and message.granted %}
-                <div class="col"><a class="d-block inbox-link" ><span class="fw-bold"> Request to {{message.owner.get_full_name}} is granted</span></a>
+                <div class="col"><a href="{% url link message_type_id %}" class="d-block inbox-link" ><span class="fw-bold"> Request to {{message.owner.get_full_name}} is granted</span></a>
                 </div>
             
             {% elif message.requester == user and  message.done and not message.granted %}

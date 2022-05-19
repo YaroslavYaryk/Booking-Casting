@@ -119,14 +119,15 @@
                       </div>
                     </div>
                     {% endif %}
-                    <a class="nav-link" href="{% url 'get_my_companies' %}" role="button" data-bs-toggle="" aria-expanded="false">
-                      <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-store"></span></span><span class="nav-link-text ps-1">My Companies</span>
-                      </div>
-                    </a>
+                    {% if user.is_staff %}
+                      <a class="nav-link" href="{% url 'get_my_companies' %}" role="button" data-bs-toggle="" aria-expanded="false">
+                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-store"></span></span><span class="nav-link-text ps-1">My Companies</span>
+                        </div>
+                      </a>
+                    {% endif %}
                   <!-- label-->
                   {% if user|has_access_to_artist or user.is_staff %}
 
-                   
                   <!-- parent pages-->
                     <a class="nav-link" href="{% url 'all_my_actors' %}" role="button" data-bs-toggle="" aria-expanded="false">
                       <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-store"></span></span><span class="nav-link-text ps-1">My Artists</span>
@@ -192,25 +193,31 @@
             </ul>
           </nav>
 
-          <div class="messages">
-            {% if messages %}
-              {% for message in messages %}
-                {% if message.tags == 'error' %}
-                  <div class="alert alert-danger" role="alert">
+
+          {% block messages %}
+            <div class="messages">
+              {% if messages %}
+                {% for message in messages %}
+                  {% if message.tags == 'error' %}
+                    <div class="alert alert-danger" role="alert">
+                      {{message}}
+                    </div>
+                  {% elif message.tags == 'critical' %}
+                  <div class="alert alert-primary" role="alert">
                     {{message}}
-                  </div>
-                {% elif message.tags == 'critical' %}
-                <div class="alert alert-primary" role="alert">
-                  {{message}}
-                  </div>
-                {% else %}
-                  <div class="alert alert-{{message.tags}}" role="alert">
-                    {{message}}
-                  </div>
-                {% endif %}	
-              {% endfor %}
-            {% endif %}
-          </div>
+                    </div>
+                  {% else %}
+                    <div class="alert alert-{{message.tags}}" role="alert">
+                      {{message}}
+                    </div>
+                  {% endif %}	
+                {% endfor %}
+              {% endif %}
+            </div>
+          {% endblock messages %}
+
+
+
             {% block content %}
 
             {% endblock content %}

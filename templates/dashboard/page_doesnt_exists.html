@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=">
+	<title>Daily UI #008 - 404 Page</title>
+
+    <style>
+        /* Design reference:  */
+
+/* basic */
+*,
+*:before,
+*:after {
+	box-sizing: border-box;
+}
+html,
+body {
+	height: 100%;
+}
+body {
+	font: 16px/1.2 "Roboto", sans-serif;
+	color: #333;
+}
+.blog {
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+	position: absolute;
+	bottom: 15px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1;
+}
+
+/* container */
+.container {
+	width: auto;
+	height: auto;
+	background-color: #fff;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1;
+	overflow: hidden;
+}
+
+/* fourzerofour */
+.fourzerofour {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 450px;
+	height: 300px;
+	background: url("https://picsum.photos/g/450/300");
+	-webkit-background-clip: text;
+	background-clip: text;
+}
+.fourzerofour h1,
+.fourzerofour p {
+	color: transparent;
+	font-weight: bold;
+}
+.fourzerofour h1 {
+	margin-bottom: 16px;
+	font-size: 96px;
+}
+.fourzerofour p {
+	font-size: 28px;
+	text-transform: uppercase;
+}
+
+    </style>
+
+</head>
+
+<body>
+	<!-- 	<div class="blog">Visit <a href="#" target="_blank">My Blog</a></div> -->
+	<div class="container">
+		<div class="fourzerofour">
+			<h1>404</h1>
+			<p>page not found</p>
+		</div>
+	</div>
+</body>
+
+</html>

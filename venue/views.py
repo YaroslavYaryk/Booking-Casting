@@ -168,6 +168,10 @@ def delete_venue(request, venue_id):
         handle_venue.delete_venue(venue_id) 
     except Exception as ex: 
         print(ex)       
+    
+    if not (request.user.is_staff or VenueAccess.objects.filter(access = request.user)):
+            return HttpResponseRedirect(reverse("home"))
+    
     return HttpResponseRedirect(reverse("my_customers")) 
 
 

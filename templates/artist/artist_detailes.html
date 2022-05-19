@@ -24,6 +24,15 @@
             container.classList.add('container-fluid');
           }
         </script>
+        
+        <div class="block_error" style="display: none;">
+
+          <div class="alert alert-warning border-2 d-flex align-items-center" role="alert">
+            <div class="bg-warning me-3 icon-item"><span class="fas fa-exclamation-circle text-white fs-3"></span></div>
+            <p class="mb-0 flex-1">Please choose a user!</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+        </div>
        
           <div class="row">
             <div class="col-12">
@@ -89,7 +98,7 @@
                       <label class="form-label" >Hospitality Raider</label>
                     <p>{{artist.hospitality_raider}}</p>
                     </div>
-                    {% if user.is_staff and is_allowed_to_change %}
+                    {% if user.is_staff or is_allowed_to_change %}
                     <div style=" width: 90%" class="button-edit-delete d-flex justify-content-start">                    
                       <div class="col-12 ">
                         <a class="btn btn-danger" href="{% url 'delete_artist' artist.id %}" type="submit">Delete </a>
@@ -319,6 +328,11 @@
         myForm.onsubmit = (e) =>{
           e.preventDefault()
           var addedUserEmail = document.getElementById("users_for_adding").value
+          if (!addedUserEmail){
+            var errors = document.querySelector(".block_error")
+            errors.style.display = "block"
+            return
+          }
           var radioInputChecked = document.getElementById("flexSwitchCheckChecked").checked
           var url = "{% url 'add_user_permission_to_change_or_see' %}";
           document.location.href = url + artist_id + '/' + addedUserEmail + "/" + radioInputChecked + "/"
@@ -332,6 +346,7 @@
     for(var i=0; i<changeButtons.length; i++){
       changeButtons[i].onclick = (e) =>{
         var checkInput = document.getElementById(e.target.name)
+        
         var url = "{% url 'change_user_permission_to_change_or_see' %}"
         document.location.href = url + e.target.name + '/' + checkInput.checked + '/'
         }

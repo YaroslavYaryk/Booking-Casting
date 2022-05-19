@@ -18,21 +18,6 @@ from .forms import ArtistAddForm, ArtistAssetsForm, RequestForm
 from .models import Artist, ArtistAccess
 from .services import request_user_to_change, user_artists
 
-# class ArtistListView(LoginRequiredMixin, ListView):
-
-#     model = Artist
-#     # paginate_by = 100  # if pagination is desired
-#     template_name = "artist/artist_list.html"
-#     context_object_name = 'artists'
-    
-#     def get_queryset(self):
-#         return Artist.objects.filter(active=True)
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context["has_perm"] = self.request.user.is_staff
-#         return context
-
 
 class MyArtistListView(LoginRequiredMixin, ListView):
     
@@ -44,6 +29,14 @@ class MyArtistListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         # return Artist.objects.
         return user_artists.get_artists_for_user(self.request.user)
+    
+    def dispatch(self, *args, **kwargs):
+        dispatch_method = super(MyArtistListView, self).dispatch
+
+        if not (self.request.user.is_staff or  ArtistAccess.objects.filter(access = self.request.user)):
+            raise PermissionDenied
+        
+        return dispatch_method(*args, **kwargs)
 
     
     def get_context_data(self, **kwargs):
@@ -76,10 +69,11 @@ def add_new_artist(request):
 
 @login_required(login_url='login')
 def get_artist_details(request, artist_id):
-    
     try:
         user_artists.is_allowed_to_change(artist_id, request.user)
-    except:
+    except Artist.DoesNotExist:
+        return render(request, "admin/404.html")
+    except Exception as er:
         return render(request, "dashboard/page_blocked.html")
     
     artist_assets = user_artists.get_artist_assets(artist_id)
@@ -150,11 +144,9 @@ def send_request_to_change_artist(request, artist_id):
 
 @login_required(login_url='login')
 def get_all_messages(request):
-    
     artist_messages = request_user_to_change.get_artist_messages_for_user(request.user)
     customer_messages = get_customer_messages_for_user(request.user)
     venue_messages = handle_venue.get_all_messages_for_user(request.user)
-    
     context = {
         "artist_messages" : artist_messages,
         "customer_messages": customer_messages,
@@ -200,12 +192,16 @@ def handle_change_request(request, r_from, r_to, artist_id):
 def delete_artist(request, artist_id):
     
     if not  user_artists.is_allowed_to_change(artist_id, request.user):
+        print("here")
         raise PermissionDenied
     try:
         user_artists.delete_artist(artist_id) 
     except Exception as ex: 
         print(ex)
         messages.error(request, "Something went wrong")       
+        
+    if not (request.user.is_staff or  ArtistAccess.objects.filter(access = request.user)):
+            return HttpResponseRedirect(reverse("home"))
     return HttpResponseRedirect(reverse("all_my_actors")) 
 
 

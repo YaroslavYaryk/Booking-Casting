@@ -3,6 +3,12 @@ from django import forms
 from .models import Customer, CustomerContacts
 
 
+class TimePickerInput(forms.TimeInput):
+        input_type = 'time'
+        
+class DatePickerInput(forms.TimeInput):
+        input_type = 'date'
+
 class CustomerAddForm(forms.ModelForm):
     
     class Meta:
@@ -15,3 +21,7 @@ class CustomerContactsAddForm(forms.ModelForm):
     class Meta:
         model = CustomerContacts
         exclude = ("customer",)
+        
+        widgets = {
+                'birthdate' : DatePickerInput(),
+            }

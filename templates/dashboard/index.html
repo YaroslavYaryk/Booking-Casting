@@ -1,9 +1,22 @@
-{% extends 'base/auth_base.html' %} {% load static %} {% block content %}
-<div class="block d-flex" style="justify-content:center; align-items:center" >
+{% extends 'base/auth_base.html' %} {% load static %}
+
+{% block messages %}{% endblock messages %}
+
+{% block content %}
+
+<div class="block" style="text-align: center;">
     {% if user.is_staff %}
         <p>You have access to create whatever you want</p>
     {% else %}
         <p>You can't create anything, just wait some time till admin add you permissions</p>
+    {% endif %}
+</div>
+
+<div class="block d-flex" style=" justify-content:center; align-items:center; height:500px" >
+    {% if user.is_staff %}
+        <div  style="font-size: 160px; color:green" class="far fa-check-circle"></div>
+    {% else %}
+        <div  style="font-size: 160px;" class="far fa-check-circle"></div>
     {% endif %}
 </div>
 

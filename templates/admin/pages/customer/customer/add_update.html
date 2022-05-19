@@ -65,7 +65,7 @@
             </div>
             
             <label class="form-label" >Creator</label>
-            <select class="form-control" name="user" id="user">
+            <select class="form-control mb-3" name="user" id="user">
               <option value="">--Please choose an option--</option>
               {% for us in users %}
                     <option value="{{us.email}}">{{us.email}}</option>
@@ -73,8 +73,7 @@
               
             </select>
 
-
-            <div class="col-12 mb-3">
+            <div class="col-12 mb-1">
               <div class="form-check form-switch">{{ form.active|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active </label></div>
             </div>
             

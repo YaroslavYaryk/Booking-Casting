@@ -24,6 +24,7 @@ class CustomerListView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         return Customer.objects.filter(active=True)
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -41,6 +42,12 @@ class MyCustomerListView(LoginRequiredMixin, ListView):
         print("its here")
         return handle_customer.get_customers_for_user(self.request.user)
 
+    def dispatch(self, *args, **kwargs):
+        dispatch_method = super(MyCustomerListView, self).dispatch
+        if not (self.request.user.is_staff or  CustomerAccess.objects.filter(access = self.request.user)):
+            raise PermissionDenied
+        
+        return dispatch_method(*args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -181,6 +188,9 @@ def delete_customer(request, customer_id):
         handle_customer.delete_customer(customer_id) 
     except Exception as ex: 
         print(ex)       
+        
+    if not (request.user.is_staff or CustomerAccess.objects.filter(access = request.user)):
+            return HttpResponseRedirect(reverse("home"))
     return HttpResponseRedirect(reverse("my_customers")) 
 
 

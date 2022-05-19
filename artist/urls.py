@@ -11,15 +11,15 @@ from .views import (MyArtistListView, add_new_artist,
 
 urlpatterns = [
     # path("all/", ArtistListView.as_view(), name="all_actors"),
-    path("my_atrists/", MyArtistListView.as_view(), name="all_my_actors"),
+    path("my_artists/", MyArtistListView.as_view(), name="all_my_actors"),
     
     path("add_new_artist/", add_new_artist, name="add_artist"),
-    path("<artist_id>/", get_artist_details, name="artist_details"),
+    path("<artist_id>/artist_details/", get_artist_details, name="artist_details"),
     path("<artist_id>/update/", change_details_artist, name="change_artist"),
     path("<artist_id>/send_request_to_change/", send_request_to_change_artist, name="send_request_to_change"),
     path("<artist_id>/delete/", delete_artist, name="delete_artist"),
     
-    path("get_all_messages/", get_all_messages, name="get_all_messages"),
+    path("get_all_my_messages/", get_all_messages, name="get_all_messages"),
     path("handle_change_request/<r_from>/<r_to>/<artist_id>", handle_change_request, name="handle_artist_change_request"),
     
     path("<artist_id>/file/<file_id>/delete/", delete_artist_file, name="delete_artist_file"),
