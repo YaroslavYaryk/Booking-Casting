@@ -25,6 +25,12 @@ class MyVenueListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return handle_venue.get_customers_for_user(self.request.user)
 
+    def dispatch(self, *args, **kwargs):
+        dispatch_method = super(MyVenueListView, self).dispatch
+        if not (self.request.user.is_staff or  VenueAccess.objects.filter(access = self.request.user)):
+            raise PermissionDenied
+        
+        return dispatch_method(*args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -121,7 +127,6 @@ def change_details_venue(request, venue_id):
 
 
 @login_required(login_url='login')
-@user_has_perm_to_change
 def send_request_to_change_venue(request, venue_id):
     user = request.user
     try:
@@ -223,7 +228,14 @@ def upload_picture_handle(request, venue_id):
     if request.method == "POST":
         images = request.FILES.getlist('images')
         for image in images:
-            VenuePictures.objects.create( venue=handle_venue.get_venue_by_id(venue_id),file=image)
+            
+            if not (image.name.endswith(".jpg") or image.name.endswith(".jpeg") or image.name.endswith(".png")):
+                messages.error(request, "This file type is not supported!")
+                return HttpResponseRedirect(reverse("get_venue_details", kwargs={
+                        "venue_id": venue_id,
+                    },)) 
+            else:
+                VenuePictures.objects.create( venue=handle_venue.get_venue_by_id(venue_id),file=image)
 
     return HttpResponseRedirect(reverse("get_venue_details", kwargs={
                         "venue_id": venue_id,

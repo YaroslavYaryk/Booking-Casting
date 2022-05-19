@@ -7,11 +7,17 @@
     color: #F41434;
     font-size: 30px;
     position: absolute;
-    top: 8px;
+    top: 5px;
     font-weight: 900;
-    right: 16px;
+    right: 10px;
 }
 
 .top-right:hover {
     color: #9C2435;
+}
+
+.block_item_power::before {
+    content: "☑ ";
+    color: green;
+    font-size: larger;
 }

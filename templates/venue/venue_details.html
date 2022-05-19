@@ -60,7 +60,7 @@
                   <div class="card-header">
                     <h5 class="mb-0">Venue Settings</h5>
                   </div>
-                  {% if  not user.is_staff or not is_allowed_to_change %}
+                  {% if  not is_allowed_to_change %}
                   <div class="send_request_button" style=" margin-right: 20px">
                     <a class="btn btn-primary" href="{% url 'send_request_to_change_venue' venue.id %}" >Ask permission to change</a>
                   </div>
@@ -109,17 +109,25 @@
                         <label class="form-label" for="closing">Closing</label>
                         <p>{{ venue.closing }}</p>
                     </div>
+                    {% if venue.comment %}
+                      <div class="col-lg-12">
+                          <label class="form-label" for="comment">Comment</label>
+                          <p align='justify'>{{ venue.comment }}</p>
+                      </div>
+                    {% endif %}
+                    {% if venue.equipment %}
+                      <div class="col-lg-12">
+                          <label class="form-label" for="equipment">Equipment</label>
+                          <p align='justify'>{{ venue.equipment }}</p>
+                      </div>
+                    {% endif %}
                     <div class="col-lg-12">
-                        <label class="form-label" for="comment">Comment</label>
-                        <p align='justify'>{{ venue.comment }}</p>
-                    </div>
-                    <div class="col-lg-12">
-                        <label class="form-label" for="equipment">Equipment</label>
-                        <p align='justify'>{{ venue.equipment }}</p>
-                    </div>
-                    <div class="col-lg-6">
                         <label class="form-label" for="power">Power</label>
-                        <p>{{ venue.power }}</p>
+                        <div class="block_list" style="display: flex; flex-wrap:wrap; gap:40px">
+                          {% for el in venue.power %}
+                            <div class="block_item_power">{{el}}</div>
+                          {% endfor %}
+                        </div>
                     </div>
 
                       <div class="col-lg-6">
@@ -229,7 +237,7 @@
                     <div class="card-header">
                       <h5 class="mb-0">Venue Pictures</h5>
                     </div>
-                    <div class="row">
+                    <div class="row  mb-4">
                       <div class="col-lg-14 mb-4 mb-lg-0">
                         <div class="swiper-container theme-slider" data-swiper='{"autoplay":true,"spaceBetween":5,"loop":true,"loopedSlides":5,"slideToClickedSlide":true}'>
                           <div class="swiper-wrapper">
@@ -329,8 +337,8 @@
               </div>
             </div>
 
-            <div class="col-lg-12 ps-lg-2">
-              <div class="sticky-sidebar">
+            <div class="col-lg-12 ps-lg-2 venue_pictures ">
+              <div class="sticky-sidebar" >
                 <div class="card mb-3 overflow-hidden">
                   <div class="card-header">
                     <h5 class="mb-0">Venue pictures</h5>
@@ -338,7 +346,7 @@
 
                   <form class="form_add_user" action="{% url 'upload_picture_handle' venue.id %}"  method="post" enctype="multipart/form-data"  style="height:120px; align-items:center; padding:20px" >
                     {% csrf_token %} 
-                    <input class="form-control" type="file" name="images" multiple>
+                    <input class="form-control" type="file" name="images" multiple accept=".png, .jpg, .jpeg"> 
                     <button style="width:100%; margin-top: 10px;" class='btn btn-primary' type="submit" id="pict_upload">upload </button>
                   </form>
                 
@@ -346,8 +354,7 @@
             </div>
             {% endif %}
             
-
-            <div class="col-lg-4 ps-lg-2 company_events">
+            <div class="col-lg-4 ps-lg-2 venue_events">
               <div class="sticky-sidebar">
                 <div class="card mb-3 overflow-hidden">
                   <div class="card-header" style="display: flex; justify-content: space-between; align-items:center">
@@ -379,7 +386,7 @@
                     </table>
                   </div>
                   {% else %}
-                    <p  style="padding-top: 10px; margin-bottom: 5px; text-align:center">This customer does not participate in any event</p>
+                    <p class="mb-4"  style="padding-top: 10px; margin-bottom: 5px; text-align:center">This customer does not participate in any event</p>
                   {% endif %}
                 </div>
               </div>
@@ -441,17 +448,22 @@
             text-align: center;
           `;
         }
-       
-        const artist_events = document.querySelector(".company_events")
+
+      });
+      const venue_events = document.querySelector(".venue_events")
+      const venue_pictures = document.querySelector(".venue_pictures")
+
         var is_allowed_to_change = "{{is_allowed_to_change}}";
         if (is_allowed_to_change === "True"){
-          artist_events.style.cssText = `
+          venue_events.style.cssText = `
+            width:102%; 
+            margin-left: -2%;
+          `;
+          venue_pictures.style.cssText = `
             width:101%; 
             margin-left: -1%;
           `;
     }
-
-      });
 
     </script>
 

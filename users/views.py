@@ -88,6 +88,8 @@ def change_password(request):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  # Important!
+            messages.success(request, "Password changed successfully")
+            return HttpResponseRedirect(reverse("home"))
         else:
             messages.error(request, 'Ups, noe gikk galt. Prøv på nytt')
 

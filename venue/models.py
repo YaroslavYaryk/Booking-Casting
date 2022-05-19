@@ -16,8 +16,8 @@ class Venue(models.Model):
     opening = models.TimeField(("Opening Time"), auto_now=False, auto_now_add=False)
     closing = models.TimeField(("Closing Time"), auto_now=False, auto_now_add=False)
     age_limit = models.IntegerField(("Age Limit"))
-    comment = models.TextField(("Comment"))
-    equipment = models.TextField(("Equipment"))
+    comment = models.TextField(("Comment"), blank=True)
+    equipment = models.TextField(("Equipment"), blank=True)
     
     POWER_CHOICES =(
         ("32 Amp Blå", "32 Amp Blå"),

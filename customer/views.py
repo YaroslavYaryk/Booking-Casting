@@ -104,6 +104,7 @@ def get_customer_details(request, customer_id):
         customer = handle_customer.get_customer_by_id(customer_id)
     except:
         customer = None
+    print("here ----",handle_customer.is_allowed_to_change(customer_id, request.user))
     context = {
         "customer" : customer,
         "is_allowed_to_change" : handle_customer.is_allowed_to_change(customer_id, request.user),
@@ -119,7 +120,6 @@ def get_customer_details(request, customer_id):
 
 
 @login_required(login_url='login')
-@user_has_perm_to_change
 def change_details_customer(request, customer_id):
     
     if not handle_customer.is_allowed_to_change(customer_id, request.user):
@@ -141,7 +141,6 @@ def change_details_customer(request, customer_id):
 
 
 @login_required(login_url='login')
-@user_has_perm_to_change
 def send_request_to_change_customer(request, customer_id):
     user = request.user
     try:
