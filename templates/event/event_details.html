@@ -79,11 +79,6 @@
                   <div class="card-header">
                     <h5 class="mb-0">Event Settings</h5>
                   </div>
-                  {% if  not user.is_staff or not is_allowed_to_change %}
-                  <div class="send_request_button" style=" margin-right: 20px">
-                    <a class="btn btn-primary" href="" >Ask permission to change</a>
-                  </div>
-                  {% endif %}
               </div>
                 <div class="card-body bg-light">
                   <form class="row g-3">
@@ -257,29 +252,29 @@
                       {% comment %} <input placeholder="Name" type="text" name="product_name" id="" style="margin-top: -10px;" class=" mb-2 form-control"> {% endcomment %}
                       {% comment %} {{form.file_field|add_class:'form-control'}} {% endcomment %}
                       <div class="col-lg-12 mb-2"  >
-                        {{form.name|add_class:'form-control'}}
+                        {{form_event.name|add_class:'form-control'}}
                         <div class="form-error" style="color: red;">
-                          {{ form.name.errors }}
+                          {{ form_event.name.errors }}
                         </div>
                       </div>
                       <div class="col-lg-12" >
-                        {{form.picture|add_class:'form-control'}}
+                        {{form_event.picture|add_class:'form-control'}}
                         <div class="form-error" style="color: red;">
-                          {{ form.picture.errors }}
+                          {{ form_event.picture.errors }}
                         </div>
                       </div>
                       
                       <div class="block mb-3" style="margin-top: 8px; width:100%; display: flex; justify-content:space-between">  
                         <div class="col-lg-5" >
-                          {{form.price|add_class:'form-control'}}
+                          {{form_event.price|add_class:'form-control'}}
                           <div class="form-error" style="color: red;">
-                            {{ form.price.errors }}
+                            {{ form_event.price.errors }}
                           </div>
                         </div>
                         <div class="col-lg-5" >
-                          {{form.count|add_class:'form-control'}}
+                          {{form_event.count|add_class:'form-control'}}
                           <div class="form-error" style="color: red;">
-                            {{ form.count.errors }}
+                            {{ form_event.count.errors }}
                           </div>
                         </div>
                       </div> 

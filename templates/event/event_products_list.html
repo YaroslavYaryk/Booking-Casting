@@ -82,7 +82,7 @@
         const WIDTH = 375;
         
         var image_preview = document.querySelectorAll(".image_preview")
-        image_preview.forEach(element =>{
+        {% comment %} image_preview.forEach(element =>{
             var elHeight = element.height
             element.width *= HEIGHT/element.height;
             element.height = WIDTH;
@@ -92,7 +92,7 @@
                   text-align: center;
                 `;
               }
-        })
+        }) {% endcomment %}
   </script>
 
 

@@ -39,7 +39,7 @@ def get_linked_text(link, id, object):
 artists = """
 <ul>
     {% for obj in artists %}
-        <li> <a style="color:black" href="../../../artist/{{obj.artist.id}}/">{{obj.artist.name}}</a></li>
+        <li> <a style="color:black" href="../../../artist/{{obj.artist.id}}/artist_details/">{{obj.artist.name}}</a></li>
     {% endfor %}
 </ul>
 """

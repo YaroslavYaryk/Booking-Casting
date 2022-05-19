@@ -130,7 +130,7 @@
                     <tbody>
                       {% for event in my_events %}
                       <tr class="btn-reveal-trigger">
-                        <td><a href="">{{event.name}}</a></td>
+                        <td><a href="{% url 'get_event_details' event.id %}">{{event.name}}</a></td>
                         <td>{{event.date}}</td>
                         <td class="text-end">
                           <a href="{% url 'load_contract_for_event' event.id %}">Contract</a>

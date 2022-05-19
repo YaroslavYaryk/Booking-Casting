@@ -105,7 +105,7 @@ def get_event_details(request, event_id):
         "form" : form,
         "my_artists": handle_event.get_my_artists(request.user),
         "aval_users": handle_event.get_avaluable_users(event),
-        "form" : EventProductForm()
+        "form_event" : EventProductForm()
     }
     
     return render(request, 'event/event_details.html', context=context)
