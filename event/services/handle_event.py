@@ -212,3 +212,19 @@ def get_event_rental_product_by_id(event_product_id):
 
 def delete_event_rental_product(event_product_id):
     get_event_rental_product_by_id(event_product_id).delete()
+
+
+
+def handle_artist_user_permission(event, event_artist):
+    users_in_team = EventTeam.objects.filter(event=event)
+    for us in users_in_team:
+        if not ArtistAccess.objects.filter(artist=event_artist.artist,access=us.user):
+            ArtistAccess.objects.create(artist=event_artist.artist, access=us.user, admin=False)
+
+
+
+def handle_artist_user_permission_in_team(event, user):
+    events_artists =EventArtists.objects.filter(event=event)
+    for artist in events_artists:
+        if not ArtistAccess.objects.filter(artist=artist, access=user):
+            ArtistAccess.objects.create(artist=artist, access=user, admin=False)

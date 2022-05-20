@@ -1,5 +1,6 @@
 from artist.decorators import user_has_perm_to_change
 from company.models import Company
+from customer.services import handle_customer
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,6 +10,7 @@ from django.shortcuts import render
 from django.urls.base import reverse
 from django.views.generic.list import ListView
 from users.services import user_handle
+from venue.services import handle_venue
 
 from .forms import (EventArtistEditForm, EventArtistForm, EventForm,
                     EventProductEditForm, EventProductForm)
@@ -83,6 +85,7 @@ def get_event_details(request, event_id):
                 event_artist.save()
                 event.contract = handle_event.get_final_contract(event)
                 event.save()
+                handle_event.handle_artist_user_permission(event, event_artist)
             except Exception as er:
                 messages.error(request, er)
             
@@ -222,8 +225,15 @@ def add_user_to_team(request, event_id):
     
     if request.method == 'POST':
         try:
+            print(request.POST)
+            event = handle_event.get_event_by_id(event_id)
+            user = user_handle.get_user_by_email(request.POST.get("users_for_adding"))
+            handle_venue.add_user_can_change(event.venue, user, False)
+            handle_customer.add_user_can_change(event.customer, user, False)
+            handle_event.handle_artist_user_permission_in_team(event, user)
             handle_event.add_user_to_team(event_id, request.POST.get("users_for_adding"), request.POST.get("users_for_adding_role"))
         except Exception as er:
+            raise Exception
             messages.error(request, er)
     
     return HttpResponseRedirect(reverse("get_event_details", kwargs={

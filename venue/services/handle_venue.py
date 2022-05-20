@@ -15,9 +15,9 @@ def get_venue_by_id(id):
     return Venue.objects.get(pk=id)
 
 
-def add_user_can_change(venue_obj,user):
+def add_user_can_change(venue_obj,user, admin=True):
     
-    VenueAccess.objects.create(venue=venue_obj, access=user, admin=True)
+    VenueAccess.objects.create(venue=venue_obj, access=user, admin=admin)
 
 
 def is_allowed_to_change(venue_id, user):

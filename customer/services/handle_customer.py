@@ -37,9 +37,9 @@ def get_customers_for_user(user):
     return CustomerAccess.objects.filter(access = user)
 
 
-def add_user_can_change(customer, user_added):
+def add_user_can_change(customer, user_added, admin=True):
     
-    CustomerAccess.objects.create(customer=customer, access=user_added, admin=True)
+    CustomerAccess.objects.create(customer=customer, access=user_added, admin=admin)
 
 
 def hash_info(data):

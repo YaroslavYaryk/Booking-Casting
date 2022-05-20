@@ -52,7 +52,7 @@
         <div class="blockDisplayList mb-3"  >
             <div class="blockItemHead" style="font-weight: bold; display: grid; grid-template-columns: repeat(4, 1fr);">
                 <p>Id</p>
-                <p>Name</a>
+                <p>Artist</a>
                 <p >Show Duration</p>
                 <p>Price</p> 
             </div>
@@ -60,7 +60,7 @@
                 <div class="full_block">
                     <div class="blockItemHeader" id="{{obj.id}}"  style="display: grid; grid-template-columns: repeat(4, 1fr);">
                         <p>{{obj.id}}</p>
-                        <a > {{obj.artist.name}}</a>
+                        <a href="{% url 'artist_details' obj.artist.id %}" > {{obj.artist.name}}</a>
                         <p> {{obj.show_duration}}</p>
                         <a> {{obj.price}}</a> 
                     </div>
