@@ -7,7 +7,7 @@ from .views import (MyArtistListView, add_new_artist,
                     delete_artist_file, delete_user_from_changeble,
                     get_all_artist_events, get_all_messages,
                     get_artist_details, handle_change_request,
-                    send_request_to_change_artist)
+                    send_request_to_change_artist, load_tech_rider, load_hosp_rider)
 
 urlpatterns = [
     # path("all/", ArtistListView.as_view(), name="all_actors"),
@@ -36,6 +36,13 @@ urlpatterns = [
     path("artist_permission_change/<access_id>/<perm_type>/", change_user_permission_to_change_or_see, 
          name="change_user_permission_to_change_or_see"),
     
-    path("<artist_id>/events/", get_all_artist_events, name="get_all_artist_events")
+    path("<artist_id>/events/", get_all_artist_events, name="get_all_artist_events"),
+
+
+	# load hechnical and hospitality riders
+	path("<artist_id>/technical_raider/", load_tech_rider, name="load_tech_rider"),
+	path("<artist_id>/hospitality_raider/", load_hosp_rider, name="load_hosp_rider"),
+
+
     
 ]

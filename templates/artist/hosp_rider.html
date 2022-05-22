@@ -1,0 +1,34 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/rider.css' %}">
+{% endblock link %}
+
+{% block content %}
+
+
+<div class="row g-0" style="100%">
+    <div class="card-header " >
+        <h5 class="mb-3" style="margin-left: 20%;">{{artist.name}} Hospitality Rider</h5>
+        <div class="col-lg-8 pe-lg-2">
+            <form method="POST" action="">
+                {% csrf_token %}
+                {{form.media}}
+                <div  class="block">{{form.rider}}</div>
+                
+                <div class="block" style="display: flex; justify-content:space-between">
+                    <div class="div"></div>
+                    <button style="flex:end" class="btn btn-primary" type="submit">save</button>
+                </div>
+
+            </form>
+        </div>
+      </div>
+    
+</div>
+
+
+
+{% endblock %}

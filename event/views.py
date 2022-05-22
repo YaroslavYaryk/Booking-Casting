@@ -12,7 +12,7 @@ from django.views.generic.list import ListView
 from users.services import user_handle
 from venue.services import handle_venue
 
-from .forms import (EventArtistEditForm, EventArtistForm, EventForm,
+from .forms import (ContractForm, EventArtistEditForm, EventArtistForm, EventForm,
                     EventProductEditForm, EventProductForm)
 from .models import EventTeam
 from .services import handle_event
@@ -26,6 +26,14 @@ class MyEventsListView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         return handle_event.get_event_for_user(self.request.user)
+    
+    def dispatch(self, *args, **kwargs):
+        dispatch_method = super(MyEventsListView, self).dispatch
+
+        if not (self.request.user.is_staff or  EventTeam.objects.filter(user = self.request.user)):
+            raise PermissionDenied
+        
+        return dispatch_method(*args, **kwargs)
 
     
     def get_context_data(self, **kwargs):
@@ -350,3 +358,10 @@ def edit_event_product(request, event_id, product_id):
         }
     
     return render(request, "event/edit_event_product.html", context=context)
+
+
+def get_contract(request, event_artist_id):
+    
+    form = ContractForm()
+
+    return render(request, "event/contract.html", {"form": form})

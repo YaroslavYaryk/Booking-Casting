@@ -2,8 +2,11 @@
 {% load static %}
 {% load widget_tweaks %}
 
-{% block content %}
+{% block link %}
+  <link rel="stylesheet" href="{% static  'css/artist_add.css' %}">
+{% endblock link %}
 
+{% block content %}
 
 
 {% if form.errors %}
@@ -43,6 +46,7 @@
       </div>
       <div class="card-body bg-light">
           <div class="row gx-2">
+            {{form.media}} 
             <div class="col-12 mb-3">
               <label class="form-label" for="first_name">Name</label>
               {{ form.name|add_class:'form-control'}}

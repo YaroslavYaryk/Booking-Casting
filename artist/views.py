@@ -14,7 +14,7 @@ from users.services import user_actions, user_handle
 from venue.services import handle_venue
 
 from .decorators import user_has_perm_to_change
-from .forms import ArtistAddForm, ArtistAssetsForm, RequestForm
+from .forms import ArtistAddForm, ArtistAssetsForm, HospRiderForm, RequestForm, TechRiderForm
 from .models import Artist, ArtistAccess
 from .services import request_user_to_change, user_artists
 
@@ -270,3 +270,47 @@ def get_all_artist_events(request, artist_id):
     }
     
     return render(request, "artist/artist_events.html", context=context)
+
+
+
+def load_tech_rider(request, artist_id):
+    artist = user_artists.get_artist_by_id(artist_id)
+
+    if request.method == 'POST':
+        form = TechRiderForm(artist.technical_raider, request.POST)
+        if form.is_valid():
+            artist.technical_raider = request.POST["rider"]
+            artist.save()
+            return HttpResponseRedirect(reverse("artist_details", kwargs={
+                        "artist_id": artist.id,
+                    },))
+             
+        else:
+            messages.error(request, 'Opps, there are some problems')
+    else:
+        form = TechRiderForm(artist.technical_raider)
+
+    
+    return render(request, "artist/tech_rider.html", {"artist": artist, "form":form})
+
+
+def load_hosp_rider(request, artist_id):
+
+    artist = user_artists.get_artist_by_id(artist_id)
+
+    if request.method == 'POST':
+        form = HospRiderForm(artist.hospitality_raider, request.POST)
+        if form.is_valid():
+            artist.hospitality_raider = request.POST["rider"]
+            artist.save()
+            return HttpResponseRedirect(reverse("artist_details", kwargs={
+                        "artist_id": artist.id,
+                    },))
+             
+        else:
+            messages.error(request, 'Opps, there are some problems')
+    else:
+        form = HospRiderForm(artist.hospitality_raider)
+
+    
+    return render(request, "artist/hosp_rider.html", {"artist": artist, "form":form})

@@ -10,6 +10,7 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls.base import reverse
 from django.views.generic.list import ListView
+from users.models import User
 from users.services import user_actions, user_handle
 
 from .forms import CompanyForm
@@ -37,14 +38,15 @@ def add_new_company(request):
         if form.is_valid():
             company_obj = form.save()
             company_obj.organization_number = handle_customer.hash_info(request.POST)
-            company_obj.creator = request.user
+            company_obj.creator = user_handle.get_user_by_email(request.POST["user"])
             company_obj.save()
             return HttpResponseRedirect(reverse("admin_get_all_companies"))
         else:
             messages.error(request, 'Opps, there are some problems')
     else:
         form = CompanyForm()
-    return render(request, 'admin/pages/company/add_update.html', {'form': form})
+    users = User.objects.all()
+    return render(request, 'admin/pages/company/add_update.html', {'form': form, "users": users})
 
 
 
@@ -62,7 +64,7 @@ def change_details_company(request, company_id):
             messages.error(request, 'Opps, there are some problems')
     else:
         form = CompanyForm(instance=company)
-    return render(request, 'admin/pages/company/add_update.html', {'form': form})
+    return render(request, 'admin/pages/company/update.html', {'form': form})
 
 
 

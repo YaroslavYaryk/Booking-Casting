@@ -6,7 +6,7 @@ from .views import (MyEventsListView, add_event_product, add_new_event,
                     edit_event_artist, edit_event_product, edit_user_in_team,
                     get_event_artist_list, get_event_details,
                     get_event_products_list, load_contract_for_event,
-                    update_event)
+                    update_event, get_contract)
 
 urlpatterns = [
     path("list/", MyEventsListView.as_view(), name="get_all_events"),
@@ -29,6 +29,8 @@ urlpatterns = [
     # event products
     path("<event_id>/products_list/", get_event_products_list, name="get_event_products_list"),
     path("<event_id>/delete_event_product/<product_id>/", delete_event_product, name="delete_event_product"),
-    path("<event_id>/edit_event_product/<product_id>/", edit_event_product, name="edit_event_product")
+    path("<event_id>/edit_event_product/<product_id>/", edit_event_product, name="edit_event_product"),
+    path("<event_artist_id>/sign_contract/", get_contract, name="sign_contract")
+
     
 ]

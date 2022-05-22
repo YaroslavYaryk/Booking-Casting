@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (CompanyListView, add_new_company, change_company_details,
                     delete_company, get_all_company_events,
-                    get_company_details)
+                    get_company_details, load_company_terms)
 
 urlpatterns = [
     path("", CompanyListView.as_view(), name="get_my_companies"),
@@ -12,5 +12,9 @@ urlpatterns = [
     path("<company_id>/delete_company/", delete_company, name="completely_delete_company"),
     
     # company events
-    path("<company_id>/all_events/", get_all_company_events, name="get_all_company_events")
+    path("<company_id>/all_events/", get_all_company_events, name="get_all_company_events"),
+
+    # load category terms 
+    path("<company_id>/load_terms/", load_company_terms, name="load_company_terms"),
+
 ]

@@ -15,7 +15,7 @@ from users.services import user_actions, user_handle
 from company.models import Company
 from company.services import handle_company
 
-from .forms import CompanyForm
+from .forms import CompanyForm, TermsForm
 
 
 @method_decorator(user_has_perm_to_change, name='dispatch')
@@ -39,7 +39,7 @@ class CompanyListView(LoginRequiredMixin, ListView):
 @user_has_perm_to_change
 def add_new_company(request):
     if request.method == 'POST':
-        form = CompanyForm( request.POST)
+        form = CompanyForm( request.POST, request.FILES)
 
         if form.is_valid():
             company_obj = form.save()
@@ -112,3 +112,27 @@ def get_all_company_events(request, company_id):
     }
     
     return render(request, "company/company_events.html", context=context)
+
+
+def load_company_terms(request, company_id):
+
+    company = handle_company.get_company_by_id(company_id)
+
+    if request.method == 'POST':
+        form = TermsForm(company.terms, request.POST)
+        if form.is_valid():
+            company.terms = request.POST["terms"]
+            company.save()
+            return HttpResponseRedirect(reverse("get_company_details", kwargs={
+                        "company_id": company_id,
+                    },))
+             
+        else:
+            messages.error(request, 'Opps, there are some problems')
+    else:
+        form = TermsForm(company.terms)
+
+    
+    return render(request, "company/terms.html", {"company": company, "form":form})
+
+

@@ -93,6 +93,10 @@
                               <span style="color: red; font-size: 20px;" class="far fa-times-circle"></span>
                           {% endif %}
                           </div>
+                          <div class="col-lg-12">
+                            <label class="form-label" for="email1">Terms - </label>
+                            <a href="{% url 'load_company_terms' company.id %}">Terms</a>
+                          </div>
 
                           <div style=" width: 90%" class="button-edit-delete d-flex justify-content-start">                    
                             <div class="col-12 ">

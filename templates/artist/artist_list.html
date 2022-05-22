@@ -23,27 +23,18 @@
       <table class="table table-hover table-striped overflow-hidden">
         <thead>
           <tr>
-            <th scope="col">Photo</th>
             <th scope="col">Name</th>
-            <th scope="col">Technical raider</th>
-            <th scope="col">Hospitality raider</th>
           </tr>
         </thead>
         <tbody>
           {% for artist in artists %}
           <tr class="align-middle">
-            {% if artist|check_image %}
-              <td><img src="{{artist|get_image}}" style="width:35px" alt=""></td>
-            {% else %}
-              <td><img src="{% static 'default_contact_img.png' %}" style="width:35px" alt=""></td>
-            {% endif %}
+
             <td class="text-nowrap">
               <div class="d-flex align-items-center">
                 <div class="ms-2"><a href="{% url 'artist_details' artist.id %}">{{artist.name}}</a></div>
               </div>
             </td>
-            <td class="text-nowrap"> {{artist.technical_raider}} </td>
-            <td class="text-nowrap"> {{artist.hospitality_raider}} </td>
             
           </tr>
           {% endfor %}

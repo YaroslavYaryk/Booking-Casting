@@ -90,13 +90,13 @@
                             <span style="color: red; font-size: 20px;" class="far fa-times-circle"></span>
                         {% endif %}
                     </div>
-                    <div class="col-lg-12">
+                    <div class="col-lg-6">
                       <label class="form-label" for="email1">Technical Raider</label>
-                      <p>{{ artist.technical_raider }}</p>
+                      <div><a href="{% url 'load_tech_rider' artist.id %}">technical rider</a></div>
                     </div>
-                    <div class="col-lg-12">
+                    <div class="col-lg-6">
                       <label class="form-label" >Hospitality Raider</label>
-                    <p>{{artist.hospitality_raider}}</p>
+                      <div><a href="{% url 'load_hosp_rider' artist.id %}">hospitality raider</a></div>
                     </div>
                     {% if user.is_staff or is_allowed_to_change %}
                     <div style=" width: 90%" class="button-edit-delete d-flex justify-content-start">                    

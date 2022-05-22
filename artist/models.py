@@ -1,4 +1,4 @@
-from statistics import mode
+from ckeditor.fields import RichTextField
 
 from django.db import models
 from users.models import User
@@ -9,8 +9,8 @@ class Artist(models.Model):
     """ class of single product """
 
     name = models.CharField("name", max_length=255, unique=True)
-    technical_raider = models.TextField("technical raider")
-    hospitality_raider = models.TextField("technical raider")
+    technical_raider = RichTextField("technical raider")
+    hospitality_raider = RichTextField("technical raider")
     active = models.BooleanField(default=True)
     
     def __str__(self):

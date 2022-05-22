@@ -89,3 +89,12 @@ class EventProductEditForm(forms.Form):
     
 
        
+class ContractForm(forms.Form):
+    
+    contract = forms.CharField(widget = CKEditorWidget())
+
+    def __init__(self, *args, **kwargs):  
+        super(ContractForm, self ).__init__(*args, **kwargs)
+       
+        
+        self.fields["contract"].initial = BASE_CONTRACT
