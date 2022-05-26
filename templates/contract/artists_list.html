@@ -1,0 +1,91 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static  'css/artist_events.css' %}">
+{% endblock link %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="row flex-between-center">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Customer: {{customer.name}}</h5>
+      </div>
+    
+  
+    </div>
+  </div>
+  <div class="card-body bg-light pb-0">
+    <div class="table-responsive scrollbar">
+      {% if artists|length %}
+      <div class="container">
+        <div class="row" id="main">
+            {% for artist in artists %}
+
+            <div class="card mb-3" style="max-width: 1800px;">
+                <div class="row g-0" id="row_row">
+                    <div class="col-md-4" id="col_header" style="margin-bottom: 30px;">
+                        <div class="card-header">
+                            Artist: <a href="{% url 'artist_details' artist.artist.id %}">{{artist.artist.name}}</a>
+                        </div>
+                        {% if artist.venue|get_image %}
+                            <img src="{{ artist.venue|get_image }}" width="600px" class="img-fluid rounded-start" alt="...">
+                        {% else %}
+                            <img src="{% static 'venue_default.jpg' %}" width="600px" class="img-fluid rounded-start" alt="...">
+                    
+                        {% endif %}
+                    </div>
+            
+                    <div class="col-md-8">
+            
+                        <div class="card-body" >
+                            <div class="div_block" >
+                                
+                                <div class="block">
+                                    <div class="col-lg-6">
+                                        <label style=" color:black" class="form-label" for="date">Venue:</label>
+                                        <p><a href="{% url 'get_venue_details' artist.venue.id %}">{{artist.venue.name}}</a></p>
+                                    </div>
+                                    {% if artist.company %}
+                                        <div class="col-lg-6">
+                                            <label style=" color:black" class="form-label" for="date">Company:</label>
+                                            <p>{{artist.company}}</p>
+                                        </div>
+                                    {% endif %}
+                                    <div class="col-lg-6">
+                                        <label style=" color:black" class="form-label" for="date">Date:</label>
+                                        <p>{{artist.date}}</p>
+                                    </div>
+                                    
+                                    <div class="col-lg-6">
+                                        <label style=" color:black" class="form-label" for="price">Price:</label>
+                                        <p>{{artist.price}}</p>
+                                    </div>
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a class="btn btn-danger" href="{% url 'cancel_contract' artist.id %}">Delete</a>
+                                    <a class="btn btn-info" href="{% url 'customer_edit_contract' artist.id %}">Edit</a>
+                                    <a class="btn btn-secondary" href="{% url 'preview_artist_contract' artist.id %}">Read more</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+      {% else %}
+        <p>This user does not participate in any event</p>
+
+      {% endif %}
+    </div>
+  </div>
+  
+  </div>
+{% endblock %}

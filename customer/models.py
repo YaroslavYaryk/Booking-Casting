@@ -27,7 +27,7 @@ class CustomerContacts(models.Model):
     """ class of single product """
 
     customer = models.ForeignKey(Customer, verbose_name=("customer"), on_delete=models.CASCADE)
-    first_name = models.CharField("first name", max_length=255, unique=True)
+    first_name = models.CharField("first name", max_length=255)
     last_name = models.CharField("last name", max_length=255)
     phone = models.CharField("phone", max_length=255)
     email = models.EmailField("email", max_length=255)

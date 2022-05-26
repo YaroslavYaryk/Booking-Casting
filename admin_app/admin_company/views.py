@@ -17,63 +17,61 @@ from .forms import CompanyForm
 
 
 class CompanyListView(LoginRequiredMixin, ListView):
-    
+
     model = Company
     # paginate_by = 100  # if pagination is desired
     template_name = "admin/pages/company/all.html"
-    context_object_name = 'companies'
-
+    context_object_name = "companies"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
 
-@login_required(login_url='login')
+@login_required(login_url="login")
 @user_is_admin
 def add_new_company(request):
-    if request.method == 'POST':
-        form = CompanyForm( request.POST)
+    if request.method == "POST":
+        form = CompanyForm(request.POST)
 
         if form.is_valid():
             company_obj = form.save()
-            company_obj.organization_number = handle_customer.hash_info(request.POST)
             company_obj.creator = user_handle.get_user_by_email(request.POST["user"])
             company_obj.save()
             return HttpResponseRedirect(reverse("admin_get_all_companies"))
         else:
-            messages.error(request, 'Opps, there are some problems')
+            messages.error(request, "Opps, there are some problems")
     else:
         form = CompanyForm()
     users = User.objects.all()
-    return render(request, 'admin/pages/company/add_update.html', {'form': form, "users": users})
+    return render(
+        request, "admin/pages/company/add_update.html", {"form": form, "users": users}
+    )
 
 
-
-@login_required(login_url='login')
+@login_required(login_url="login")
 @user_is_admin
 def change_details_company(request, company_id):
-    
+
     company = handle_company.get_company_by_id(company_id)
-    if request.method == 'POST':
-        form = CompanyForm( request.POST, instance=company)
+    if request.method == "POST":
+        form = CompanyForm(request.POST, instance=company)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("admin_get_all_companies"))
         else:
-            messages.error(request, 'Opps, there are some problems')
+            messages.error(request, "Opps, there are some problems")
     else:
         form = CompanyForm(instance=company)
-    return render(request, 'admin/pages/company/update.html', {'form': form})
+    return render(request, "admin/pages/company/update.html", {"form": form})
 
 
-
-@login_required(login_url='login')
+@login_required(login_url="login")
 @user_is_admin
 def delete_company(request, company_id):
 
     try:
-        handle_company.delete_company(company_id) 
-    except Exception as ex: 
-        print(ex)       
-    return HttpResponseRedirect(reverse("admin_get_all_companies")) 
+        handle_company.delete_company(company_id)
+    except Exception as ex:
+        print(ex)
+    return HttpResponseRedirect(reverse("admin_get_all_companies"))

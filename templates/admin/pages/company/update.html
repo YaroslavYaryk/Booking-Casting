@@ -31,10 +31,14 @@
         <div class="add_ability d-flex justify-content-between align-items-center" 
             >
         </div>
-        
+        {{form.media}}
       </div>
       <div class="card-body bg-light">
           <div class="row gx-2">
+            <div class="col-12 mb-3">
+              <label class="form-label" for="name">Organization Number</label>
+              {{ form.organization_number|add_class:'form-control'}}
+            </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="first_name">Name</label>
               {{ form.name|add_class:'form-control'}}
@@ -51,6 +55,16 @@
             <div class="col-12 mb-3">
                 <label class="form-label" for="email">City</label>
                 {{ form.city|add_class:'form-control '}}
+            </div>
+
+            <div class="col-12 mb-3">
+              <label class="form-label" for="email">Terms</label>
+              {{ form.terms|add_class:'form-control '}}
+            </div>
+
+            <div class="col-12 mb-3">
+              <label class="form-label" for="email">Icon</label>
+              {{ form.icon|add_class:'form-control '}}
             </div>
 
             <div class="col-12 mb-3">

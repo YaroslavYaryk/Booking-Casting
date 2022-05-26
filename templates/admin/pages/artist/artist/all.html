@@ -23,13 +23,11 @@
         <thead>
           <tr>
             <th scope="col">Name</th>
-            <th scope="col">Technical raider</th>
-            <th scope="col">Hospitality raider</th>
             <th scope="col">Active</th>
             <th></th>
             <th></th>
 
-            <th scope="col">Action</th>
+            <th style="float:right;" scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -40,8 +38,6 @@
                 <div class="ms-2"><a href="{% url 'admin_change_details_artist' artist.id %}">{{artist.name}}</a></div>
               </div>
             </td>
-            <td class="text-nowrap"> {{artist.technical_raider}} </td>
-            <td class="text-nowrap"> {{artist.hospitality_raider}} </td>
             {% if artist.active %}
             <td><span class="badge badge rounded-pill d-block p-2 badge-soft-success">active<span class="ms-1 fas fa-check" data-fa-transform="shrink-2"></span></span></td>
             {% else %}
@@ -50,7 +46,7 @@
             <td></td>
             <th></th>
 
-            <td><a class="btn btn-danger"  href="{% url 'admin_delete_artist' artist.id %}">delete</a></tr>
+            <td style="float:right"><a class="btn btn-danger"  href="{% url 'admin_delete_artist' artist.id %}">delete</a></tr>
           </tr>
           {% endfor %}
         </tbody>

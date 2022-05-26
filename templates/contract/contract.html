@@ -1,0 +1,24 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block content %}
+
+    <form method="POST" action="" style="width:1100px;" >
+        {% csrf_token %}
+        {{form.media}}
+
+        {{form.contract}}
+        <button type="submit" class="btn btn-success"> SAVE</button>
+    </form>
+
+    <script type="text/javascript">
+
+        var image_text = document.querySelector(".cke_contents_ltr")
+        console.log(image_text)
+
+    </script>
+
+{% endblock content %}
+

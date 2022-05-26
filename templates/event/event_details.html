@@ -103,18 +103,7 @@
                         <label class="form-label" for="phone">Venue</label>
                         <p><a href="{% url 'get_venue_details' event.venue.id %}">{{ event.venue.name }}</a></p>
                     </div>
-                    <div class="col-lg-6">
-                        <label class="form-label" for="email">Customer</label>
-                        <p><a href="{% url 'customer_details' event.customer.id %}">{{ event.customer.name }}</a></p>
-                    </div>
-                    <div class="col-lg-6">
-                        <label class="form-label" for="company">Company</label>
-                        <p><a href="{% url 'get_company_details' event.company.id %}">{{ event.company.name }}</a></p>
-                    </div>
-                    <div class="col-lg-6">
-                      <label class="form-label" for="company">Contract</label>
-                      <p><a href="{% url 'load_contract_for_event' event.id %}">Contract</a></p>
-                  </div>
+                    
                     {% if is_allowed_to_change %}
                     <div  class="button-edit-delete d-flex justify-content-between">                    
                         <a class="btn btn-danger" href="{% url 'delete_event' event.id %}" type="submit">Delete </a>
@@ -125,8 +114,13 @@
                   </form>
                 </div>
               </div>
+              
+              
 
-              <a href="{% url 'sign_contract' 1 %}">contract</a>
+              <a href="{% url 'sign_contract' 36 %}">contract</a>
+              <br>
+              <a href="{% url 'preview_artist_contract' 36 %}">preview contract</a>
+
 
               
               {% if users_in_team %}          
@@ -172,41 +166,7 @@
                 </div>
 
               {% endif %}  
-              <div class="card mb-3">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center">
-                  <h5 class="mb-0">Add artist to event</h5>
-                  <a class="btn btn-primary" href="{% url 'get_event_artist_list' event.id %}">Event Artists</a>
-                </div>
-                <div class="row">
-                  <div class="col-lg-14 mb-4 mb-lg-0">
-                    <div class="card" style="padding: 20px;">
-                      <form action="" method="POST">
-                        {% csrf_token %}
-                        <div class="col-lg-12" >
-                          <label class="form-label" for="artist">Artist:</label>
-                          <p>{{ form.artist|add_class:"form-control" }}</p>
-                        </div>
-                        <div class="col-lg-12" >
-                          <label class="form-label" for="show_duration">Show Duration:</label>
-                          <p>{{ form.show_duration|add_class:"form-control" }}</p>
-                        </div>
-                        <div class="col-lg-12" >
-                          <label class="form-label" for="show_duration">Price:</label>
-                          <p>{{ form.price|add_class:"form-control" }}</p>
-                        </div>
-                        <div class="col-lg-12 reponsibilities" >
-                          <label class="form-label" for="email1">Customer Responsibilities:</label>
-                          <p>{{ form.customers_responsibility }}</p>
-                        </div>
-                        <div class="button_add_user d-flex justify-content-between">
-                          <div class="block"></div>
-                          <button class="btn btn-primary" type="submit">ADD</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              
               
             </div>
             <div class="col-lg-4 ps-lg-2">

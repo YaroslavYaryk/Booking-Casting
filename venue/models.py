@@ -10,26 +10,25 @@ class Venue(models.Model):
     address = models.CharField("Address", max_length=255)
     zip_code = models.CharField("Zip Code", max_length=255)
     city = models.CharField("City", max_length=255)
-    phone = models.CharField("Phone", max_length=255) 
-    email = models.EmailField("Email", max_length=255) 
-    capacity = models.CharField("Capacity", max_length=255) 
+    phone = models.CharField("Phone", max_length=255)
+    email = models.EmailField("Email", max_length=255)
+    capacity = models.CharField("Capacity", max_length=255)
     opening = models.TimeField(("Opening Time"), auto_now=False, auto_now_add=False)
     closing = models.TimeField(("Closing Time"), auto_now=False, auto_now_add=False)
     age_limit = models.IntegerField(("Age Limit"))
     comment = models.TextField(("Comment"), blank=True)
     equipment = models.TextField(("Equipment"), blank=True)
-    
-    POWER_CHOICES =(
+
+    POWER_CHOICES = (
         ("32 Amp Blå", "32 Amp Blå"),
         ("32 Amp rød", "32 Amp rød"),
         ("63 Amp Blå", "63 Amp Blå"),
         ("63 Amp rød", "63 Amp rød"),
     )
     power = MultiSelectField(choices=POWER_CHOICES)
-    
+
     active = models.BooleanField(default=True)
-    
-    
+
     def __str__(self):
         return self.name
 
@@ -39,17 +38,16 @@ class Venue(models.Model):
 
 
 class VenueContacts(models.Model):
-    """ class of single product """
+    """class of single product"""
 
     venue = models.ForeignKey(Venue, verbose_name=("Venue"), on_delete=models.CASCADE)
     first_name = models.CharField("first name", max_length=255, unique=True)
     last_name = models.CharField("last name", max_length=255)
-    phone = models.CharField("phone", max_length=255)
+    phone = models.CharField("phone", max_length=255, unique=True)
     epost = models.EmailField("email", max_length=255)
     role = models.CharField("role", max_length=255)
     active = models.BooleanField(default=True)
-    
-    
+
     def __str__(self):
         return self.venue.name
 
@@ -59,18 +57,22 @@ class VenueContacts(models.Model):
 
 
 class VenueAccess(models.Model):
-    """ class of single product """
+    """class of single product"""
 
-    venue = models.ForeignKey(Venue, verbose_name="venue_access", on_delete=models.CASCADE)
+    venue = models.ForeignKey(
+        Venue, verbose_name="venue_access", on_delete=models.CASCADE
+    )
     access = models.ForeignKey(User, verbose_name=("access"), on_delete=models.CASCADE)
     admin = models.BooleanField(default=False)
-    
+
     class Meta:
-        unique_together = ('venue', 'access',)
+        unique_together = (
+            "venue",
+            "access",
+        )
 
     def __str__(self):
         return self.venue.name
-
 
     @property
     def is_admin(self):
@@ -94,24 +96,30 @@ class VenueRequestsStorage(models.Model):
         related_name="venue_owner",
     )
 
-    venue = models.ForeignKey(Venue, verbose_name="venue_on_request_storage", on_delete=models.CASCADE)
+    venue = models.ForeignKey(
+        Venue, verbose_name="venue_on_request_storage", on_delete=models.CASCADE
+    )
     created_at = models.DateTimeField(auto_now=True)
     granted = models.BooleanField(default=False)
     done = models.BooleanField(default=False)
-    
-    
+
     class Meta:
-        unique_together = ('requester', 'owner', "venue",)
+        unique_together = (
+            "requester",
+            "owner",
+            "venue",
+        )
 
     def __str__(self):
         return f"{self.requester} + {self.owner} + {self.venue}"
-    
 
 
 class VenuePictures(models.Model):
-    
-    venue = models.ForeignKey(Venue, verbose_name="venue_picture", on_delete=models.CASCADE)
+
+    venue = models.ForeignKey(
+        Venue, verbose_name="venue_picture", on_delete=models.CASCADE
+    )
     file = models.FileField(("Picture"), upload_to="venue_pictures/")
 
-    def __str__(self) :
-        return  self.venue.name
+    def __str__(self):
+        return self.venue.name

@@ -18,13 +18,13 @@ from company.services import handle_company
 from .forms import CompanyForm, TermsForm
 
 
-@method_decorator(user_has_perm_to_change, name='dispatch')
+@method_decorator(user_has_perm_to_change, name="dispatch")
 class CompanyListView(LoginRequiredMixin, ListView):
-    
+
     model = Company
     # paginate_by = 100  # if pagination is desired
     template_name = "company/list.html"
-    context_object_name = 'companies'
+    context_object_name = "companies"
 
     def get_queryset(self):
         return Company.objects.filter(creator=self.request.user)
@@ -35,82 +35,86 @@ class CompanyListView(LoginRequiredMixin, ListView):
         return context
 
 
-@login_required(login_url='login')
+@login_required(login_url="login")
 @user_has_perm_to_change
 def add_new_company(request):
-    if request.method == 'POST':
-        form = CompanyForm( request.POST, request.FILES)
+    if request.method == "POST":
+        form = CompanyForm(request.POST, request.FILES)
 
         if form.is_valid():
             company_obj = form.save()
-            company_obj.organization_number = handle_customer.hash_info(request.POST)
             company_obj.creator = request.user
             company_obj.save()
-            return HttpResponseRedirect(reverse("get_company_details", kwargs={
+            return HttpResponseRedirect(
+                reverse(
+                    "get_company_details",
+                    kwargs={
                         "company_id": company_obj.id,
-                    },))
+                    },
+                )
+            )
         else:
-            messages.error(request, 'Opps, there are some problems')
+            messages.error(request, "Opps, there are some problems")
     else:
         form = CompanyForm()
-    return render(request, 'company/add_company.html', {'form': form})
+    return render(request, "company/add_company.html", {"form": form})
 
 
-@login_required(login_url='login')
+@login_required(login_url="login")
 @user_has_perm_to_change
 def get_company_details(request, company_id):
-    
+
     try:
         handle_company.is_allowed_to_change(company_id, request.user)
     except:
         return render(request, "dashboard/page_blocked.html")
-    
+
     company = handle_company.get_company_by_id(company_id)
     context = {
-        "company" : company,
-        "my_events" : handle_company.get_my_events(company_id)[:5]
+        "company": company,
     }
-    
-    return render(request, 'company/details.html', context=context)
+
+    return render(request, "company/details.html", context=context)
 
 
-
-@login_required(login_url='login')
+@login_required(login_url="login")
 def change_company_details(request, company_id):
-    
+
     company = handle_company.get_company_by_id(company_id)
-    if request.method == 'POST':
-        form = CompanyForm( request.POST, instance=company)
+    if request.method == "POST":
+        form = CompanyForm(request.POST, request.FILES, instance=company)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("get_company_details", kwargs={
+            return HttpResponseRedirect(
+                reverse(
+                    "get_company_details",
+                    kwargs={
                         "company_id": company_id,
-                    },))
+                    },
+                )
+            )
         else:
-            messages.error(request, 'Opps, there are some problems')
+            messages.error(request, "Opps, there are some problems")
     else:
         form = CompanyForm(instance=company)
-    return render(request, 'company/edit_company.html', {'form': form})
+    return render(request, "company/edit_company.html", {"form": form})
 
 
-
-@login_required(login_url='login')
+@login_required(login_url="login")
 def delete_company(request, company_id):
 
     try:
-        handle_company.delete_company(company_id) 
-    except Exception as ex: 
-        print(ex)       
-    return HttpResponseRedirect(reverse("get_my_companies")) 
+        handle_company.delete_company(company_id)
+    except Exception as ex:
+        print(ex)
+    return HttpResponseRedirect(reverse("get_my_companies"))
 
 
 def get_all_company_events(request, company_id):
-    
+
     my_events = handle_company.get_my_events(company_id)
-    context = {
-        "events" : my_events
-    }
-    
+    context = {"events": my_events}
+
     return render(request, "company/company_events.html", context=context)
 
 
@@ -118,21 +122,23 @@ def load_company_terms(request, company_id):
 
     company = handle_company.get_company_by_id(company_id)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = TermsForm(company.terms, request.POST)
         if form.is_valid():
             company.terms = request.POST["terms"]
             company.save()
-            return HttpResponseRedirect(reverse("get_company_details", kwargs={
+            return HttpResponseRedirect(
+                reverse(
+                    "get_company_details",
+                    kwargs={
                         "company_id": company_id,
-                    },))
-             
+                    },
+                )
+            )
+
         else:
-            messages.error(request, 'Opps, there are some problems')
+            messages.error(request, "Opps, there are some problems")
     else:
         form = TermsForm(company.terms)
 
-    
-    return render(request, "company/terms.html", {"company": company, "form":form})
-
-
+    return render(request, "company/terms.html", {"company": company, "form": form})

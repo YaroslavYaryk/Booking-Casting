@@ -40,32 +40,47 @@
         
       </div>
       <div class="card-body bg-light">
-          <div class="row gx-2">
-            <div class="col-12 mb-3">
-              <label class="form-label" for="first_name">Name</label>
-              {{ form.name|add_class:'form-control'}}
-            </div>
-            <div class="col-12 mb-3">
-              <label class="form-label" for="last_name">Adddress</label>
-              {{ form.address|add_class:'form-control'}}
-            </div>
-            <div class="col-12 mb-3">
-              <label class="form-label" for="email">Zip Code</label>
-              {{ form.zip_code|add_class:'form-control text-lowercase'}}
-            </div>
-
-            <div class="col-12 mb-3">
-                <label class="form-label" for="email">City</label>
-                {{ form.city|add_class:'form-control '}}
-            </div>
-
-            <div class="col-12 mb-3">
-              <div class="form-check form-switch">{{ form.active|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active </label></div>
-            </div>
-            
-            <button class="btn btn-primary me-1 mb-1" type="submit">Save</button>
+        <div class="row gx-2">
+          {{form.media}}
+          <div class="col-12 mb-3">
+            <label class="form-label" for="name">Organization Number</label>
+            {{ form.organization_number|add_class:'form-control'}}
           </div>
-      </div>
+          <div class="col-12 mb-3">
+            <label class="form-label" for="first_name">Name</label>
+            {{ form.name|add_class:'form-control'}}
+          </div>
+          <div class="col-12 mb-3">
+            <label class="form-label" for="last_name">Adddress</label>
+            {{ form.address|add_class:'form-control'}}
+          </div>
+          <div class="col-12 mb-3">
+            <label class="form-label" for="email">Zip Code</label>
+            {{ form.zip_code|add_class:'form-control text-lowercase'}}
+          </div>
+
+          <div class="col-12 mb-3">
+              <label class="form-label" for="email">City</label>
+              {{ form.city|add_class:'form-control '}}
+          </div>
+
+          <div class="col-12 mb-3">
+            <label class="form-label" for="email">Terms</label>
+            {{ form.terms|add_class:'form-control '}}
+          </div>
+
+          <div class="col-12 mb-3">
+            <label class="form-label" for="email">Icon</label>
+            {{ form.icon|add_class:'form-control '}}
+          </div>
+
+          <div class="col-12 mb-3">
+            <div class="form-check form-switch">{{ form.active|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active </label></div>
+          </div>
+          
+          <button class="btn btn-primary me-1 mb-1" type="submit">Save</button>
+        </div>
+    </div>
     </div>
 
   </div>

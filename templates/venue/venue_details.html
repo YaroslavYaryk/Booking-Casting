@@ -24,6 +24,21 @@
             container.classList.add('container-fluid');
           }
         </script>
+
+        <div class="block_error" style="display: none;">
+
+          <div class="alert alert-warning border-2 d-flex align-items-center" role="alert">
+            <div class="bg-warning me-3 icon-item"><span class="fas fa-exclamation-circle text-white fs-3"></span></div>
+            <p class="mb-0 flex-1">Please choose a user!</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+        </div>
+        <div class="block_critical" style="display: none;">
+          <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
+            <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
+            <p class="mb-0 flex-1">Invalid Email</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
        
           <div class="row">
             <div class="col-12">
@@ -164,33 +179,23 @@
                   <form method="POST">
                     {% csrf_token %}
                     
-                    <div class="row g-3">
-                      <div class="col-lg-6">
-                        <label class="form-label" for="first-name">First Name</label>
-                        <p>{{form.first_name|add_class:'form-control'}}</p>
+                    <div class="col-lg-12">
+                      <label class="form-label" >Venue User: </label>
+                      {% if us %}
+                        <a href="{% url 'user_profile_view' us.id %}">{{us.full_name}}</a>
+                      {% endif %}
+                      <p>{{form.venue_user|add_class:"form-control"}}</p>
+                    </div>
+                    <div class="col-lg-12">
+                      <label class="form-label" >Role</label>
+                      <p>{{form.role|add_class:"form-control"}}</p>
+                    </div>
+                    
+                    <div class="block" style="display: flex; justify-content: space-between; align-items:center">
+                      <div class="col-6 mb-3">
+                        <div class="form-check form-switch">{{ form.active|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active </label></div>
                       </div>
-                      <div class="col-lg-6" style="align-items: center" >
-                              <label class="form-label" for="last-name">Last Name </label>
-                          <p>{{ form.last_name|add_class:'form-control' }}</p>
-                      </div>
-                      <div class="col-lg-6">
-                        <label class="form-label" for="email1">Phone</label>
-                        <p>{{ form.phone|add_class:'form-control' }}</p>
-                      </div>
-                      <div class="col-lg-6">
-                        <label class="form-label" >Email</label>
-                        <p>{{form.epost|add_class:'form-control'}}</p>
-                      </div>
-                      <div class="col-lg-12">
-                        <label class="form-label" for="email1">Role</label>
-                        <p>{{ form.role|add_class:'form-control' }}</p>
-                      </div>
-                      <div class="block" style="display: flex; justify-content:space-between">
-                        <div class="col-lg-6">
-                          <div class="form-check form-switch">{{ form.active|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active </label></div>
-                        </div>
-                        <button class="btn btn-primary" type="submit">Submit</button>
-                      </div>
+                      <button class="btn btn-primary" type="submit">Submit</button>
                     </div>
                   </form>                  
                 </div>
@@ -313,21 +318,35 @@
             {% if is_allowed_to_change %}
             <div class="col-lg-4 ps-lg-2">
               <div class="sticky-sidebar">
-                <div class="card mb-3 overflow-hidden">
-                  <div class="card-header">
+                <div class="card mb-3 pb-4 overflow-hidden">
+                  <div class="card-header" style="display: flex; justify-content:space-between; align-items: center">
                     <h5 class="mb-0">User Has Access</h5>
+                    <a class="btn btn-info inviteUserSwitch" href="">Invite User</a>
                   </div>
 
-                  <form class="form_add_user" action="" style="height:120px; align-items:center; padding:20px" >
+                  {% comment %} invite friend form {% endcomment %}
+                  <form class="form_invite_user" action="" style="height:110px; align-items:center; padding:20px; display:none" >
+                    {% csrf_token %}
+                    <input type="text" class="form-control mb-2" placeholder="Invite user" name="" id="invite_user">
+                    
+                    <div class="block_add_user" style="display: flex;  margin-top: 10px; justify-content:space-between">
+                      <div></div>
+                      <button type="submit" class='btn btn-primary' >INVITE</button>
+                    </div>
+                  </form>
+
+                  {% comment %} add user access to artist {% endcomment %}
+                  <form class="form_add_user" action="" style="height:110px; align-items:center; padding:20px" >
                     {% csrf_token %}
                     <select class="form-control" name="users_for_adding" id="users_for_adding">
-                      <option value="">--Please choose an option--</option>
+                      <option value="">--User phone--</option>
                       {% for us in aval_users %}
-                            <option value="{{us.email}}">{{us.email}}</option>
+                            <option value="{{us.phone}}">{{us.phone}}</option>
                       {% endfor %}
                       
                     </select>
-                    <div class="block_add_user" style="display: flex; justify-content:space-between; margin-top: 10px;">
+                    
+                    <div class="block_add_user" style="display: flex;  margin-top: 10px; justify-content:space-between">
                      
                       <div class="form-check form-switch"><input class="form-check-input" id="flexSwitchCheckChecked" type="checkbox" checked="" /><label class="form-check-label" for="flexSwitchCheckChecked">Can change?</label></div>
                       <button type="submit" class='btn btn-primary' >ADD</button>
@@ -358,35 +377,33 @@
               <div class="sticky-sidebar">
                 <div class="card mb-3 overflow-hidden">
                   <div class="card-header" style="display: flex; justify-content: space-between; align-items:center">
-                    <h5 class="mb-0">Venue Events</h5>
-                    <a href="{% url 'get_all_venue_events' venue.id %}" class="btn btn-success">All Events</a>
+                    <h5 class="mb-0">Venue Contracts</h5>
+                    <a href="{% url 'get_venue_contracts' venue.id %}" class="btn btn-success">All Contracts</a>
                   </div>
-                  {% if my_events %}
+                  {% if my_contracts %}
                   <div class="table-responsive scrollbar">
                     <table class="table table-striped overflow-hidden">
                       <thead>
                         <tr class="btn-reveal-trigger">
-                          <th scope="col">Name</th>
-                          <th scope="col">Date</th>
-                          <th class="text-end" scope="col">Contract</th>
+                          <th scope="col">Artist</th>
+                          <th scope="col">Customer</th>
+                          {% comment %} <th  scope="col">Company</th> {% endcomment %}
                         </tr>
                       </thead>
                       <tbody>
-                        {% for event in my_events %}
+                        {% for contract in my_contracts %}
                         <tr class="btn-reveal-trigger">
-                          <td><a href="">{{event.name}}</a></td>
-                          <td>{{event.date}}</td>
-                          <td class="text-end">
-                            <a href="{% url 'load_contract_for_event' event.id %}">Contract</a>
-                          </td>
+                          <td><a href="{% url 'artist_details' contract.artist.id %}">{{contract.artist.name}}</a></td>
+                          <td><a href="{% url 'customer_details' contract.customer.id %}">{{contract.customer.name}}</a></td>
+                          {% comment %} <td><a href="{% url 'get_company_details' contract.company.id %}">{{contract.company.name}}</a></td> {% endcomment %}
                         </tr>
                       {% endfor %}
-    
+
                       </tbody>
                     </table>
                   </div>
                   {% else %}
-                    <p class="mb-4"  style="padding-top: 10px; margin-bottom: 5px; text-align:center">This customer does not participate in any event</p>
+                    <p class="mb-4"  style="padding-top: 10px; margin-bottom: 5px; text-align:center">This artist does not participate in any event</p>
                   {% endif %}
                 </div>
               </div>
@@ -410,10 +427,16 @@
       if(myForm){
         myForm.onsubmit = (e) =>{
           e.preventDefault()
-          var addedUserEmail = document.getElementById("users_for_adding").value
+          var addedUserphone = document.getElementById("users_for_adding").value
+          if (!addedUserphone ){
+            console.log("error")
+            var errors = document.querySelector(".block_error")
+            errors.style.display = "block"
+            return
+          }
           var radioInputChecked = document.getElementById("flexSwitchCheckChecked").checked
           var url = "{% url 'add_user_permission_to_change_or_see_venue' %}";
-          document.location.href = url + venueId + '/' + addedUserEmail + "/" + radioInputChecked + "/"
+          document.location.href = url + venueId + '/' + addedUserphone + "/" + radioInputChecked + "/"
           
         }
       }
@@ -464,6 +487,40 @@
             margin-left: -1%;
           `;
     }
+
+    {% comment %} invite user {% endcomment %}
+
+    var inviteAddSwitch = document.querySelector(".inviteUserSwitch")
+    var form_invite_user = document.querySelector(".form_invite_user")
+    inviteAddSwitch.onclick = (e) =>{
+      e.preventDefault()
+      if (form_invite_user.style.display !== "block"){
+        form_invite_user.style.display = "block";
+        myForm.style.display = "none"
+      }else{
+        form_invite_user.style.display = "none";
+        myForm.style.display = "block"
+      }
+    }
+
+    form_invite_user.onsubmit = (e) =>{
+      e.preventDefault()
+      var invite_user = document.getElementById("invite_user").value
+      if (!(invite_user.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) == invite_user)){
+        var errors = document.querySelector(".block_critical")
+        errors.style.display = "block"
+        return
+      }
+      if (!invite_user){
+          var errors = document.querySelector(".block_error")
+          errors.style.display = "block"
+          return
+      }
+      var url = "{% url 'venue_invite_user' %}";
+      document.location.href = url + venueId + '/' + invite_user + "/"
+      
+    }
+
 
     </script>
 

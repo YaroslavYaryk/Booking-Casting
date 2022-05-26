@@ -32,8 +32,6 @@
             <th scope="col">Name</th>
             <th scope="col">Date</th>
             <th scope="col">Venue</th> 
-            <th scope="col">Customer</th> 
-            <th scope="col">Company</th>
           </tr>
         </thead>
         <tbody>
@@ -46,8 +44,7 @@
             </td>
              <td class="text-nowrap"> {{team.event.date}} </td>
              <td class="text-nowrap"> <a href="{% url 'get_venue_details' team.event.venue.id %}">{{team.event.venue}}</a> </td>
-             <td class="text-nowrap"> <a href="{% url 'customer_details' team.event.customer.id %}">{{team.event.customer}}</a> </td>
-             <td class="text-nowrap"> <a href="{% url 'get_company_details' team.event.company.id %}">{{team.event.company}}</a> </td>
+             
           </tr>
           {% endfor %}
         </tbody>

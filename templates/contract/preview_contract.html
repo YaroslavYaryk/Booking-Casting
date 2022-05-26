@@ -1,0 +1,63 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block content %}
+
+    <h3 class="mb-3" style="text-align: center;">Contract: {{artist.customer.name}} -  {{artist.artist.name}} </h3>
+    <div class="block_contract" style="position: relative; background: #fff; padding: 20px;">
+        {{artist.contract|safe}}
+    </div>
+    <a class="btn btn-success save_contract" > SAVE </a>
+
+
+    <script type="text/javascript">
+        const saveButton = document.querySelector(".save_contract")
+        console.log("{{artist.id}}")
+        saveButton.onclick = () =>{
+            var eventArtistId = "{{artist.id}}"
+
+            var block = document.querySelector('.block_contract')
+            var elements = block.getElementsByTagName("span")
+            var batailing = "";
+            var comment = "";
+
+            for(var i=0; i<elements.length; i++){
+                var el = elements[i].innerText.replaceAll("_", '') 
+                if (i === 0){
+                    var date = el;
+                    const pattern = /^(\d{2})\.(\d{2})\.(\d{4})/g
+                    if (date.match(pattern)){
+                        var res = date.split(".") 
+                        date = res[2]+"-"+res[1]+"-"+res[0]
+                    }
+                }
+                if( i === 1){
+                    var honorar = el
+                }
+                if( i === 2 || i === 3){
+                    batailing += el  + " ";
+                }
+                if( i >= 4 && i <= 7 ){
+                    comment += el  + " ";
+                } 
+            }
+            if (!(date || honorar || batailing)){
+                return
+            }
+            if (!batailing){
+                batailing = " ";
+            }
+            if (!comment){
+                comment = " ";
+            }
+            var url = "{% url 'save_contract_data' %}"
+            document.location.href = url + eventArtistId + "/" + date + 
+                                    '/' + honorar + "/" + batailing + "/" + comment + "/"
+         
+        }
+    </script>
+
+{% endblock content %}
+

@@ -11,10 +11,6 @@ def delete_company(company_id):
 
 
 def is_allowed_to_change(company_id, user):
-    
+
     company = get_company_by_id(company_id)
     return company.creator == user
-
-
-def get_my_events(company_id):
-    return Event.objects.filter(company__id = company_id)

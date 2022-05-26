@@ -69,21 +69,10 @@
             </div>
 
             <div class="col-12 mb-3">
-                <label class="form-label" for="company">Company</label>
+                <label class="form-label mb-3" for="company">Company</label>
                 {{ form.company|add_class:'form-control'  }}
             </div>
 
-            <div class="col-12 mb-3">
-                <label class="form-label" for="contract">Contract (Male sure {customer} {venue} {company} {artist} 
-                    in doubly brackets )</label>
-                <div class="blockContract">{{ form.contract_template|add_class:'form-control'  }}</div>
-            </div>
-
-            <div class="col-12 mb-3">
-                <label class="form-label" for="contract"></label>
-                <div class="blockContract">{{ form.contract|add_class:'form-control'  }}</div>
-            </div> 
-            
             <button class="btn btn-primary me-1 mb-1 ml-1" type="submit">Save</button>
           </div>
       </div>
