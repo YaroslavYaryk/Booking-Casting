@@ -10,13 +10,19 @@
         {{form.media}}
 
         {{form.contract}}
-        <button type="submit" class="btn btn-success"> SAVE</button>
+        <div class="block mt-2" style="align-items: center; display: flex; justify-content:space-around">
+            {% if delete %}
+                <a style="width: 200px" href="{% url 'cancel_contract' contract.id 'customer' %}"  class="btn btn-danger btn-lg button_discard"> Discard</a>
+            {% else %}
+                <a style="width: 200px" href="{% url 'customer_details' contract.customer.id %}"  class="btn btn-danger btn-lg button_discard"> Discard</a>
+            {% endif %}
+            <button style="width: 200px" type="submit" class="btn btn-success btn-lg"> Save</button>
+
+        </div>
     </form>
 
     <script type="text/javascript">
-
-        var image_text = document.querySelector(".cke_contents_ltr")
-        console.log(image_text)
+       
 
     </script>
 

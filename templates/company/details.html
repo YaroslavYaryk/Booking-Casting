@@ -8,6 +8,10 @@
   <link href="{% static 'css/popup.css' %}" rel="stylesheet">
 {% endblock link %}
 
+{% block title %}
+      <title>{{company.name}}</title>
+{% endblock title %}
+
 
 {% block content %}
 
@@ -119,26 +123,23 @@
               <div class="card pb-3 overflow-hidden" >
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items:center">
                   <h5 class="mb-0">Company Contracts</h5>
-                  <a href="" class="btn btn-success">Contracts</a>
+                  <a href="{% url 'get_company_contracts' company.id %}" class="btn btn-success">Contracts</a>
                 </div>
-                {% if my_events %}
+                {% if my_contracts %}
                 <div class="table-responsive scrollbar">
                   <table class="table table-striped overflow-hidden">
                     <thead>
                       <tr class="btn-reveal-trigger">
-                        <th scope="col">Name</th>
-                        <th scope="col">Date</th>
-                        <th class="text-end" scope="col">Contract</th>
+                        <th scope="col">Artist</th>
+                        <th scope="col">Customer</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {% for event in my_events %}
+                      {% for contract in my_contracts %}
                       <tr class="btn-reveal-trigger">
-                        <td><a href="{% url 'get_event_details' event.id %}">{{event.name}}</a></td>
-                        <td>{{event.date}}</td>
-                        <td class="text-end">
-                          <a href="{% url 'load_contract_for_event' event.id %}">Contract</a>
-                        </td>
+                        <td><a href="{% url 'artist_details' contract.artist.id %}">{{contract.artist.name}}</a></td>
+                        <td><a href="{% url 'customer_details' contract.customer.id %}">{{contract.customer.name}}</a></td>
+                       
                       </tr>
                     {% endfor %}
   

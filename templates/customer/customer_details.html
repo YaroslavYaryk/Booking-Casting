@@ -3,6 +3,12 @@
 {% load widget_tweaks %}
 {% load artist_tags %}
 
+
+{% block title %}
+      <title>{{customer.name}}</title>
+{% endblock title %}
+
+
 {% block content %}
 
     <!-- ===============================================-->
@@ -326,7 +332,7 @@
                           <td>{{contract.date}}</td>
                           <td class="text-end">
                             {% if is_allowed_to_change %}
-                              <a href="{% url 'customer_get_contract' contract.id %}">Contract</a>
+                              <a href="{% url 'customer_get_contract_view' contract.id  %}">Contract</a>
                             {% else %}
                               <a href="{% url 'preview_artist_contract' contract.id %}">Contract</a>
                             {% endif %}

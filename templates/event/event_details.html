@@ -13,6 +13,12 @@
 
 {% endblock link %}
 
+
+{% block title %}
+      <title>{{event.name}}</title>
+{% endblock title %}
+
+
 {% block content %}
 
 {% if form.errors %}
@@ -114,15 +120,6 @@
                   </form>
                 </div>
               </div>
-              
-              
-
-              <a href="{% url 'sign_contract' 36 %}">contract</a>
-              <br>
-              <a href="{% url 'preview_artist_contract' 36 %}">preview contract</a>
-
-
-              
               {% if users_in_team %}          
                 <div class="card mb-3">
                   <div class="card-header">

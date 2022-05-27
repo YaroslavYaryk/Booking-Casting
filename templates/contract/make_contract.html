@@ -2,9 +2,11 @@
 {% load static %}
 {% load widget_tweaks %}
 
+{% block title %}
+      <title>Create Contract: {{customer.name}}</title>
+{% endblock title %}
+
 {% block content %}
-
-
 
 {% if form.errors %}
     {% for field in form %}

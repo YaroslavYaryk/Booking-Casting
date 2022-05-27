@@ -68,7 +68,7 @@ E-mail:{{customer_email}}</div>
 			<td>&nbsp;</td>
 		</tr>
 		<tr>
-			<td>Datoer:&nbsp;</td>
+			<td>Datoer:&nbsp; (d.m.y or y-d-m)</td>
 			<td><span style="color:#2c3e50">______________________________</span></td>
 		</tr>
 		<tr>
@@ -89,7 +89,7 @@ E-mail:{{customer_email}}</div>
 		</tr>
 		<tr>
 			<td><strong>Honorar:</strong></td>
-			<td><span style="color:#2c3e50">______________________________</span></td>
+			<td><strong><span style="color:#2c3e50">________________________________</span></strong></td>
 		</tr>
 		<tr>
 			<td>Betaling:</td>

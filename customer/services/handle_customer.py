@@ -106,7 +106,6 @@ def get_avaluable_users(customer):
         us.access.email for us in CustomerAccess.objects.filter(customer=customer)
     ]
     taken_users += [us.email for us in User.objects.filter(admin=True)]
-    print(User.objects.exclude(email__in=taken_users))
     return User.objects.exclude(email__in=taken_users)
 
 

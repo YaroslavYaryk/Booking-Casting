@@ -3,20 +3,40 @@
 {% load widget_tweaks %}
 
 
-{% block content %}
+{% block title %}
+      <title>Preview Contract: {{artist.artist.name}}</title>
+{% endblock title %}
 
+
+{% block content %}
+    <div class="block_critical" style="display: none;">
+        <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
+        <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
+        <p class="mb-0 flex-1">Invalid date format</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
     <h3 class="mb-3" style="text-align: center;">Contract: {{artist.customer.name}} -  {{artist.artist.name}} </h3>
     <div class="block_contract" style="position: relative; background: #fff; padding: 20px;">
         {{artist.contract|safe}}
     </div>
-    <a class="btn btn-success save_contract" > SAVE </a>
-
+    <div class="block_critical2" style="display: none;">
+        <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
+        <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
+        <p class="mb-0 flex-1">Invalid date format</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    <div class="block mt-3" style="display: flex; justify-content: space-around">
+        {% if to_customer %}
+            <a href="btn btn-danger">{% url 'customer_details' artist.customer.id %}</a>
+        {% endif %}
+        <a class="btn btn-danger discard_contract" > DISCARD </a>
+        <a class="btn btn-success save_contract" > SAVE </a>
+    </div>
 
     <script type="text/javascript">
         const saveButton = document.querySelector(".save_contract")
-        console.log("{{artist.id}}")
+        var eventArtistId = "{{artist.id}}"
         saveButton.onclick = () =>{
-            var eventArtistId = "{{artist.id}}"
 
             var block = document.querySelector('.block_contract')
             var elements = block.getElementsByTagName("span")
@@ -27,10 +47,21 @@
                 var el = elements[i].innerText.replaceAll("_", '') 
                 if (i === 0){
                     var date = el;
-                    const pattern = /^(\d{2})\.(\d{2})\.(\d{4})/g
+                    const pattern = /^(\d{2})\.(\d{2})\.(\d{4})/g;
+                    const pattern2 = /^(\d{4})-(\d{2})-(\d{2})/g;
+
                     if (date.match(pattern)){
                         var res = date.split(".") 
                         date = res[2]+"-"+res[1]+"-"+res[0]
+                    }
+                    if (! date.match(pattern2)){
+                        var block_critical = document.querySelector(".block_critical")
+                        var block_critical2 = document.querySelector(".block_critical2")
+
+                        block_critical.style.display = "block"
+                        block_critical2.style.display = "block"
+
+                        return
                     }
                 }
                 if( i === 1){
@@ -56,6 +87,12 @@
             document.location.href = url + eventArtistId + "/" + date + 
                                     '/' + honorar + "/" + batailing + "/" + comment + "/"
          
+        }
+
+        var discardButton = document.querySelector(".discard_contract")
+        discardButton.onclick = () =>{
+            var url = "{% url 'customer_get_contract_one' %}"
+            document.location.href = url + eventArtistId + "/" 
         }
     </script>
 

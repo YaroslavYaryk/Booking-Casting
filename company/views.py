@@ -72,6 +72,7 @@ def get_company_details(request, company_id):
     company = handle_company.get_company_by_id(company_id)
     context = {
         "company": company,
+        "my_contracts": handle_company.get_company_contracts(company),
     }
 
     return render(request, "company/details.html", context=context)
@@ -110,6 +111,7 @@ def delete_company(request, company_id):
     return HttpResponseRedirect(reverse("get_my_companies"))
 
 
+@login_required(login_url="login")
 def get_all_company_events(request, company_id):
 
     my_events = handle_company.get_my_events(company_id)
@@ -118,6 +120,7 @@ def get_all_company_events(request, company_id):
     return render(request, "company/company_events.html", context=context)
 
 
+@login_required(login_url="login")
 def load_company_terms(request, company_id):
 
     company = handle_company.get_company_by_id(company_id)
@@ -135,10 +138,25 @@ def load_company_terms(request, company_id):
                     },
                 )
             )
-
         else:
             messages.error(request, "Opps, there are some problems")
     else:
         form = TermsForm(company.terms)
 
     return render(request, "company/terms.html", {"company": company, "form": form})
+
+
+@login_required(login_url="login")
+def get_company_contracts(request, company_id):
+
+    company = handle_company.get_company_by_id(company_id)
+
+    try:
+        company_contracts = handle_company.get_company_contracts(company)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+
+    context = {"company": company, "contracts": company_contracts}
+
+    return render(request, "company/company_contracts.html", context)

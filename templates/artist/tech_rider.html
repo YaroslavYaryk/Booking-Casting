@@ -6,8 +6,13 @@
     <link rel="stylesheet" href="{% static 'css/rider.css' %}">
 {% endblock link %}
 
-{% block content %}
 
+{% block title %}
+      <title>Technical Rider: {{artist.name}}</title>
+{% endblock title %}
+
+
+{% block content %}
 
 <div class="row g-0" style="100%">
     <div class="card-header " >

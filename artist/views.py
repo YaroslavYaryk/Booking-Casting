@@ -10,7 +10,7 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls.base import reverse
 from django.views.generic.list import ListView
-from users.services import user_actions, user_handle
+from users.services import user_handle
 from venue.services import handle_venue
 
 from .decorators import user_has_perm_to_change

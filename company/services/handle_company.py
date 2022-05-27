@@ -14,3 +14,7 @@ def is_allowed_to_change(company_id, user):
 
     company = get_company_by_id(company_id)
     return company.creator == user
+
+
+def get_company_contracts(company):
+    return company.contract_set.all()

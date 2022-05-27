@@ -8,7 +8,7 @@
 {% endblock link %}
 
 {% block title %}
-      <title>Contracts: {{artist.name}}</title>
+      <title>Contracts: {{company.name}}</title>
 {% endblock title %}
 
 {% block content %}
@@ -16,9 +16,8 @@
   <div class="card-header">
     <div class="row flex-between-center">
       <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
-        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Artist: {{artist.name}}</h5>
+        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Venue: {{venue.name}}</h5>
       </div>
-    
   
     </div>
   </div>
@@ -50,13 +49,13 @@
                                 
                                 <div class="block">
                                     <div class="col-lg-6">
-                                        <label style=" color:black" class="form-label" for="date">Venue:</label>
-                                        <p><a href="{% url 'get_venue_details' contract.venue.id %}">{{contract.venue.name}}</a></p>
+                                        <label style=" color:black" class="form-label" for="date">Artist:</label>
+                                        <p><a href="{% url 'artist_details' contract.artist.id %}">{{contract.artist.name}}</a></p>
                                     </div>
                                     {% if contract.company %}
                                         <div class="col-lg-6">
-                                            <label style=" color:black" class="form-label" for="date">Company:</label>
-                                            <p>{{contract.company.name}}</p>
+                                            <label style=" color:black" class="form-label" for="date">Venue:</label>
+                                            <p><a href="{% url 'get_venue_details' contract.venue.id %}">{{contract.venue.name}}</a></p>
                                         </div>
                                     {% endif %}
                                     <div class="col-lg-6">
@@ -87,7 +86,7 @@
     </div>
 
       {% else %}
-        <p>This artist does not participate in any event</p>
+        <p>This user does not participate in any event</p>
 
       {% endif %}
     </div>

@@ -1,6 +1,11 @@
 {% extends 'base/auth_base.html' %}
 {% load static %}
 {% load widget_tweaks %}
+{% load artist_tags %}
+
+{% block title %}
+      <title>My Artists</title>
+{% endblock title %}
 
 {% block content %}
 <div class="card">
@@ -25,6 +30,9 @@
         <thead>
           <tr>
             <th scope="col">Name</th>
+            <th scope="col">Contracts</th>
+            <th scope="col">Viewers</th>
+            <th scope="col">Assets</th>
             <th scope="col">Active</th>
           </tr>
         </thead>
@@ -36,11 +44,14 @@
                 <div class="ms-2"><a href="{% url 'artist_details' artist_access.artist.id %}">{{artist_access.artist.name}}</a></div>
               </div>
             </td>
+            <td>{{artist_access.artist|artist_contracts_count}}</td>
+            <td>{{artist_access.artist|artist_viewers_count}}</td>
+            <td>{{artist_access.artist|artist_assets_count}}</td>
             
             {% if artist_access.artist.active %}
-            <td><span class="badge badge rounded-pill d-block p-2 badge-soft-success">Aktiv<span class="ms-1 fas fa-check" data-fa-transform="shrink-2"></span></span></td>
+            <td><span class="badge badge rounded-pill d-block p-2 badge-soft-success">Yes<span class="ms-1 fas fa-check" data-fa-transform="shrink-2"></span></span></td>
             {% else %}
-            <td><span class="badge badge rounded-pill d-block p-2 badge-soft-danger">Deaktivert<span class="ms-1 fas fa-times" data-fa-transform="shrink-2"></span></span></td>
+            <td><span class="badge badge rounded-pill d-block p-2 badge-soft-danger">No<span class="ms-1 fas fa-times" data-fa-transform="shrink-2"></span></span></td>
             {% endif %}
           </tr>
           {% endfor %}

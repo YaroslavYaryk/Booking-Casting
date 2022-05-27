@@ -1,6 +1,6 @@
 from multiprocessing import context
 
-from artist.models import ArtistAccess
+from artist.models import ArtistAccess, ArtistAssets
 from django import template
 from venue.models import VenuePictures
 from customer.models import CustomerAccess
@@ -43,6 +43,21 @@ def get_image(venue):
     venue_pictures_obj = VenuePictures.objects.filter(venue=venue)
     if venue_pictures_obj:
         return venue_pictures_obj.first().file.url
+
+
+@register.filter
+def artist_contracts_count(artist):
+    return artist.contract_set.all().count()
+
+
+@register.filter
+def artist_viewers_count(artist):
+    return ArtistAccess.objects.filter(artist=artist).count()
+
+
+@register.filter
+def artist_assets_count(artist):
+    return ArtistAssets.objects.get(artist=artist).file.count()
 
 
 @register.inclusion_tag("tags/message_extractor.html")

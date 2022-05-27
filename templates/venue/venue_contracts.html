@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="{% static  'css/artist_events.css' %}">
 {% endblock link %}
 
+
+{% block title %}
+      <title>Contracts: {{venue.name}}</title>
+{% endblock title %}
+
+
 {% block content %}
 <div class="card">
   <div class="card-header">
@@ -67,7 +73,7 @@
                                 </div>
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                     {% if user|has_access_to_customer:contract.customer %}
-                                      <a class="btn btn-danger" href="{% url 'cancel_contract' contract.id %}">Delete</a>
+                                      <a class="btn btn-danger" href="{% url 'cancel_contract' contract.id 0 %}">Delete</a>
                                       <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                     {% endif %}
                                     <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>

@@ -1,14 +1,13 @@
-from multiprocessing import context
 from django.shortcuts import render
 from customer.services import handle_customer
 from .forms import ContractArtistForm, ContractForm, ContractArtistEditForm
-from company.services import handle_company
 from venue.services import handle_venue
 from event.services import handle_event
 from django.contrib import messages
 from django.urls.base import reverse
 from django.http import HttpResponseRedirect
 from .services import handle_contract
+from django.core.exceptions import PermissionDenied
 
 
 def create_contract(request, customer_id):
@@ -64,7 +63,9 @@ def get_contract(request, contract_id):
     else:
         form = ContractForm(rendered_template)
 
-    return render(request, "contract/contract.html", {"form": form})
+    context = {"form": form, "contract": cotract_artist}
+
+    return render(request, "contract/contract.html", context)
 
 
 def preview_artist_contract(request, contract_id):
@@ -104,7 +105,7 @@ def get_all_contracted_artists(request, customer_id):
     return render(request, "contract/artists_list.html", context=context)
 
 
-def cancel_contract(request, contract_id):
+def cancel_contract(request, contract_id, redirect_link):
 
     try:
         customer_id = handle_contract.delete_contract(contract_id)
@@ -112,12 +113,13 @@ def cancel_contract(request, contract_id):
         print(err)
         messages(request, "Something went wrong")
 
-    return HttpResponseRedirect(
-        reverse("get_all_contracted_artists", kwargs={"customer_id": customer_id})
-    )
+    return handle_contract.get_responce_redirect(customer_id, redirect_link)
 
 
 def edit_contract(request, contract_id):
+
+    if not handle_contract.user_has_access_to_customer(contract_id, request.user):
+        return render(request, "dashboard/page_blocked.html")
 
     contract = handle_contract.get_contract_artist_by_id(contract_id)
     customer = handle_customer.get_customer_by_id(contract.customer.id)
@@ -138,5 +140,38 @@ def edit_contract(request, contract_id):
     else:
         form = ContractArtistEditForm(instance=contract)
 
-    context = {"form": form, "customer": customer}
+    context = {"form": form, "customer": customer, "artist": contract.artist}
     return render(request, "contract/edit_contract.html", context=context)
+
+
+def get_contract_view(request, contract_id):
+
+    rendered_template = handle_contract.get_rendered_contract(request, contract_id)
+    cotract_artist = handle_contract.get_contract_artist_by_id(contract_id)
+    # return rendered_template
+    if request.method == "POST":
+        form = ContractForm(rendered_template, request.POST)
+        if form.is_valid():
+            cotract_artist.contract = form.cleaned_data["contract"]
+            cotract_artist.save()
+            return HttpResponseRedirect(
+                reverse(
+                    "preview_artist_contract", kwargs={"contract_id": cotract_artist.id}
+                )
+            )
+    else:
+        form = ContractForm(rendered_template)
+
+    context = {"form": form, "contract": cotract_artist, "delete": False}
+
+    return render(request, "contract/contract.html", context)
+
+
+# def preview_artist_contract_view(request, contract_id):
+#     contract_artist = handle_contract.get_contract_artist_by_id(contract_id)
+
+#     return render(
+#         request,
+#         "contract/preview_contract.html",
+#         {"artist": contract_artist, "to_customer": True},
+#     )

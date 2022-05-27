@@ -1,7 +1,10 @@
+from os import access
 from contract.models import Contract
 from jinja2 import Template
 from .constants import BASE_CONTRACT, EDIT_CONTRACT, BASE_FIELD_LENGTH
-from customer.models import CustomerContacts
+from customer.models import CustomerAccess, CustomerContacts
+from django.urls.base import reverse
+from django.http import HttpResponseRedirect
 
 
 def get_contract_artist_by_id(id):
@@ -152,3 +155,19 @@ def rerender_contract(contr):
         )
 
     return rendered_contract
+
+
+def user_has_access_to_customer(contract_id, user):
+    contract = get_contract_artist_by_id(contract_id)
+    customer = contract.customer
+    return CustomerAccess.objects.filter(customer=customer, access=user, admin=True)
+
+
+def get_responce_redirect(customer_id, redirect_link):
+    if not redirect_link == "customer":
+        return HttpResponseRedirect(
+            reverse("get_all_contracted_artists", kwargs={"customer_id": customer_id})
+        )
+    return HttpResponseRedirect(
+        reverse("customer_details", kwargs={"customer_id": customer_id})
+    )

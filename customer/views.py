@@ -38,7 +38,6 @@ class MyCustomerListView(LoginRequiredMixin, ListView):
     context_object_name = "customer_access"
 
     def get_queryset(self):
-        print("its here")
         return handle_customer.get_customers_for_user(self.request.user)
 
     def dispatch(self, *args, **kwargs):
@@ -84,7 +83,10 @@ def add_new_customer(request):
             messages.error(request, "Opps, there are some problems")
     else:
         form = CustomerAddForm()
-    return render(request, "customer/add_customer.html", {"form": form})
+
+    context = {"form": form}
+
+    return render(request, "customer/add_customer.html", context)
 
 
 # HANDLE When user hasnt permission to change - he cant change or see form of user contacts
@@ -121,7 +123,6 @@ def get_customer_details(request, customer_id):
         customer = handle_customer.get_customer_by_id(customer_id)
     except:
         customer = None
-    print("here ----", handle_customer.is_allowed_to_change(customer_id, request.user))
     context = {
         "customer": customer,
         "is_allowed_to_change": handle_customer.is_allowed_to_change(
