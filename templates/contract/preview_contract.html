@@ -29,8 +29,8 @@
         {% if to_customer %}
             <a href="btn btn-danger">{% url 'customer_details' artist.customer.id %}</a>
         {% endif %}
-        <a class="btn btn-danger discard_contract" > DISCARD </a>
-        <a class="btn btn-success save_contract" > SAVE </a>
+        <a class="btn btn-danger btn-lg discard_contract" > DISCARD </a>
+        <a class="btn btn-success btn-lg save_contract" > SAVE </a>
     </div>
 
     <script type="text/javascript">
@@ -94,6 +94,12 @@
             var url = "{% url 'customer_get_contract_one' %}"
             document.location.href = url + eventArtistId + "/" 
         }
+
+
+    var block = document.querySelector('.block_contract')
+    var my_tags = block.getElementsByTagName("div")
+    console.log(my_tags)
+
     </script>
 
 {% endblock content %}

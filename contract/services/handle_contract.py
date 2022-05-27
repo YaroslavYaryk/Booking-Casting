@@ -5,15 +5,18 @@ from .constants import BASE_CONTRACT, EDIT_CONTRACT, BASE_FIELD_LENGTH
 from customer.models import CustomerAccess, CustomerContacts
 from django.urls.base import reverse
 from django.http import HttpResponseRedirect
+import pdfkit
+from decouple import config
 
 
 def get_contract_artist_by_id(id):
     return Contract.objects.get(id=id)
 
 
-contract_image = """
-    <img style="position:absolute; top:20px; right:50px;" width="350" height="150" src="{{ company.icon.url }}"  alt="" >
-"""
+def get_company_image(link):
+    return f"""
+        <img style="position:absolute; top:20px; right:50px;" width="350" height="150" src="{config('HOST')}:{config('PORT')}{link}"  alt="" >
+    """
 
 
 even_products = """ 
@@ -31,10 +34,10 @@ def get_rendered_contract(request, event_artist_id):
         return event_artist.contract
 
     contract = Template(BASE_CONTRACT)
-    icon = Template(contract_image)
+
     if event_artist.company:
         rendered_contract = contract.render(
-            company_image=icon.render(company=event_artist.company),
+            company_image=get_company_image(event_artist.company.icon.url),
             artist=event_artist.artist,
             company=event_artist.company,
             org_number=event_artist.customer.organization_number,
@@ -61,7 +64,6 @@ def get_rendered_contract(request, event_artist_id):
             lstrip_blocks=True,
             customer_contact_phone=customer_contact.phone,
         )
-
     return rendered_contract
 
 
@@ -105,7 +107,9 @@ def get_payment_methods_rows(text):
     length2 = len(" ".join([el for el in text.split()[index1:]]))
     res2 = divide_payment_methods(text.split()[index1:], length2)
     p_methods_two = res2[0]
-    return p_methods_one, " ".join([el for el in p_methods_two])
+    return " ".join([el for el in p_methods_one]), " ".join(
+        [el for el in p_methods_two]
+    )
 
 
 def rerender_contract(contr):
@@ -113,12 +117,10 @@ def rerender_contract(contr):
     method_payment = get_payment_methods_rows(contr.payment_methods)
 
     customer_contact = CustomerContacts.objects.get(customer=contr.customer)
-    print(customer_contact.birthdate)
     contract = Template(EDIT_CONTRACT)
-    icon = Template(contract_image)
     if contr.company:
         rendered_contract = contract.render(
-            company_image=icon.render(company=contr.company),
+            company_image=get_company_image(contr.company.icon.url),
             artist=contr.artist,
             company=contr.company,
             org_number=contr.customer.organization_number,
@@ -145,15 +147,14 @@ def rerender_contract(contr):
             customer=contr.customer,
             customer_email=customer_contact.email,
             contract=contr,
-            p_methods_one=get_payment_methods_rows(contr.payment_methods)[0],
-            p_methods_two=get_payment_methods_rows(contr.payment_methods)[1][0],
+            p_methods_one=method_payment[0],
+            p_methods_two=method_payment[1],
             comment=contr.comment,
             cusomer_date_of_birth=customer_contact.birthdate,
             trim_blocks=True,
             lstrip_blocks=True,
             customer_contact_phone=customer_contact.phone,
         )
-
     return rendered_contract
 
 
@@ -171,3 +172,9 @@ def get_responce_redirect(customer_id, redirect_link):
     return HttpResponseRedirect(
         reverse("customer_details", kwargs={"customer_id": customer_id})
     )
+
+
+def create_pdf_contract(contract_artist):
+
+    contract = rerender_contract(contract_artist)
+    pdfkit.from_string(contract, "sample.pdf")

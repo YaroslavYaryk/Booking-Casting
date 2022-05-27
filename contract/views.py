@@ -7,7 +7,6 @@ from django.contrib import messages
 from django.urls.base import reverse
 from django.http import HttpResponseRedirect
 from .services import handle_contract
-from django.core.exceptions import PermissionDenied
 
 
 def create_contract(request, customer_id):
@@ -53,6 +52,7 @@ def get_contract(request, contract_id):
     if request.method == "POST":
         form = ContractForm(rendered_template, request.POST)
         if form.is_valid():
+            print(form.cleaned_data["contract"])
             cotract_artist.contract = form.cleaned_data["contract"]
             cotract_artist.save()
             return HttpResponseRedirect(
@@ -63,7 +63,7 @@ def get_contract(request, contract_id):
     else:
         form = ContractForm(rendered_template)
 
-    context = {"form": form, "contract": cotract_artist}
+    context = {"form": form, "contract": cotract_artist, "delete": True}
 
     return render(request, "contract/contract.html", context)
 
@@ -85,6 +85,12 @@ def save_artist_contract_data(
     contract_artist.payment_methods = payment_methods
     contract_artist.comment = comment
     contract_artist.save()
+
+    try:
+        handle_contract.create_pdf_contract(contract_artist)
+    except Exception as err:
+        print(err)
+        messages.error(request, "something went wrong")
 
     return HttpResponseRedirect(
         reverse(
