@@ -27,6 +27,7 @@ class Contract(models.Model):
     date = models.DateField("Date", null=True)
     comment = models.TextField(("Comment"), blank=True, null=True)
     contract = RichTextField("Artist Contract", null=True, blank=True)
+    contract_pdf_url = models.CharField(("Contract PDF"), max_length=150, null=True)
 
     def __str__(self):
         return self.artist.name

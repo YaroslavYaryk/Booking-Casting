@@ -5,26 +5,24 @@
 
 {% block content %}
 
-    <form method="POST" action="" style="width:1100px;" >
+    <form method="POST" action="" id="form-contract" style="width:1100px;" >
         {% csrf_token %}
         {{form.media}}
-
+        
         {{form.contract}}
         <div class="block mt-2" style="align-items: center; display: flex; justify-content:space-around">
             {% if delete %}
                 <a style="width: 200px" href="{% url 'cancel_contract' contract.id 'customer' %}"  class="btn btn-danger btn-lg button_discard"> Discard</a>
             {% else %}
-                <a style="width: 200px" href="{% url 'customer_details' contract.customer.id %}"  class="btn btn-danger btn-lg button_discard"> Discard</a>
+                <a style="width: 200px" href="{% url 'customer_details' contract.customer.id %}"  class="btn btn-danger btn-lg button_discard"> Back</a>
             {% endif %}
-            <button style="width: 200px" type="submit" class="btn btn-success btn-lg"> Save</button>
+            <button style="width: 200px" type="submit" class="btn btn-success btn-lg bnt_submit"> Save</button>
 
         </div>
     </form>
 
     <script type="text/javascript">
-        {% comment %} var block = document.querySelector('.block_contract') {% endcomment %}
-        var my_tags = document.getElementsByTagName("mytag1")
-        console.log(my_tags)
+    
 
     </script>
 

@@ -52,7 +52,6 @@ def get_contract(request, contract_id):
     if request.method == "POST":
         form = ContractForm(rendered_template, request.POST)
         if form.is_valid():
-            print(form.cleaned_data["contract"])
             cotract_artist.contract = form.cleaned_data["contract"]
             cotract_artist.save()
             return HttpResponseRedirect(
@@ -77,17 +76,19 @@ def preview_artist_contract(request, contract_id):
 
 
 def save_artist_contract_data(
-    request, event_artist_id, date, honorar, payment_methods, comment
+    request, event_artist_id, date, honorar, payment_methods, comment, page_heights
 ):
     contract_artist = handle_contract.get_contract_artist_by_id(event_artist_id)
     contract_artist.date = date
     contract_artist.price = honorar
     contract_artist.payment_methods = payment_methods
     contract_artist.comment = comment
-    contract_artist.save()
 
     try:
-        handle_contract.create_pdf_contract(contract_artist)
+        contract_artist.contract_pdf_url = handle_contract.create_pdf_contract(
+            contract_artist, page_heights
+        )
+        contract_artist.save()
     except Exception as err:
         print(err)
         messages.error(request, "something went wrong")

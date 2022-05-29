@@ -36,7 +36,7 @@ urlpatterns = [
     ),
     path("save_contract_data/", save_artist_contract_data, name="save_contract_data"),
     path(
-        "save_contract_data/<event_artist_id>/<date>/<honorar>/<payment_methods>/<comment>/",
+        "save_contract_data/<event_artist_id>/<date>/<honorar>/<payment_methods>/<comment>/page_height/<page_heights>/",
         save_artist_contract_data,
         name="save_contract_data",
     ),

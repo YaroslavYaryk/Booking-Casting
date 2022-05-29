@@ -1,0 +1,28 @@
+
+<div class="block_contract" style=" background: #fff; padding: 0 20px 20px 20px;">
+    {{contract|safe}}
+</div>
+
+
+
+<script type="text/javascript">
+var block = document.querySelector('.block_contract').children
+for(var i=0; i<block.length; i++){
+    if (block[i].tagName =="DIV"){
+        if (i === 0){
+            block[i].style.height = "{{first}}";
+        }
+        if (i === 1){
+            block[i].style.height = "{{second}}";
+        }
+        if (i === 2){
+            block[i].style.height = "{{third}}";
+        }
+        if (i === 3){
+            block[i].style.height = "{{forth}}";
+        }
+    }
+}
+</script>
+
+

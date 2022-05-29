@@ -43,7 +43,6 @@
                     
                         {% endif %}
                     </div>
-            
                     <div class="col-md-8">
             
                         <div class="card-body" >
@@ -71,6 +70,7 @@
                                     </div>
                                 </div>
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a class="btn btn-success" target="blank" href="{{artist.contract_pdf_url}}">Contract</a>
                                     <a class="btn btn-danger" href="{% url 'cancel_contract' artist.id 0 %}">Delete</a>
                                     <a class="btn btn-info" href="{% url 'customer_edit_contract' artist.id %}">Edit</a>
                                     <a class="btn btn-secondary" href="{% url 'preview_artist_contract' artist.id %}">Read more</a>

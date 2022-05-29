@@ -1,12 +1,14 @@
 from os import access
 from contract.models import Contract
 from jinja2 import Template
-from .constants import BASE_CONTRACT, EDIT_CONTRACT, BASE_FIELD_LENGTH
+from .constants import BASE_CONTRACT, EDIT_CONTRACT, PDF_CONTRACT
 from customer.models import CustomerAccess, CustomerContacts
 from django.urls.base import reverse
 from django.http import HttpResponseRedirect
 import pdfkit
 from decouple import config
+from django.template.loader import render_to_string
+from django.utils.text import slugify
 
 
 def get_contract_artist_by_id(id):
@@ -15,7 +17,7 @@ def get_contract_artist_by_id(id):
 
 def get_company_image(link):
     return f"""
-        <img style="position:absolute; top:20px; right:50px;" width="350" height="150" src="{config('HOST')}:{config('PORT')}{link}"  alt="" >
+        <img style="position:absolute; top:20px; right:35px;" width="350" height="150" src="{config('HOST')}:{config('PORT')}{link}"  alt="" >
     """
 
 
@@ -64,6 +66,7 @@ def get_rendered_contract(request, event_artist_id):
             lstrip_blocks=True,
             customer_contact_phone=customer_contact.phone,
         )
+    print(rendered_contract)
     return rendered_contract
 
 
@@ -112,12 +115,17 @@ def get_payment_methods_rows(text):
     )
 
 
-def rerender_contract(contr):
+def get_comment_or_none(comment):
+    if not all([i == " " for i in comment]):
+        return comment
+
+
+def rerender_contract(contr, contract_template=EDIT_CONTRACT):
 
     method_payment = get_payment_methods_rows(contr.payment_methods)
 
     customer_contact = CustomerContacts.objects.get(customer=contr.customer)
-    contract = Template(EDIT_CONTRACT)
+    contract = Template(contract_template)
     if contr.company:
         rendered_contract = contract.render(
             company_image=get_company_image(contr.company.icon.url),
@@ -131,7 +139,7 @@ def rerender_contract(contr):
             contract=contr,
             p_methods_one=method_payment[0],
             p_methods_two=method_payment[1],
-            comment=contr.comment,
+            comment=get_comment_or_none(contr.comment),
             cusomer_date_of_birth=customer_contact.birthdate,
             trim_blocks=True,
             lstrip_blocks=True,
@@ -149,7 +157,7 @@ def rerender_contract(contr):
             contract=contr,
             p_methods_one=method_payment[0],
             p_methods_two=method_payment[1],
-            comment=contr.comment,
+            comment=get_comment_or_none(contr.comment),
             cusomer_date_of_birth=customer_contact.birthdate,
             trim_blocks=True,
             lstrip_blocks=True,
@@ -174,7 +182,18 @@ def get_responce_redirect(customer_id, redirect_link):
     )
 
 
-def create_pdf_contract(contract_artist):
+def create_pdf_contract(contract_artist, page_heights):
 
-    contract = rerender_contract(contract_artist)
-    pdfkit.from_string(contract, "sample.pdf")
+    a, b, c, d = page_heights.split("_")
+
+    print(page_heights)
+    contract = rerender_contract(contract_artist, PDF_CONTRACT)
+
+    context = {"contract": contract, "first": a, "second": b, "third": c, "forth": d}
+
+    t = render_to_string("contract/contract_to_pdf.html", context)
+    pdfkit.from_string(
+        t,
+        f"media/contracts/{slugify(contract_artist.customer.name)}_{slugify(contract_artist.artist.name)}.pdf",
+    )
+    return f"/media/contracts/{slugify(contract_artist.customer.name)}_{slugify(contract_artist.artist.name)}.pdf"

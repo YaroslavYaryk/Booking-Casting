@@ -9,6 +9,17 @@
 
 
 {% block content %}
+    <div class="block_critical_date" style="display: none;">
+        <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
+        <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
+        <p class="mb-0 flex-1">Invalid date</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div> <div class="block_critical_price" style="display: none;">
+        <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
+        <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
+        <p class="mb-0 flex-1">Invalid price</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
     <div class="block_critical" style="display: none;">
         <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
         <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
@@ -16,7 +27,7 @@
         </div>
     </div>
     <h3 class="mb-3" style="text-align: center;">Contract: {{artist.customer.name}} -  {{artist.artist.name}} </h3>
-    <div class="block_contract" style="position: relative; background: #fff; padding: 20px;">
+    <div class="block_contract" style="position: relative; background: #fff; padding: 20px 0 0 50px;">
         {{artist.contract|safe}}
     </div>
     <div class="block_critical2" style="display: none;">
@@ -25,13 +36,25 @@
         <p class="mb-0 flex-1">Invalid date format</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
+    <div class="block_critical_date2" style="display: none;">
+        <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
+        <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
+        <p class="mb-0 flex-1">Invalid date</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div> <div class="block_critical_price2" style="display: none;">
+        <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
+        <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
+        <p class="mb-0 flex-1">Invalid price</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
     <div class="block mt-3" style="display: flex; justify-content: space-around">
         {% if to_customer %}
             <a href="btn btn-danger">{% url 'customer_details' artist.customer.id %}</a>
         {% endif %}
-        <a class="btn btn-danger btn-lg discard_contract" > DISCARD </a>
-        <a class="btn btn-success btn-lg save_contract" > SAVE </a>
+        <a class="btn btn-danger btn-lg discard_contract" style="padding: 7px 60px;" > DISCARD </a>
+        <a class="btn btn-success btn-lg save_contract"style="padding: 7px 60px;" > SAVE </a>
     </div>
+
 
     <script type="text/javascript">
         const saveButton = document.querySelector(".save_contract")
@@ -77,15 +100,52 @@
             if (!(date || honorar || batailing)){
                 return
             }
+            
+            
+            daysInMonth = new Date(date.split("-")[0], date.split("-")[1], 0).getDate();
+            console.log(daysInMonth)
+            if (date.split("-")[2] > daysInMonth || !Number(new Date(date))){
+                var block_critical = document.querySelector(".block_critical_date")
+                var block_critical2 = document.querySelector(".block_critical_date2")
+                
+                block_critical.style.display = "block"
+                block_critical2.style.display = "block"
+                return
+            }
+            
+            if (!parseInt(honorar)){
+                var block_critical = document.querySelector(".block_critical_price")
+                var block_critical2 = document.querySelector(".block_critical_price2")
+                
+                block_critical.style.display = "block"
+                block_critical2.style.display = "block"
+                return
+            }
+
+            
+
             if (!batailing){
                 batailing = " ";
             }
             if (!comment){
                 comment = " ";
             }
+            var block_width = [];
+            var block = document.querySelector('.block_contract').children
+            for(var i=0; i<block.length; i++){
+                if (block[i].tagName =="DIV"){
+                    block_width.push(block[i].style.height)
+                }
+                
+            }
+
+
             var url = "{% url 'save_contract_data' %}"
             document.location.href = url + eventArtistId + "/" + date + 
-                                    '/' + honorar + "/" + batailing + "/" + comment + "/"
+                                    '/' + honorar + "/" + batailing + "/" + comment + "/" + 
+                                    "page_height/" + `${block_width[0]}_${block_width[1]}_${block_width[2]}_${block_width[3]}` + "/" 
+
+
          
         }
 
@@ -95,10 +155,19 @@
             document.location.href = url + eventArtistId + "/" 
         }
 
+        var block = document.querySelector('.block_contract').children
+        for(var i=0; i<block.length; i++){
+            if (block[i].tagName =="DIV"){
+                if (block[i].clientHeight > 1440){
+                    block[i].style.height = 1470 * (Math.trunc(block[i].clientHeight/1440) + 1 ) + "px"
+                }else{
+                    block[i].style.height = 1440 + "px"
+                }
+            }
+}
 
-    var block = document.querySelector('.block_contract')
-    var my_tags = block.getElementsByTagName("div")
-    console.log(my_tags)
+
+    
 
     </script>
 
