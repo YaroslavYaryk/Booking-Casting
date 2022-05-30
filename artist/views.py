@@ -372,6 +372,17 @@ def load_hosp_rider(request, artist_id):
 @login_required(login_url="login")
 def invite_user(request, artist_id, user_email):
 
+    if user_handle.filter_user_email(user_email):
+        messages.error(request, "This user already exists")
+        return HttpResponseRedirect(
+            reverse(
+                "artist_details",
+                kwargs={
+                    "artist_id": artist_id,
+                },
+            )
+        )
+
     try:
         user_artists.send_invitation_message(
             request.user,

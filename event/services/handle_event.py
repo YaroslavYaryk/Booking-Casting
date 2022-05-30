@@ -41,6 +41,11 @@ def get_customer_queryset(user):
     return Customer.objects.filter(pk__in=my_customers, active=True)
 
 
+def get_artist_queryset(user):
+    my_artists = [el.artist.id for el in ArtistAccess.objects.filter(access=user)]
+    return Artist.objects.filter(pk__in=my_artists, active=True)
+
+
 def get_linked_text(link, id, object):
     return f""" <a style="color:black" href="../../../{link}/{id}/details/">{object}</a> """
 

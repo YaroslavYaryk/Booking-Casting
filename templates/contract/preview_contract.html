@@ -27,8 +27,8 @@
         </div>
     </div>
     <h3 class="mb-3" style="text-align: center;">Contract: {{artist.customer.name}} -  {{artist.artist.name}} </h3>
-    <div class="block_contract" style="position: relative; background: #fff; padding: 20px 0 0 50px;">
-        {{artist.contract|safe}}
+    <div class="block_contract" style="position: relative; background: #fff; ">
+        {{contract|safe}}
     </div>
     <div class="block_critical2" style="display: none;">
         <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
@@ -90,20 +90,18 @@
                 if( i === 1){
                     var honorar = el
                 }
-                if( i === 2 || i === 3){
-                    batailing += el  + " ";
+                if( i === 2 ){
+                    batailing += el;
                 }
-                if( i >= 4 && i <= 7 ){
-                    comment += el  + " ";
+                if( i === 3 ){
+                    comment += el ;
                 } 
             }
             if (!(date || honorar || batailing)){
                 return
             }
             
-            
             daysInMonth = new Date(date.split("-")[0], date.split("-")[1], 0).getDate();
-            console.log(daysInMonth)
             if (date.split("-")[2] > daysInMonth || !Number(new Date(date))){
                 var block_critical = document.querySelector(".block_critical_date")
                 var block_critical2 = document.querySelector(".block_critical_date2")
@@ -158,16 +156,13 @@
         var block = document.querySelector('.block_contract').children
         for(var i=0; i<block.length; i++){
             if (block[i].tagName =="DIV"){
-                if (block[i].clientHeight > 1440){
-                    block[i].style.height = 1470 * (Math.trunc(block[i].clientHeight/1440) + 1 ) + "px"
+                if (block[i].clientHeight > 1420){
+                    block[i].style.height = 1440 * (Math.trunc(block[i].clientHeight/1420) + 1 ) + "px"
                 }else{
-                    block[i].style.height = 1440 + "px"
+                    block[i].style.height = 1420 + "px"
                 }
             }
 }
-
-
-    
 
     </script>
 

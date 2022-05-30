@@ -4,11 +4,18 @@ from .views import (
     preview_artist_contract,
     get_contract,
     save_artist_contract_data,
-    get_all_contracted_artists,
+    get_visible_contracted_artists,
     cancel_contract,
     edit_contract,
     get_contract_view,
     # preview_artist_contract_view,
+    hide_contract,
+    get_hidden_contracts_list,
+    unhide_contract,
+    get_visible_contracts_for_user,
+    get_hidden_contracts_for_user,
+    customer_create_contract_from_user,
+    user_edit_contract,
 )
 
 urlpatterns = [
@@ -42,13 +49,41 @@ urlpatterns = [
     ),
     path(
         "<customer_id>/get_contracted_artists/",
-        get_all_contracted_artists,
+        get_visible_contracted_artists,
         name="get_all_contracted_artists",
+    ),
+    path(
+        "<customer_id>/get_hidden_artists/",
+        get_hidden_contracts_list,
+        name="get_hidden_contracts_list",
     ),
     path(
         "<contract_id>/cancel_contract/<redirect_link>/",
         cancel_contract,
         name="cancel_contract",
     ),
+    path("<contract_id>/hide_contract/", hide_contract, name="hide_contract"),
+    path("<contract_id>/unhide_contract/", unhide_contract, name="unhide_contract"),
     path("<contract_id>/edit_contract/", edit_contract, name="customer_edit_contract"),
+    # user_contracts
+    path(
+        "user_contracts/<user_id>/visible/",
+        get_visible_contracts_for_user,
+        name="get_visible_contracts_for_user",
+    ),
+    path(
+        "user_contracts/<user_id>/hidden/",
+        get_hidden_contracts_for_user,
+        name="get_hidden_contracts_for_user",
+    ),
+    path(
+        "<user_id>/create_contract_from_user/",
+        customer_create_contract_from_user,
+        name="customer_create_contract_from_user",
+    ),
+    path(
+        "<contract_id>/user_edit_contract/",
+        user_edit_contract,
+        name="user_edit_contract",
+    ),
 ]

@@ -22,3 +22,7 @@ def get_user_by_email(us_email):
 
 def get_user_by_phone(phone):
     return User.objects.get(phone=phone)
+
+
+def filter_user_email(user_email):
+    return User.objects.filter(email=user_email)

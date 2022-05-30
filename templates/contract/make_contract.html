@@ -8,27 +8,6 @@
 
 {% block content %}
 
-{% if form.errors %}
-    {% for field in form %}
-        {% for error in field.errors %}
-            <div class="alert alert-danger">
-                <strong>{{ error|escape }}</strong>
-            </div>
-        {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-danger">
-            <strong>{{ error|escape }}</strong>
-        </div>
-    {% endfor %}
-{% endif %}
-{% if messages %}
- {% for message in messages %}
-       <div class="alert alert-primary">
-           <strong>{{ message }}</strong>
-       </div>
- {% endfor %}
-{% endif %}
 
 <form method="POST" enctype="multipart/form-data">{% csrf_token %}
 <div class="row g-0">
@@ -51,15 +30,60 @@
             <div class="col-12 mb-3">
               <label class="form-label" for="form.artist">Artist</label>
               {{ form.artist|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.artist.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="form.venue">Venue</label>
               {{ form.venue|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.venue.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="form.company">Company</label>
               {{ form.company|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.company.errors }}
+              </div>
             </div>
+            <div class="col-6 mb-3">
+              <label class="form-label" for="form.company">Honorar</label>
+              {{ form.price|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.price.errors }}
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label" for="form.company">Date</label>
+              {{ form.date|add_class:'form-control datetimepicker'}}
+              <div class="form-error">
+                {{ form.date.errors }}
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label" for="form.company">Payment Methods</label>
+              {{ form.payment_methods|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.payment_methods.errors }}
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label" for="form.company">Comment</label>
+              {{ form.comment|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.comment.errors }}
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label" for="form.company">Aditional</label>
+              {{ form.aditional_staff}}
+              <div class="form-error">
+                {{ form.aditional_staff.errors }}
+              </div>
+            </div>
+           
             
             <button class="btn btn-primary me-1 mb-1" type="submit">To Contract</button>
           </div>
@@ -73,5 +97,18 @@
 
 </form>
 
+
+<script>
+
+  var id_aditional_staff = document.getElementById("id_aditional_staff")
+  id_aditional_staff.style.cssText = `
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+  `
+  console.log(id_aditional_staff)
+
+</script>
 
 {% endblock %}

@@ -327,6 +327,17 @@ def get_all_venue_events(request, venue_id):
 
 def invite_user(request, venue_id, user_email):
 
+    if user_handle.filter_user_email(user_email):
+        messages.error(request, "This user already exists")
+        return HttpResponseRedirect(
+            reverse(
+                "get_venue_details",
+                kwargs={
+                    "venue_id": venue_id,
+                },
+            )
+        )
+
     try:
         user_artists.send_invitation_message(
             request.user,

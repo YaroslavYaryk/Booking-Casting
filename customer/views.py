@@ -289,6 +289,17 @@ def change_user_permission_to_change_or_see_customer(request, access_id, perm_ty
 
 def invite_user(request, customer_id, user_email):
 
+    if user_handle.filter_user_email(user_email):
+        messages.error(request, "This user already exists")
+        return HttpResponseRedirect(
+            reverse(
+                "customer_details",
+                kwargs={
+                    "customer_id": customer_id,
+                },
+            )
+        )
+
     try:
         user_artists.send_invitation_message(
             request.user,

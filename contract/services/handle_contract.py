@@ -1,7 +1,7 @@
 from os import access
 from contract.models import Contract
 from jinja2 import Template
-from .constants import BASE_CONTRACT, EDIT_CONTRACT, PDF_CONTRACT
+from .constants import BASE_CONTRACT, EDIT_CONTRACT, PDF_CONTRACT, additinal_staff_list
 from customer.models import CustomerAccess, CustomerContacts
 from django.urls.base import reverse
 from django.http import HttpResponseRedirect
@@ -21,6 +21,24 @@ def get_company_image(link):
     """
 
 
+aditional_staff_template = """
+        <table border="0"  cellpadding="1" cellspacing="1" style="width:1000px">
+            <tbody>
+                {% for elem in additinal_staff_list %}
+                    <tr>
+                        <td>{{elem}}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;</td>
+                        {% if elem in contract_add_staff %}
+                            <td><u>inkludert</u></td>
+                        {% else %}
+                            <td><u>ihht. Rider</u></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    """
+
+
 even_products = """ 
     {% for product in rental_products %}
                 <p>{{product.rental_products.name}} ({{product.count}}) - {{product.price}}</p>
@@ -28,7 +46,7 @@ even_products = """
 """
 
 
-def get_rendered_contract(request, event_artist_id):
+def get_rendered_contract(event_artist_id):
 
     event_artist = get_contract_artist_by_id(event_artist_id)
     customer_contact = CustomerContacts.objects.get(customer=event_artist.customer)
@@ -71,7 +89,11 @@ def get_rendered_contract(request, event_artist_id):
 
 
 def get_contracted_artists(customer):
-    return Contract.objects.filter(customer=customer)
+    return Contract.objects.filter(customer=customer, visible=True)
+
+
+def get_hidden_contracts(customer):
+    return Contract.objects.filter(customer=customer, visible=False)
 
 
 def delete_contract(contract_id):
@@ -106,10 +128,16 @@ def get_payment_methods_rows(text):
     res1 = divide_payment_methods(text.split(), len(text))
     index1 = res1[1]
     p_methods_one = res1[0]
-
-    length2 = len(" ".join([el for el in text.split()[index1:]]))
-    res2 = divide_payment_methods(text.split()[index1:], length2)
-    p_methods_two = res2[0]
+    if index1 != -1:
+        length2 = len(" ".join([el for el in text.split()[index1:]]))
+        res2 = divide_payment_methods(text.split()[index1:], length2)
+        p_methods_two = res2[0]
+    else:
+        p_methods_two = ""
+    if p_methods_one and p_methods_two:
+        return "".join([el for el in p_methods_one]), "".join(
+            [el for el in p_methods_two]
+        )
     return " ".join([el for el in p_methods_one]), " ".join(
         [el for el in p_methods_two]
     )
@@ -118,6 +146,7 @@ def get_payment_methods_rows(text):
 def get_comment_or_none(comment):
     if not all([i == " " for i in comment]):
         return comment
+    return ""
 
 
 def rerender_contract(contr, contract_template=EDIT_CONTRACT):
@@ -125,6 +154,9 @@ def rerender_contract(contr, contract_template=EDIT_CONTRACT):
     method_payment = get_payment_methods_rows(contr.payment_methods)
 
     customer_contact = CustomerContacts.objects.get(customer=contr.customer)
+
+    contract_aditional_staff_template = Template(aditional_staff_template)
+
     contract = Template(contract_template)
     if contr.company:
         rendered_contract = contract.render(
@@ -144,6 +176,10 @@ def rerender_contract(contr, contract_template=EDIT_CONTRACT):
             trim_blocks=True,
             lstrip_blocks=True,
             customer_contact_phone=customer_contact.phone,
+            contract_add_staff=contract_aditional_staff_template.render(
+                additinal_staff_list=additinal_staff_list,
+                contract_add_staff=contr.aditional_staff,
+            ),
         )
     else:
         rendered_contract = contract.render(
@@ -162,6 +198,10 @@ def rerender_contract(contr, contract_template=EDIT_CONTRACT):
             trim_blocks=True,
             lstrip_blocks=True,
             customer_contact_phone=customer_contact.phone,
+            contract_add_staff=contract_aditional_staff_template.render(
+                additinal_staff_list=additinal_staff_list,
+                contract_add_staff=customer_contact.aditional_staff,
+            ),
         )
     return rendered_contract
 
@@ -197,3 +237,22 @@ def create_pdf_contract(contract_artist, page_heights):
         f"media/contracts/{slugify(contract_artist.customer.name)}_{slugify(contract_artist.artist.name)}.pdf",
     )
     return f"/media/contracts/{slugify(contract_artist.customer.name)}_{slugify(contract_artist.artist.name)}.pdf"
+
+
+def hide_contract(contract):
+
+    contract.visible = False
+    contract.save()
+
+
+def unhide_contract(contract):
+    contract.visible = True
+    contract.save()
+
+
+def get_contracts_for_user(user, visible=True):
+    customer_ids = [
+        el.customer.id for el in CustomerAccess.objects.filter(access=user, admin=True)
+    ]
+
+    return Contract.objects.filter(customer__id__in=customer_ids, visible=visible)
