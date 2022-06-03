@@ -1,6 +1,6 @@
 from django import forms
 from ckeditor.widgets import CKEditorWidget
-
+from datetime import date as ddd
 from .models import Contract
 
 
@@ -65,6 +65,14 @@ class ContractArtistForm(forms.ModelForm):
         self.fields["artist"].queryset = artists
         self.fields["artist"].empty_label = "Please select your artist"
 
+    def clean(self):
+        cleaned_data = super().clean()
+        date = cleaned_data.get("date")
+
+        if date and date < ddd.today():
+            msg = "Date cannot be in the past"
+            self.add_error("date", msg)
+
 
 class UserContractArtistForm(forms.ModelForm):
     class Meta:
@@ -93,6 +101,14 @@ class UserContractArtistForm(forms.ModelForm):
         self.fields["artist"].queryset = artists
         self.fields["artist"].empty_label = "Please select your artist"
 
+    def clean(self):
+        cleaned_data = super().clean()
+        date = cleaned_data.get("date")
+
+        if date and date < ddd.today():
+            msg = "Date cannot be in the past"
+            self.add_error("date", msg)
+
 
 class ContractArtistEditForm(forms.ModelForm):
     class Meta:
@@ -120,6 +136,14 @@ class ContractArtistEditForm(forms.ModelForm):
         self.fields["company"].required = False
         self.fields["company"].empty_label = "Select company if you need"
 
+    def clean(self):
+        cleaned_data = super().clean()
+        date = cleaned_data.get("date")
+
+        if date and date < ddd.today():
+            msg = "Date cannot be in the past"
+            self.add_error("date", msg)
+
 
 class UserContractArtistEditForm(forms.ModelForm):
     class Meta:
@@ -141,3 +165,11 @@ class UserContractArtistEditForm(forms.ModelForm):
         self.fields["company"].queryset = companies
         self.fields["company"].required = False
         self.fields["company"].empty_label = "Select company if you need"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        date = cleaned_data.get("date")
+
+        if date and date < ddd.today():
+            msg = "Date cannot be in the past"
+            self.add_error("date", msg)

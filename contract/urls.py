@@ -16,6 +16,8 @@ from .views import (
     get_hidden_contracts_for_user,
     customer_create_contract_from_user,
     user_edit_contract,
+    hide_contract_from_user,
+    unhide_contract_from_user,
 )
 
 urlpatterns = [
@@ -85,5 +87,15 @@ urlpatterns = [
         "<contract_id>/user_edit_contract/",
         user_edit_contract,
         name="user_edit_contract",
+    ),
+    path(
+        "<contract_id>/hide_contract_from_user/",
+        hide_contract_from_user,
+        name="hide_contract_from_user",
+    ),
+    path(
+        "<contract_id>/unhide_contract_from_user/",
+        unhide_contract_from_user,
+        name="unhide_contract_from_user",
     ),
 ]

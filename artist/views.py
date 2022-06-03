@@ -1,6 +1,3 @@
-from multiprocessing import context
-from traceback import print_tb
-
 from customer.services.request_user_to_change import get_customer_messages_for_user
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -12,7 +9,7 @@ from django.urls.base import reverse
 from django.views.generic.list import ListView
 from users.services import user_handle
 from venue.services import handle_venue
-
+from datetime import datetime
 from .decorators import user_has_perm_to_change
 from .forms import (
     ArtistAddForm,
@@ -127,7 +124,8 @@ def get_artist_details(request, artist_id):
         "users_has_access": user_artists.get_users_have_access(artist_id, request.user),
         "aval_users": user_artists.get_avaluable_users(artist),
         "smth": [1, 11, 111, 2, 22, 222],
-        "my_contracts": user_artists.get_artist_contracts(artist),
+        "my_contracts": user_artists.get_all_artist_contracts(artist),
+        "date": str(datetime.today().date()),
     }
 
     return render(request, "artist/artist_detailes.html", context=context)
@@ -279,6 +277,7 @@ def add_user_permission_to_change_or_see(request, artist_id, user_phone, perm_ty
 
     try:
         user_artists.add_permission_to_change(artist_id, user_phone, perm_type)
+        user_artists.create_user_access_status(artist_id, user_phone)
     except Exception as er:
         print(er)
         # if er == "Can't add user that already exists":
@@ -407,16 +406,21 @@ def invite_user(request, artist_id, user_email):
 
 
 @login_required(login_url="login")
-def get_artist_contracts(request, artist_id):
+def get_artist_contracts(request, artist_id, date):
 
     artist = user_artists.get_artist_by_id(artist_id)
 
     try:
-        artist_contracts = user_artists.get_artist_contracts(artist)
+        artist_contracts = user_artists.get_artist_contracts(artist, date)
     except Exception as err:
         print(err)
         messages(request, "Something went wrong")
 
-    context = {"artist": artist, "contracts": artist_contracts}
+    context = {
+        "artist": artist,
+        "contracts": artist_contracts,
+        "today_date": date,
+        "today_today": str(datetime.today().date()),
+    }
 
     return render(request, "artist/artist_contracts.html", context)

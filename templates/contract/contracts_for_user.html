@@ -3,12 +3,17 @@
 {% load widget_tweaks %}
 {% load artist_tags %}
 
+
 {% block link %}
     <link rel="stylesheet" href="{% static  'css/artist_events.css' %}">
 {% endblock link %}
 
 {% block title %}
-      <title>Contracts: {{user.get_full_name}}</title>
+    {% if hidden %}
+        <title>Hidden Contracts: {{user.get_full_name}}</title>
+    {% else %}
+        <title>Contracts: {{user.get_full_name}}</title>
+    {% endif %}
 {% endblock title %}
 
 {% block content %}
@@ -81,9 +86,9 @@
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                     <a class="btn btn-success" target="blank" href="{{artist.contract_pdf_url}}">Contract</a>
                                     {% if hidden %}
-                                        <a class="btn btn-warning" href="{% url 'unhide_contract' artist.id %}">Unhide</a>
+                                        <a class="btn btn-warning" href="{% url 'unhide_contract_from_user' artist.id %}">Unhide</a>
                                     {% else %}
-                                        <a class="btn btn-warning" href="{% url 'hide_contract' artist.id %}">Hide</a>
+                                        <a class="btn btn-warning" href="{% url 'hide_contract_from_user' artist.id %}">Hide</a>
                                     {% endif %}
                                     <a class="btn btn-info" href="{% url 'user_edit_contract' artist.id %}">Edit</a>
                                     <a class="btn btn-secondary" href="{% url 'preview_artist_contract' artist.id %}">Read more</a>

@@ -207,20 +207,21 @@
                     <h5 class="mb-0">Users that has access</h5>
                   </div>
                   <div class="card-body bg-light">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered ">
                       <thead>
                         <tr>
                           <th scope="col">User</th>
-                          <th class="text-center" scope="col">Can edit</th>
+                          <th class="" style="width:13%" scope="col">Can edit</th>
                           <th class="text-center">Action</th>
                           <th class="text-center">Delete</th>
+                          <th class="text-center">Info</th>
                         </tr>
                       </thead>
                       <tbody>
                         {% for user_for in users_has_access %}
 
-                          <tr>
-                            <td>{{user_for.access.email}}</td>
+                          <tr class="table-has-access-row table-hover" >
+                            <td><a href="{% url 'user_profile_view' user %}">{{user_for.access.email}}</a></td>
                             <td class="text-center">
                               {% if user_for.admin %}
                                 <div class="align-center form-check form-switch"><input class="form-check-input" checked id={{user_for.id}} type="checkbox"  /><label class="form-check-label" for="flexSwitchCheckChecked"></label></div>
@@ -239,9 +240,33 @@
                               
                               <a href="{% url 'delete_user_from_changeble' artist.id user_for.access.id %}" class="btn btn-danger">Delete</a>
                             </div></td>
+                            <td>
+                              <a class="btn btn-secondary" href="">Info</a>
+                            </td>
                           </tr>
-                          
-                        {% endfor %}
+                          <tr>
+                            <td colspan=5><div class="block_under_has_access_row" style="display: none; ">
+                              <div class="block-box" style="display: flex;  width: 70%">
+                                <div class="col-lg-6">
+                                  <label class="form-label" for="email1">Last Asset</label>
+                                  <div>{{user_for|artist_access_status_asset}}</div>
+                                </div>
+                                <div class="col-lg-6">
+                                  <label class="form-label" for="email1">Invited</label>
+                                  {% if user_for|artist_access_status_invited %}
+                                      <div style="color: green; font-size: 20px; display: block;" class="far fa-check-circle"></div>
+                                  {% else %}
+                                      <div style="color: red; font-size: 20px; display: block;" class="far fa-times-circle"></div>
+                                  {% endif %}
+                                </div>
+                                <div class="col-lg-6">
+                                  <label class="form-label" for="email1">Last added user</label>
+                                  <div>{{user_for|artist_access_status_user}}</div>
+                                </div>
+                              </div>
+                            </div></td>
+                          </tr>
+                          {% endfor %}
                       </tbody>
                     </table>
                   </div>
@@ -296,7 +321,7 @@
                 <div class="card mb-3 overflow-hidden">
                   <div class="card-header" style="display: flex; justify-content: space-between; align-items:center">
                     <h5 class="mb-0">Artist Contracts</h5>
-                    <a href="{% url 'get_artist_contracts' artist.id %}" class="btn btn-success">All Contracts</a>
+                    <a href="{% url 'get_artist_contracts' artist.id date%}" class="btn btn-success">All Contracts</a>
                   </div>
                   {% if my_contracts %}
                   <div class="table-responsive scrollbar">
@@ -418,6 +443,16 @@
       
     }
 
+    //table-has-access-row
+    var table_has_access_row = document.querySelector(".table-has-access-row")
+    table_has_access_row.onclick = () =>{
+      var block_under_has_access_row = document.querySelector(".block_under_has_access_row")
+      if(block_under_has_access_row.style.display === 'none'){
+        block_under_has_access_row.style.display = "block"
+      }else{
+        block_under_has_access_row.style.display = "none"
+      }
+    }
 
     </script>
 

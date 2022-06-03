@@ -27,7 +27,7 @@
         </div>
     </div>
     <h3 class="mb-3" style="text-align: center;">Contract: {{artist.customer.name}} -  {{artist.artist.name}} </h3>
-    <div class="block_contract" style="position: relative; background: #fff; ">
+    <div class="block_contract" style="padding: 20px 30px 0 50px ;position: relative; background: #fff; ">
         {{contract|safe}}
     </div>
     <div class="block_critical2" style="display: none;">
@@ -90,10 +90,10 @@
                 if( i === 1){
                     var honorar = el
                 }
-                if( i === 2 ){
-                    batailing += el;
+                if( i === 2 || i === 3 ){
+                    batailing += el + " ";
                 }
-                if( i === 3 ){
+                if( i === 4 ){
                     comment += el ;
                 } 
             }
@@ -153,17 +153,45 @@
             document.location.href = url + eventArtistId + "/" 
         }
 
+        var icon_link = '{{company_image_link}}'
         var block = document.querySelector('.block_contract').children
+        var index = 1;
         for(var i=0; i<block.length; i++){
             if (block[i].tagName =="DIV"){
+               if(i != 0){
+                block[i].style.position = "relative";
+                block[i].innerHTML = `
+                        <p style="margin-bottom: 20px; height: 200px"> 
+                            ${'{{artist.company.name}}'}<br/>
+                            ${'{{artist.company.address}}'}<br />
+                            ${'{{artist.company.zip_code}}'} ${'{{artist.company.city}}'}<br />
+                            Tlf: {{customer_contact_phone}}<br />
+                            E-mail:{{customer_email}}
+
+                        </p>
+                        <img style="position:absolute; top:20px; right:35px; margin-bottom: 20px" width="350" height="150" src="${icon_link}"  alt="" >
+                ` + block[i].innerHTML
+
+               }
+
                 if (block[i].clientHeight > 1420){
                     block[i].style.height = 1440 * (Math.trunc(block[i].clientHeight/1420) + 1 ) + "px"
                 }else{
                     block[i].style.height = 1420 + "px"
                 }
-            }
-}
 
+
+                const pagination = document.createElement("center")
+                pagination.innerHTML = `${index} of 4`
+                block[i].after(pagination)
+                index+=1;
+            }
+                
+    }   
+
+    var tbody = document.getElementsByTagName("table")
+    var tbody1 = tbody[0]
+    tbody1.style.width = "1000px"
     </script>
 
 {% endblock content %}

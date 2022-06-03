@@ -1,4 +1,7 @@
+from datetime import date
 from django.db import models
+from django.forms import ValidationError
+from pkg_resources import require
 from artist.models import Artist
 from ckeditor.fields import RichTextField
 from company.models import Company
@@ -42,13 +45,15 @@ class Contract(models.Model):
     aditional_staff = MultiSelectField(choices=ADITIONAL_STAFF_CHOICES, null=True)
 
     contract = RichTextField("Artist Contract", null=True, blank=True)
-    contract_pdf_url = models.CharField(("Contract PDF"), max_length=150, null=True)
-
-    def __str__(self):
-        return self.artist.name
+    contract_pdf_url = models.CharField(
+        ("Contract PDF"), max_length=150, null=True, blank=True
+    )
 
     class Meta:
         unique_together = (
             "artist",
             "customer",
         )
+
+    def __str__(self):
+        return self.artist.name

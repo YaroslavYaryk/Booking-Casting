@@ -12,7 +12,7 @@ from event.services import handle_event
 from django.contrib import messages
 from django.urls.base import reverse
 from django.http import HttpResponseRedirect
-from .services import handle_contract, constants
+from .services import handle_contract, constants, static_function
 from users.services import user_handle
 
 
@@ -41,8 +41,6 @@ def create_contract(request, customer_id):
                     },
                 )
             )
-        else:
-            messages.error(request, "Something went wrong")
 
     else:
         form = ContractArtistForm(aval_arists, companies, venues)
@@ -80,10 +78,26 @@ def preview_artist_contract(request, contract_id):
         contract_artist, constants.PREVIEW_CONTRACT
     )
 
+    print(
+        static_function.get_company_image_link(contract_artist.company.icon.url),
+    )
+
     return render(
         request,
         "contract/preview_contract.html",
-        {"artist": contract_artist, "contract": contract},
+        {
+            "artist": contract_artist,
+            "contract": contract_artist.contract,
+            "company_image_link": static_function.get_company_image_link(
+                contract_artist.company.icon.url
+            ),
+            "customer_contact_phone": handle_customer.get_customer_contact(
+                contract_artist.customer
+            ).phone,
+            "customer_email": handle_customer.get_customer_contact(
+                contract_artist.customer
+            ).email,
+        },
     )
 
 
@@ -162,8 +176,7 @@ def edit_contract(request, contract_id):
             return HttpResponseRedirect(
                 reverse("preview_artist_contract", kwargs={"contract_id": contract.id})
             )
-        else:
-            messages.error(request, "Something went wrong")
+
     else:
         form = ContractArtistEditForm(companies, venues, instance=contract)
 
@@ -294,7 +307,9 @@ def customer_create_contract_from_user(request, user_id):
         )
 
         if form.is_valid():
+
             contract_obj = form.save()
+
             handle_customer.add_team_peermission_to_change_contract_details(
                 contract_obj
             )
@@ -307,7 +322,8 @@ def customer_create_contract_from_user(request, user_id):
                 )
             )
         else:
-            messages.error(request, "Something went wrong")
+            pass
+            # messages.error(request, form.errors.as_text)
 
     else:
         form = UserContractArtistForm(customers, aval_arists, companies, venues)
@@ -345,10 +361,36 @@ def user_edit_contract(request, contract_id):
             return HttpResponseRedirect(
                 reverse("preview_artist_contract", kwargs={"contract_id": contract.id})
             )
-        else:
-            messages.error(request, "Something went wrong")
+
     else:
         form = ContractArtistEditForm(companies, venues, instance=contract)
 
     context = {"form": form, "customer": customer, "artist": contract.artist}
     return render(request, "contract/user_edit_contract.html", context=context)
+
+
+def hide_contract_from_user(request, contract_id):
+
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+    try:
+        handle_contract.hide_contract(contract)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse("get_visible_contracts_for_user", kwargs={"user_id": request.user.id})
+    )
+
+
+def unhide_contract_from_user(request, contract_id):
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+    try:
+        handle_contract.unhide_contract(contract)
+    except Exception as err:
+        print(err)
+        messages.error(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse("get_hidden_contracts_for_user", kwargs={"user_id": request.user.id})
+    )

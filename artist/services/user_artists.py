@@ -5,6 +5,7 @@ from artist.models import (
     ArtistAssets,
     ArtistFile,
     ArtistRequestsStorage,
+    ArtistUserStatus,
 )
 from users.models import User
 from users.services import user_handle
@@ -179,5 +180,16 @@ def send_invitation_message(sender, reciever, template_link, site_link):
     mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
 
 
-def get_artist_contracts(artist):
+def get_artist_contracts(artist, date):
+    return artist.contract_set.filter(date=date)
+
+
+def get_all_artist_contracts(artist):
     return artist.contract_set.all()
+
+
+def create_user_access_status(artist_id, user_phone):
+    artist = get_artist_by_id(artist_id)
+    user = user_handle.get_user_by_phone(user_phone)
+    user_access = ArtistAccess.objects.get(artist=artist, access=user)
+    ArtistUserStatus.objects.create(user_access=user_access, invited=True)

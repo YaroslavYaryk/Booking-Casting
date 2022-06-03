@@ -6,19 +6,13 @@ from customer.models import CustomerAccess, CustomerContacts
 from django.urls.base import reverse
 from django.http import HttpResponseRedirect
 import pdfkit
-from decouple import config
 from django.template.loader import render_to_string
 from django.utils.text import slugify
+from .static_function import get_company_image
 
 
 def get_contract_artist_by_id(id):
     return Contract.objects.get(id=id)
-
-
-def get_company_image(link):
-    return f"""
-        <img style="position:absolute; top:20px; right:35px;" width="350" height="150" src="{config('HOST')}:{config('PORT')}{link}"  alt="" >
-    """
 
 
 aditional_staff_template = """
@@ -26,7 +20,11 @@ aditional_staff_template = """
             <tbody>
                 {% for elem in additinal_staff_list %}
                     <tr>
-                        <td>{{elem}}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;</td>
+                        {% if to_pdf %}
+                            <td>{{elem}}&nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;</td>
+                        {% else %}
+                            <td>{{elem}}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;</td>
+                        {% endif %}
                         {% if elem in contract_add_staff %}
                             <td><u>inkludert</u></td>
                         {% else %}
@@ -149,7 +147,7 @@ def get_comment_or_none(comment):
     return ""
 
 
-def rerender_contract(contr, contract_template=EDIT_CONTRACT):
+def rerender_contract(contr, contract_template=EDIT_CONTRACT, to_pdf=False):
 
     method_payment = get_payment_methods_rows(contr.payment_methods)
 
@@ -179,6 +177,7 @@ def rerender_contract(contr, contract_template=EDIT_CONTRACT):
             contract_add_staff=contract_aditional_staff_template.render(
                 additinal_staff_list=additinal_staff_list,
                 contract_add_staff=contr.aditional_staff,
+                to_pdf=to_pdf,
             ),
         )
     else:
@@ -206,6 +205,24 @@ def rerender_contract(contr, contract_template=EDIT_CONTRACT):
     return rendered_contract
 
 
+# def get_header_for_page(contract):
+#     return """
+#         <p>
+# 			{% if company %}
+# 			{{company.name}}<br />
+# 			{{company.address}}<br />
+# 			{{company.zip_code}}&nbsp;{{company.city}}<br />
+# 			{% endif %}
+# 			Tlf: {{customer_contact_phone}}<br />
+# 			E-mail:{{customer_email}}
+# 		</p>
+
+# 		<p>{{company_image}}</p>
+
+# 	<p>&nbsp;</p>
+#     """
+
+
 def user_has_access_to_customer(contract_id, user):
     contract = get_contract_artist_by_id(contract_id)
     customer = contract.customer
@@ -227,7 +244,7 @@ def create_pdf_contract(contract_artist, page_heights):
     a, b, c, d = page_heights.split("_")
 
     print(page_heights)
-    contract = rerender_contract(contract_artist, PDF_CONTRACT)
+    contract = rerender_contract(contract_artist, PDF_CONTRACT, to_pdf=True)
 
     context = {"contract": contract, "first": a, "second": b, "third": c, "forth": d}
 

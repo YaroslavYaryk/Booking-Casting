@@ -240,3 +240,8 @@ def add_team_peermission_to_change_contract_details(contract_obj):
         )
         if not perm_to_see_venue:
             VenueAccess.objects.create(venue=contract_obj.venue, access=elem.access)
+
+
+def get_customer_contact(customer):
+
+    return CustomerContacts.objects.get(customer=customer)

@@ -77,7 +77,11 @@
                                     </div>
                                 </div>
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <a class="btn btn-success" target="blank" href="{{artist.contract_pdf_url}}">Contract</a>
+                                    {% if artist.contract_pdf_url %}
+                                        <a class="btn btn-success" target="blank" href="{{artist.contract_pdf_url}}">Contract</a>
+                                    {% else %}
+                                        <a class="btn btn-success disabled" target="blank" href="{{artist.contract_pdf_url}}">Contract</a>
+                                    {% endif %}
                                     {% if hidden %}
                                         <a class="btn btn-warning" href="{% url 'unhide_contract' artist.id %}">Unhide</a>
                                     {% else %}

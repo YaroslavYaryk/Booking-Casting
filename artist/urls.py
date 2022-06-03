@@ -76,6 +76,8 @@ urlpatterns = [
     path("invite_user/<artist_id>/<user_email>/", invite_user, name="invite_user"),
     # contracts
     path(
-        "<artist_id>/all_contracts/", get_artist_contracts, name="get_artist_contracts"
+        "<artist_id>/all_contracts/<date>/",
+        get_artist_contracts,
+        name="get_artist_contracts",
     ),
 ]

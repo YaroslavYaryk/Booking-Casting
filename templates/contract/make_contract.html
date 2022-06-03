@@ -2,6 +2,8 @@
 {% load static %}
 {% load widget_tweaks %}
 
+{% block messages %}{% endblock messages %}
+
 {% block title %}
       <title>Create Contract: {{customer.name}}</title>
 {% endblock title %}
@@ -23,25 +25,25 @@
       <div class="card-body bg-light">
           <div class="row gx-2">
             
-            <div class="col-12 mb-3">
+            <div class="col-6 mb-3">
               <label class="form-label" for="form.customer">Customer</label>
               <input type="text" class="form-control" disabled value="{{customer}}">
             </div>
-            <div class="col-12 mb-3">
+            <div class="col-6 mb-3">
               <label class="form-label" for="form.artist">Artist</label>
               {{ form.artist|add_class:'form-control'}}
               <div class="form-error">
                 {{ form.artist.errors }}
               </div>
             </div>
-            <div class="col-12 mb-3">
+            <div class="col-6 mb-3">
               <label class="form-label" for="form.venue">Venue</label>
               {{ form.venue|add_class:'form-control'}}
               <div class="form-error">
                 {{ form.venue.errors }}
               </div>
             </div>
-            <div class="col-12 mb-3">
+            <div class="col-6  mb-3">
               <label class="form-label" for="form.company">Company</label>
               {{ form.company|add_class:'form-control'}}
               <div class="form-error">

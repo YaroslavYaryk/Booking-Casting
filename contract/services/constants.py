@@ -190,7 +190,7 @@ EDIT_CONTRACT = """
 
 	<h1>Kontrakt</h1>
 
-	<table border="0" align="center" cellpadding="1" cellspacing="1" style="width:1000px" summary="adsadas">
+	<table border="0" cellpadding="1" cellspacing="1" style="width:1000px; border-collapse: collapse;" summary="adsadas">
 		<tbody>
 			<tr>
 				<td><strong>Artister</strong>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</td>
@@ -682,7 +682,7 @@ PDF_CONTRACT = """
 	</table>
 
 	<p>&nbsp;</p>
-	<div>
+	<div">
 		{{contract_add_staff}}
 	</div>
 	<p>&nbsp;</p>
@@ -759,7 +759,7 @@ PDF_CONTRACT = """
 
 		<p>{{company_image}}</p>
 	</p>
-
+44444.0
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
 	<h2 style="text-align:center"><strong>{{artist.name}}</strong></h2>
