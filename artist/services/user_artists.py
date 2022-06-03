@@ -11,6 +11,7 @@ from users.models import User
 from users.services import user_handle
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from datetime import timedelta, datetime
 
 
 def get_artists_for_user(user):
@@ -193,3 +194,13 @@ def create_user_access_status(artist_id, user_phone):
     user = user_handle.get_user_by_phone(user_phone)
     user_access = ArtistAccess.objects.get(artist=artist, access=user)
     ArtistUserStatus.objects.create(user_access=user_access, invited=True)
+
+
+def get_week_days_list(today, n):
+    arr = []
+    for i in range(n - 1, -1, -1):
+        arr.append(str(today + timedelta(days=-abs(i))))
+    for i in range(1, 7 - n + 1, 1):
+        arr.append(str(today + timedelta(days=i)))
+
+    return arr

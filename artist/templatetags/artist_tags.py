@@ -95,6 +95,12 @@ def get_day_name_with_time_delta(date_today, timedelta_count):
     return new_date.strftime("%A")
 
 
+@register.filter
+def get_day_name(date_today):
+    date_today_datetime = datetime.strptime(date_today, "%Y-%m-%d").date()
+    return date_today_datetime.strftime("%A")
+
+
 @register.inclusion_tag("tags/message_extractor.html")
 def message_creator(message, user, type_of_user, link, message_type_id):
 

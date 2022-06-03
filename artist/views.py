@@ -19,7 +19,7 @@ from .forms import (
     TechRiderForm,
 )
 from .models import Artist, ArtistAccess
-from .services import request_user_to_change, user_artists
+from .services import request_user_to_change, user_artists, constants
 
 
 class MyArtistListView(LoginRequiredMixin, ListView):
@@ -415,12 +415,18 @@ def get_artist_contracts(request, artist_id, date):
     except Exception as err:
         print(err)
         messages(request, "Something went wrong")
-
+    print(date)
     context = {
         "artist": artist,
         "contracts": artist_contracts,
         "today_date": date,
         "today_today": str(datetime.today().date()),
+        "week_days_list": user_artists.get_week_days_list(
+            datetime.strptime(date, "%Y-%m-%d").date(),
+            constants.week_names_count[
+                datetime.strptime(date, "%Y-%m-%d").date().strftime("%A")
+            ],
+        ),
     }
 
     return render(request, "artist/artist_contracts.html", context)
