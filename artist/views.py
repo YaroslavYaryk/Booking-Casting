@@ -20,6 +20,7 @@ from .forms import (
 )
 from .models import Artist, ArtistAccess
 from .services import request_user_to_change, user_artists, constants
+from contract.services import handle_contract
 
 
 class MyArtistListView(LoginRequiredMixin, ListView):
@@ -427,6 +428,63 @@ def get_artist_contracts(request, artist_id, date):
                 datetime.strptime(date, "%Y-%m-%d").date().strftime("%A")
             ],
         ),
+        "visible": True,
     }
 
     return render(request, "artist/artist_contracts.html", context)
+
+
+@login_required(login_url="login")
+def get_hiden_artist_contracts(request, artist_id):
+
+    artist = user_artists.get_artist_by_id(artist_id)
+
+    try:
+        artist_contracts = user_artists.get_artist_hiden_contracts(artist)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+    context = {
+        "artist": artist,
+        "contracts": artist_contracts,
+        "visible": False,
+        "today_today": str(datetime.today().date()),
+    }
+
+    return render(request, "artist/artist_contracts.html", context)
+
+
+@login_required(login_url="login")
+def hide_artist_contract(request, contract_id, date):
+
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+    try:
+        handle_contract.hide_contract(contract)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse(
+            "get_artist_contracts",
+            kwargs={"artist_id": contract.artist.id, "date": date},
+        )
+    )
+
+
+@login_required(login_url="login")
+def unhide_artist_contract(request, contract_id):
+
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+    try:
+        handle_contract.unhide_contract(contract)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse(
+            "get_hiden_artist_contracts",
+            kwargs={"artist_id": contract.artist.id},
+        )
+    )

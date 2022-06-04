@@ -182,7 +182,11 @@ def send_invitation_message(sender, reciever, template_link, site_link):
 
 
 def get_artist_contracts(artist, date):
-    return artist.contract_set.filter(date=date)
+    return artist.contract_set.filter(date=date, visible=True)
+
+
+def get_artist_hiden_contracts(artist):
+    return artist.contract_set.filter(visible=False)
 
 
 def get_all_artist_contracts(artist):

@@ -18,120 +18,131 @@
       <div class="col-4 col-sm-auto align-items-center pe-0" style="width: 98%; display: flex;justify-content:space-between;">
         <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Artist: {{artist.name}}</h5>
         <div class="block" style="margin-bottom: -20px;">
-            <ul class="align-items-center" type="none" style="display: flex; gap:10px; justify-content:space-between;">
-                <li class="page-item "><a class="page-link " href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:-7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&laquo;</span><span class="sr-only "></span></a></li>
-                {% comment %} {% for i in '1234567'|make_list %}
-                    {% if  today_date|get_date_with_time_delta:forloop.counter0 == today_today %}
-                        {% if forloop.counter0 == 0 %}
-                            <li style="font-size: 10px; box-shadow: 1px 1px 10px black;" class="btn btn-primary">
-                                <a style="color:white; " href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
-                                    <div class="day_name">
-                                        {{today_date|get_day_name_with_time_delta:forloop.counter0}}
-                                    </div>
-                                    <div class="date_date">
-                                        {{ today_date|get_date_with_time_delta:forloop.counter0 }}
-                                    </div>
-                                </a>
-                            </li>
+            {% if visible %}
+                <ul class="align-items-center" type="none" style="display: flex; gap:10px; justify-content:space-between;">
+                    {% if today_today not in week_days_list %}
+                        <li style="font-size: 10px;  background: wheat;" class="btn">
+                            <a style="color: blue"  href="{% url 'get_artist_contracts' artist.id today_today %}">
+                                today
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item "><a class="page-link " href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:-7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&laquo;</span><span class="sr-only "></span></a></li>
+                    {% comment %} {% for i in '1234567'|make_list %}
+                        {% if  today_date|get_date_with_time_delta:forloop.counter0 == today_today %}
+                            {% if forloop.counter0 == 0 %}
+                                <li style="font-size: 10px; box-shadow: 1px 1px 10px black;" class="btn btn-primary">
+                                    <a style="color:white; " href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
+                                        <div class="day_name">
+                                            {{today_date|get_day_name_with_time_delta:forloop.counter0}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ today_date|get_date_with_time_delta:forloop.counter0 }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li style="font-size: 10px;" class="btn btn-primary">
+                                    <a style="color:white" href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
+                                        <div class="day_name">
+                                            {{today_date|get_day_name_with_time_delta:forloop.counter0}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ today_date|get_date_with_time_delta:forloop.counter0 }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
                         {% else %}
-                            <li style="font-size: 10px;" class="btn btn-primary">
-                                <a style="color:white" href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
-                                    <div class="day_name">
-                                        {{today_date|get_day_name_with_time_delta:forloop.counter0}}
-                                    </div>
-                                    <div class="date_date">
-                                        {{ today_date|get_date_with_time_delta:forloop.counter0 }}
-                                    </div>
-                                </a>
-                            </li>
-                        {% endif %}
-                        
-                    {% else %}
-                        
-                        {% if forloop.counter0 == 0 %}
-                            <li style="font-size: 10px; box-shadow: 1px 1px 10px black; background: #B4D5AD;" class="btn " >
-                                <a style="color:black" href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
-                                    <div class="day_name">
-                                        {{today_date|get_day_name_with_time_delta:forloop.counter0}}
-                                    </div>
-                                    <div class="date_date">
-                                        {{ today_date|get_date_with_time_delta:forloop.counter0 }}
-                                    </div>
-                                </a>
-                            </li>
-                        {% else %}
-                            <li style="font-size: 10px;  background: #B4D5AD;" class="btn ">
-                                <a style="color:black" href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
-                                    <div class="day_name">
-                                        {{today_date|get_day_name_with_time_delta:forloop.counter0}}
-                                    </div>
-                                    <div class="date_date">
-                                        {{ today_date|get_date_with_time_delta:forloop.counter0 }}
-                                    </div>
-                                </a>
-                            </li>
-                        {% endif %}
+                            
+                            {% if forloop.counter0 == 0 %}
+                                <li style="font-size: 10px; box-shadow: 1px 1px 10px black; background: #B4D5AD;" class="btn " >
+                                    <a style="color:black" href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
+                                        <div class="day_name">
+                                            {{today_date|get_day_name_with_time_delta:forloop.counter0}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ today_date|get_date_with_time_delta:forloop.counter0 }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li style="font-size: 10px;  background: #B4D5AD;" class="btn ">
+                                    <a style="color:black" href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
+                                        <div class="day_name">
+                                            {{today_date|get_day_name_with_time_delta:forloop.counter0}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ today_date|get_date_with_time_delta:forloop.counter0 }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endif %}
 
-                       
-                    {% endif %}
-                    
-                {% endfor %} {% endcomment %}
-                {% for elem in week_days_list %}
-                    {% if elem == today_today %}
-                        {% if elem == today_date %}
                         
-                            <li style="font-size: 10px;  background: #9BC2E5; box-shadow: 0 0 10px black" class="btn ">
-                                <a style="color:black" href="{% url 'get_artist_contracts' artist.id elem %}">
-                                    <div class="day_name">
-                                        {{elem|get_day_name}}
-                                    </div>
-                                    <div class="date_date">
-                                        {{ elem }}
-                                    </div>
-                                </a>
-                            </li>
-                        {% else %}
-                            <li style="font-size: 10px;  background: #9BC2E5;" class="btn ">
-                                <a style="color:black" href="{% url 'get_artist_contracts' artist.id elem %}">
-                                    <div class="day_name">
-                                        {{elem|get_day_name}}
-                                    </div>
-                                    <div class="date_date">
-                                        {{ elem }}
-                                    </div>
-                                </a>
-                            </li>
                         {% endif %}
-                    {% else %}
-                        {% if elem == today_date %}
-                            <li style="font-size: 10px;  background: #B4D5AD; box-shadow: 0 0 10px black;" class="btn ">
-                                <a style="color:black" href="{% url 'get_artist_contracts' artist.id elem %}">
-                                    <div class="day_name">
-                                        {{elem|get_day_name}}
-                                    </div>
-                                    <div class="date_date">
-                                        {{ elem }}
-                                    </div>
-                                </a>
-                            </li>
+                        
+                    {% endfor %} {% endcomment %}
+                    {% for elem in week_days_list %}
+                        {% if elem == today_today %}
+                            
+                            {% if elem == today_date %}
+                                <li style="font-size: 10px;  box-shadow: 0 0 10px black;" class="btn today_date" id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_artist_contracts' artist.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li style="font-size: 10px; " class="btn today_date" id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_artist_contracts' artist.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endif %}
                         {% else %}
-                            <li style="font-size: 10px;  background: #B4D5AD;" class="btn ">
-                                <a style="color:black" href="{% url 'get_artist_contracts' artist.id elem %}">
-                                    <div class="day_name">
-                                        {{elem|get_day_name}}
-                                    </div>
-                                    <div class="date_date">
-                                        {{ elem }}
-                                    </div>
-                                </a>
-                            </li>
+                            {% if elem == today_date %}
+                                <li style="font-size: 10px; box-shadow: 0 0 10px black;" class="btn" id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_artist_contracts' artist.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li style="font-size: 10px;" class="btn " id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_artist_contracts' artist.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                
-                {% endfor %}
-                <li class="page-item "><a class="page-link " href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&raquo;</span><span class="sr-only "></span></a></li>
-                
-            </ul>
+                    
+                    {% endfor %}
+                    <li class="page-item "><a class="page-link " href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&raquo;</span><span class="sr-only "></span></a></li>
+                    
+                </ul>
+            {% else %}
+                <a href="{% url 'get_artist_contracts' artist.id today_today %}" class="btn btn-success">Visible</a>
+            {% endif %}
         </div>
       </div>
   
@@ -164,6 +175,7 @@
                             <div class="div_block" >
                                 
                                 <div class="block">
+                                    
                                     <div class="col-lg-6">
                                         <label style=" color:black" class="form-label" for="date">Venue:</label>
                                         <p><a href="{% url 'get_venue_details' contract.venue.id %}">{{contract.venue.name}}</a></p>
@@ -185,8 +197,17 @@
                                     </div>
                                 </div>
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    {% if contract.contract_pdf_url %}
+                                        <a class="btn btn-success" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
+                                    {% else %}
+                                        <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
+                                    {% endif %}
                                     {% if user|has_access_to_customer:contract.customer %}
-                                      <a class="btn btn-danger" href="{% url 'cancel_contract' contract.id 0 %}">Delete</a>
+                                    {% if visible %}
+                                        <a class="btn btn-danger" href="{% url 'hide_artist_contract' contract.id today_date %}">Hide</a>
+                                    {% else %}
+                                        <a class="btn btn-danger" href="{% url 'unhide_artist_contract' contract.id  %}">Unhide</a>
+                                    {% endif %}
                                       <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                     {% endif %}
                                     <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
@@ -196,17 +217,38 @@
                         </div>
                     </div>
                 </div>
+                
             </div>
             {% endfor %}
         </div>
     </div>
 
       {% else %}
-        <p>This is no any event for this date</p>
+        {% if visible %}
+            <p>This is no any event for this date</p>
+        {% else %}
+            <p>There are no hiden contracts</p>
+        {% endif %}
 
       {% endif %}
     </div>
+    {% if visible %}
+        <div class="block_flex mb-3" style="display: flex; justify-content:space-between">
+            <div class=""></div>
+            <a href="{% url 'get_hiden_artist_contracts' artist.id %}" class="btn btn-success">Hiden</a>
+        </div>
+    {% endif %}
   </div>
   
   </div>
+
+
+  <script>
+      var today_date_elem = document.querySelector(".today_date")
+      today_date_elem.style.position = "relative"
+      today_date_elem.innerHTML  = "<span style='position:absolute; top:-20px; left: 35%' class='today_date_pointer'>today</span>" + today_date_elem.innerHTML
+  </script>
+
+
+
 {% endblock %}

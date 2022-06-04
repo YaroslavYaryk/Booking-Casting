@@ -17,6 +17,9 @@ from .views import (
     load_hosp_rider,
     invite_user,
     get_artist_contracts,
+    get_hiden_artist_contracts,
+    hide_artist_contract,
+    unhide_artist_contract,
 )
 
 urlpatterns = [
@@ -79,5 +82,20 @@ urlpatterns = [
         "<artist_id>/all_contracts/<date>/",
         get_artist_contracts,
         name="get_artist_contracts",
+    ),
+    path(
+        "<artist_id>/hiden_contracts/",
+        get_hiden_artist_contracts,
+        name="get_hiden_artist_contracts",
+    ),
+    path(
+        "<contract_id>/hide_contract/<date>/",
+        hide_artist_contract,
+        name="hide_artist_contract",
+    ),
+    path(
+        "<contract_id>/unhide_contract/",
+        unhide_artist_contract,
+        name="unhide_artist_contract",
     ),
 ]

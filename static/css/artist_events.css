@@ -4,3 +4,63 @@
 }
 
 .cust_reapons_list__item {}
+
+#Monday {
+    background: linear-gradient(90deg, rgba(224, 144, 73, 1) 0%, rgba(255, 0, 9, 0.8827906162464986) 100%);
+}
+
+#Monday a {
+    color: rgb(255, 255, 255);
+}
+
+#Tuesday {
+    background: linear-gradient(90deg, rgba(224, 222, 73, 1) 0%, rgba(255, 102, 0, 0.8827906162464986) 100%);
+}
+
+#Tuesday a {
+    color: rgb(68, 89, 68);
+}
+
+#Wednesday {
+    background: linear-gradient(90deg, rgba(73, 224, 174, 1) 0%, rgba(255, 102, 0, 0.8827906162464986) 100%);
+}
+
+#Wednesday a {
+    color: rgb(44, 67, 131);
+}
+
+#Thursday {
+    background: linear-gradient(90deg, rgba(181, 214, 174, 1) 0%, rgba(88, 148, 65, 0.8827906162464986) 100%);
+}
+
+#Thursday a {
+    color: blue;
+}
+
+#Friday {
+    background: linear-gradient(90deg, rgba(91, 193, 69, 1) 0%, rgba(37, 57, 29, 0.8827906162464986) 100%);
+}
+
+#Friday a {
+    color: white;
+}
+
+#Saturday {
+    background: linear-gradient(90deg, rgba(109, 186, 92, 1) 0%, rgba(46, 163, 122, 0.8827906162464986) 100%);
+}
+
+#Saturday a {
+    color: white;
+}
+
+#Sunday {
+    background: linear-gradient(90deg, rgba(92, 171, 186, 1) 0%, rgba(101, 53, 154, 0.8827906162464986) 100%);
+}
+
+#Sunday a {
+    color: white;
+}
+
+.today_date {
+    color: red;
+}
