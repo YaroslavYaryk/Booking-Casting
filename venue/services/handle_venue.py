@@ -118,8 +118,12 @@ def delete_venue_contacts(venue_contacts_id):
     get_venue_contacts_by_id(venue_contacts_id).delete()
 
 
-def get_my_contracts(venue):
-    return venue.contract_set.all()
+def get_my_contracts(venue, date):
+    return venue.contract_set.filter(date=date, visible=True)
+
+
+def get_my_hidden_contracts(venue):
+    return venue.contract_set.filter(visible=False)
 
 
 def add_venue_contacts(venue_contacts, cleaned_data):
@@ -137,3 +141,7 @@ def add_venue_contacts(venue_contacts, cleaned_data):
     venue_contacts.active = active
 
     venue_contacts.save()
+
+
+def get_all_my_contracts(venue):
+    return venue.contract_set.all()

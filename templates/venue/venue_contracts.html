@@ -17,8 +17,80 @@
 <div class="card">
   <div class="card-header">
     <div class="row flex-between-center">
-      <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0" style="display: flex; justify-content: space-between; width: 98%">
         <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Venue: {{venue.name}}</h5>
+        <div class="block" style="margin-bottom: -20px;">
+            {% if visible %}
+                <ul class="align-items-center" type="none" style="display: flex; gap:10px; justify-content:space-between;">
+                    {% if today_today not in week_days_list %}
+                        <li style="font-size: 10px;  background: wheat;" class="btn">
+                            <a style="color: blue"  href="{% url 'get_venue_contracts' venue.id today_today %}">
+                                today
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item "><a class="page-link " href="{% url 'get_venue_contracts' venue.id today_date|get_date_with_time_delta:-7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&laquo;</span><span class="sr-only "></span></a></li>
+                    {% for elem in week_days_list %}
+                        {% if elem == today_today %}
+                            
+                            {% if elem == today_date %}
+                                <li style="font-size: 10px;  box-shadow: 0 0 10px black;" class="btn today_date" id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_venue_contracts' venue.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li style="font-size: 10px; " class="btn today_date" id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_venue_contracts' venue.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            {% if elem == today_date %}
+                                <li style="font-size: 10px; box-shadow: 0 0 10px black;" class="btn" id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_venue_contracts' venue.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li style="font-size: 10px;" class="btn " id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_venue_contracts' venue.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    
+                    {% endfor %}
+                    <li class="page-item "><a class="page-link " href="{% url 'get_venue_contracts' venue.id today_date|get_date_with_time_delta:7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&raquo;</span><span class="sr-only "></span></a></li>
+                    
+                </ul>
+            {% else %}
+                <a href="{% url 'get_venue_contracts' venue.id today_today %}" class="btn btn-success mb-3">Visible</a>
+            {% endif %}
+        </div>
+        
       </div>
     
   
@@ -72,8 +144,17 @@
                                     </div>
                                 </div>
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    {% if contract.contract_pdf_url %}
+                                        <a class="btn btn-success" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
+                                    {% else %}
+                                        <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
+                                    {% endif %}
                                     {% if user|has_access_to_customer:contract.customer %}
-                                      <a class="btn btn-danger" href="{% url 'cancel_contract' contract.id 0 %}">Delete</a>
+                                    {% if visible %}
+                                        <a class="btn btn-danger" href="{% url 'hide_contract_venue' contract.id today_today %}">Hide</a>
+                                    {% else %}
+                                        <a class="btn btn-danger" href="{% url 'unhide_contract_venue' contract.id %}">Unhide</a>
+                                    {% endif %}
                                       <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                     {% endif %}
                                     <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
@@ -93,7 +174,21 @@
 
       {% endif %}
     </div>
+    {% if visible %}
+            <div class="block_flex mb-3" style="display: flex; justify-content:space-between">
+                <div class=""></div>
+                <a href="{% url 'get_hidden_contracts_venue' venue.id %}" class="btn btn-success">Hiden</a>
+            </div>
+        {% endif %}
   </div>
   
   </div>
+
+
+
+    <script>
+        var today_date_elem = document.querySelector(".today_date")
+        today_date_elem.style.position = "relative"
+        today_date_elem.innerHTML  = "<span style='position:absolute; top:-20px; left: 35%' class='today_date_pointer'>today</span>" + today_date_elem.innerHTML
+    </script>
 {% endblock %}

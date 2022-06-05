@@ -50,7 +50,7 @@ urlpatterns = [
         name="save_contract_data",
     ),
     path(
-        "<customer_id>/get_contracted_artists/",
+        "<customer_id>/get_contracted_artists/<date>/",
         get_visible_contracted_artists,
         name="get_all_contracted_artists",
     ),

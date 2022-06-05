@@ -16,5 +16,13 @@ def is_allowed_to_change(company_id, user):
     return company.creator == user
 
 
-def get_company_contracts(company):
-    return company.contract_set.all()
+def get_company_contracts(company, date):
+    return company.contract_set.filter(date=date, visible=True)
+
+
+def get_all_company_contracts(company):
+    return company.contract_set.filter(visible=True)
+
+
+def get_company_hiden_contracts(company):
+    return company.contract_set.filter(visible=False)

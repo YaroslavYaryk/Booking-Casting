@@ -9,6 +9,9 @@ from .views import (
     get_company_details,
     load_company_terms,
     get_company_contracts,
+    get_company_hiden_contracts,
+    hide_artist_contract,
+    unhide_artist_contract,
 )
 
 urlpatterns = [
@@ -29,8 +32,23 @@ urlpatterns = [
     path("<company_id>/load_terms/", load_company_terms, name="load_company_terms"),
     # contracts
     path(
-        "<company_id>/all_contracts/",
+        "<company_id>/visible_contracts/<date>/",
         get_company_contracts,
         name="get_company_contracts",
+    ),
+    path(
+        "<company_id>/hiden_contracts/",
+        get_company_hiden_contracts,
+        name="get_company_hiden_contracts",
+    ),
+    path(
+        "<contract_id>/hide_contract_company/<date>/",
+        hide_artist_contract,
+        name="hide_artist_company_contract",
+    ),
+    path(
+        "<contract_id>/unhide_contract_company/",
+        unhide_artist_contract,
+        name="unhide_artist_company_contract",
     ),
 ]

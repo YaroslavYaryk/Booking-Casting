@@ -14,6 +14,8 @@ from django.urls.base import reverse
 from django.http import HttpResponseRedirect
 from .services import handle_contract, constants, static_function
 from users.services import user_handle
+from artist.services import user_artists, constants as art_constants
+from datetime import datetime
 
 
 def create_contract(request, customer_id):
@@ -78,10 +80,6 @@ def preview_artist_contract(request, contract_id):
         contract_artist, constants.PREVIEW_CONTRACT
     )
 
-    print(
-        static_function.get_company_image_link(contract_artist.company.icon.url),
-    )
-
     return render(
         request,
         "contract/preview_contract.html",
@@ -116,7 +114,7 @@ def save_artist_contract_data(
         )
         contract_artist.save()
     except Exception as err:
-        print(err)
+        raise err
         messages.error(request, "something went wrong")
 
     return HttpResponseRedirect(
@@ -129,11 +127,23 @@ def save_artist_contract_data(
     )
 
 
-def get_visible_contracted_artists(request, customer_id):
+def get_visible_contracted_artists(request, customer_id, date):
 
     customer = handle_customer.get_customer_by_id(customer_id)
-    artists = handle_contract.get_contracted_artists(customer)
-    context = {"artists": artists, "customer": customer, "hidden": False}
+    artists = handle_contract.get_contracted_artists(customer, date)
+    context = {
+        "artists": artists,
+        "customer": customer,
+        "hidden": False,
+        "today_date": date,
+        "today_today": str(datetime.today().date()),
+        "week_days_list": user_artists.get_week_days_list(
+            datetime.strptime(date, "%Y-%m-%d").date(),
+            art_constants.week_names_count[
+                datetime.strptime(date, "%Y-%m-%d").date().strftime("%A")
+            ],
+        ),
+    }
 
     return render(request, "contract/artists_list.html", context=context)
 
@@ -228,7 +238,11 @@ def hide_contract(request, contract_id):
 
     return HttpResponseRedirect(
         reverse(
-            "get_all_contracted_artists", kwargs={"customer_id": contract.customer.id}
+            "get_all_contracted_artists",
+            kwargs={
+                "customer_id": contract.customer.id,
+                "date": str(datetime.today().date()),
+            },
         )
     )
 
@@ -253,7 +267,12 @@ def get_hidden_contracts_list(request, customer_id):
     customer = handle_customer.get_customer_by_id(customer_id)
     contracts = handle_contract.get_hidden_contracts(customer)
 
-    context = {"hidden": True, "artists": contracts, "customer": customer}
+    context = {
+        "hidden": True,
+        "artists": contracts,
+        "customer": customer,
+        "today_today": str(datetime.today().date()),
+    }
 
     return render(request, "contract/artists_list.html", context=context)
 

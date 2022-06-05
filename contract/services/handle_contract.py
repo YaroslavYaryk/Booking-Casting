@@ -86,8 +86,8 @@ def get_rendered_contract(event_artist_id):
     return rendered_contract
 
 
-def get_contracted_artists(customer):
-    return Contract.objects.filter(customer=customer, visible=True)
+def get_contracted_artists(customer, date):
+    return Contract.objects.filter(customer=customer, visible=True, date=date)
 
 
 def get_hidden_contracts(customer):
@@ -104,8 +104,8 @@ def delete_contract(contract_id):
 
 
 def divide_payment_methods(text, length):
+    first_row = text
     if length < 30:
-        first_row = text
         index = -1
     else:
 
@@ -243,7 +243,6 @@ def create_pdf_contract(contract_artist, page_heights):
 
     a, b, c, d = page_heights.split("_")
 
-    print(page_heights)
     contract = rerender_contract(contract_artist, PDF_CONTRACT, to_pdf=True)
 
     context = {"contract": contract, "first": a, "second": b, "third": c, "forth": d}

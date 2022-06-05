@@ -313,7 +313,7 @@
                 <div class="card mb-3 overflow-hidden">
                   <div class="card-header" style="display: flex; justify-content: space-between; align-items:center">
                     <h5 class="mb-0">Customer Contracts</h5>
-                    <a href="{% url 'get_all_contracted_artists' customer.id %}" class="btn btn-success">Contracts</a>
+                    <a href="{% url 'get_all_contracted_artists' customer.id today_today %}" class="btn btn-success">Contracts</a>
                   </div>
                   {% if my_contracts %}
                   <div class="table-responsive scrollbar">

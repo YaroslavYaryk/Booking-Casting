@@ -1,3 +1,4 @@
+from datetime import datetime
 from artist.decorators import user_has_perm_to_change
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -12,8 +13,9 @@ from users.services import user_handle
 from .forms import VenueAddForm, VenueContactsAddForm
 from .models import Venue, VenueAccess, VenueContacts, VenuePictures
 from .services import handle_request_storage, handle_venue, handle_venue_contacts
-from artist.services import user_artists
+from artist.services import user_artists, constants as artist_constants
 from customer.services import handle_customer
+from contract.services import handle_contract
 
 
 class MyVenueListView(LoginRequiredMixin, ListView):
@@ -117,8 +119,9 @@ def get_venue_details(request, venue_id):
         "aval_users": handle_venue.get_avaluable_users(venue),
         "images": handle_venue.get_venue_pictures(venue_id),
         "image_preview": handle_venue.get_venue_pictures(venue_id).first(),
-        "my_contracts": handle_venue.get_my_contracts(venue),
+        "my_contracts": handle_venue.get_all_my_contracts(venue),
         "us": user_handle.get_user_by_email(venue_contacts.epost),
+        "today_today": str(datetime.today().date()),
     }
 
     return render(request, "venue/venue_details.html", context=context)
@@ -300,6 +303,7 @@ def upload_picture_handle(request, venue_id):
     )
 
 
+@login_required(login_url="login")
 def delete_venue_picture(request, venue_id, picture_id):
     try:
         handle_venue.delete_venue_picture(picture_id)
@@ -317,6 +321,7 @@ def delete_venue_picture(request, venue_id, picture_id):
     )
 
 
+@login_required(login_url="login")
 def get_all_venue_events(request, venue_id):
 
     my_events = handle_venue.get_my_events(venue_id)
@@ -325,6 +330,7 @@ def get_all_venue_events(request, venue_id):
     return render(request, "venue/venue_events.html", context=context)
 
 
+@login_required(login_url="login")
 def invite_user(request, venue_id, user_email):
 
     if user_handle.filter_user_email(user_email):
@@ -361,15 +367,84 @@ def invite_user(request, venue_id, user_email):
     )
 
 
-def get_venue_contracts(request, venue_id):
+@login_required(login_url="login")
+def get_venue_contracts(request, venue_id, date):
 
     venue = handle_venue.get_venue_by_id(venue_id)
     try:
-        venue_contracts = handle_venue.get_my_contracts(venue)
+        venue_contracts = handle_venue.get_my_contracts(venue, date)
     except Exception as err:
         print(err)
         messages(request, "Something went wrong")
 
-    context = {"venue": venue, "contracts": venue_contracts}
+    context = {
+        "venue": venue,
+        "contracts": venue_contracts,
+        "today_date": date,
+        "today_today": str(datetime.today().date()),
+        "week_days_list": user_artists.get_week_days_list(
+            datetime.strptime(date, "%Y-%m-%d").date(),
+            artist_constants.week_names_count[
+                datetime.strptime(date, "%Y-%m-%d").date().strftime("%A")
+            ],
+        ),
+        "visible": True,
+    }
 
     return render(request, "venue/venue_contracts.html", context)
+
+
+@login_required(login_url="login")
+def get_venue_hidden_contracts(request, venue_id):
+
+    venue = handle_venue.get_venue_by_id(venue_id)
+    try:
+        venue_contracts = handle_venue.get_my_hidden_contracts(venue)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+
+    context = {
+        "venue": venue,
+        "contracts": venue_contracts,
+        "today_today": str(datetime.today().date()),
+        "visible": False,
+    }
+
+    return render(request, "venue/venue_contracts.html", context)
+
+
+@login_required(login_url="login")
+def hide_artist_contract(request, contract_id, date):
+
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+    try:
+        handle_contract.hide_contract(contract)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse(
+            "get_venue_contracts",
+            kwargs={"venue_id": contract.venue.id, "date": date},
+        )
+    )
+
+
+@login_required(login_url="login")
+def unhide_artist_contract(request, contract_id):
+
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+    try:
+        handle_contract.unhide_contract(contract)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse(
+            "get_hidden_contracts_venue",
+            kwargs={"venue_id": contract.venue.id},
+        )
+    )

@@ -28,62 +28,6 @@
                         </li>
                     {% endif %}
                     <li class="page-item "><a class="page-link " href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:-7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&laquo;</span><span class="sr-only "></span></a></li>
-                    {% comment %} {% for i in '1234567'|make_list %}
-                        {% if  today_date|get_date_with_time_delta:forloop.counter0 == today_today %}
-                            {% if forloop.counter0 == 0 %}
-                                <li style="font-size: 10px; box-shadow: 1px 1px 10px black;" class="btn btn-primary">
-                                    <a style="color:white; " href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
-                                        <div class="day_name">
-                                            {{today_date|get_day_name_with_time_delta:forloop.counter0}}
-                                        </div>
-                                        <div class="date_date">
-                                            {{ today_date|get_date_with_time_delta:forloop.counter0 }}
-                                        </div>
-                                    </a>
-                                </li>
-                            {% else %}
-                                <li style="font-size: 10px;" class="btn btn-primary">
-                                    <a style="color:white" href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
-                                        <div class="day_name">
-                                            {{today_date|get_day_name_with_time_delta:forloop.counter0}}
-                                        </div>
-                                        <div class="date_date">
-                                            {{ today_date|get_date_with_time_delta:forloop.counter0 }}
-                                        </div>
-                                    </a>
-                                </li>
-                            {% endif %}
-                            
-                        {% else %}
-                            
-                            {% if forloop.counter0 == 0 %}
-                                <li style="font-size: 10px; box-shadow: 1px 1px 10px black; background: #B4D5AD;" class="btn " >
-                                    <a style="color:black" href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
-                                        <div class="day_name">
-                                            {{today_date|get_day_name_with_time_delta:forloop.counter0}}
-                                        </div>
-                                        <div class="date_date">
-                                            {{ today_date|get_date_with_time_delta:forloop.counter0 }}
-                                        </div>
-                                    </a>
-                                </li>
-                            {% else %}
-                                <li style="font-size: 10px;  background: #B4D5AD;" class="btn ">
-                                    <a style="color:black" href="{% url 'get_artist_contracts' artist.id today_date|get_date_with_time_delta:forloop.counter0%}">
-                                        <div class="day_name">
-                                            {{today_date|get_day_name_with_time_delta:forloop.counter0}}
-                                        </div>
-                                        <div class="date_date">
-                                            {{ today_date|get_date_with_time_delta:forloop.counter0 }}
-                                        </div>
-                                    </a>
-                                </li>
-                            {% endif %}
-
-                        
-                        {% endif %}
-                        
-                    {% endfor %} {% endcomment %}
                     {% for elem in week_days_list %}
                         {% if elem == today_today %}
                             

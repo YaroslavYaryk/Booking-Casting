@@ -17,18 +17,85 @@
     <div class="row flex-between-center">
       <div class="col-4 col-sm-auto  align-items-center pe-0" style="width:99%; display: flex; justify-content: space-between;">
         <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Customer: {{customer.name}}</h5>
+        <div class="block" style="margin-bottom: -10px;">
+            {% if not hidden %}
+                <ul class="align-items-center" type="none" style="display: flex; gap:10px; justify-content:space-between;">
+                    {% if today_today not in week_days_list %}
+                        <li style="font-size: 10px;  background: wheat;" class="btn">
+                            <a style="color: blue"  href="{% url 'get_all_contracted_artists' customer.id today_today %}">
+                                today
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item "><a class="page-link " href="{% url 'get_all_contracted_artists' customer.id today_date|get_date_with_time_delta:-7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&laquo;</span><span class="sr-only "></span></a></li>
+                    {% for elem in week_days_list %}
+                        {% if elem == today_today %}
+                            
+                            {% if elem == today_date %}
+                                <li style="font-size: 10px;  box-shadow: 0 0 10px black;" class="btn today_date" id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_all_contracted_artists' customer.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li style="font-size: 10px; " class="btn today_date" id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_all_contracted_artists' customer.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            {% if elem == today_date %}
+                                <li style="font-size: 10px; box-shadow: 0 0 10px black;" class="btn" id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_all_contracted_artists' customer.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li style="font-size: 10px;" class="btn " id="{{elem|get_day_name}}">
+                                    <a  href="{% url 'get_all_contracted_artists' customer.id elem %}">
+                                        <div class="day_name">
+                                            {{elem|get_day_name}}
+                                        </div>
+                                        <div class="date_date">
+                                            {{ elem }}
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item "><a class="page-link " href="{% url 'get_all_contracted_artists' customer.id today_date|get_date_with_time_delta:7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&raquo;</span><span class="sr-only "></span></a></li>
+                </ul>
+            {% else %}
+                <a href="{% url 'get_all_contracted_artists' customer.id today_today %}" class="btn btn-success">Visible</a>
+            {% endif %}
+        </div>
+      </div>
+      <div class="block-flex mt-3" style="display: flex; justify-content: space-between" >
+          <div class="elem"></div>
         <div class="block">
             {% if not hidden %}
                 <a class="btn btn-light" href="{% url 'get_hidden_contracts_list' customer.id %}">Hidden</a>
                 <a class="btn btn-outline-primary  me-1 mb-1"   href="{% url 'customer_create_contract' customer.id %}">Make Contract</a>
-            {% else %}
-                <a class="btn btn-success" href="{% url 'get_all_contracted_artists' customer.id %}">Visible</a>
             {% endif %}
-        </div>
-
+            </div>
       </div>
-    
-  
     </div>
   </div>
   <div class="card-body bg-light pb-0">
@@ -112,4 +179,13 @@
   </div>
   
   </div>
+
+
+  <script>
+    var today_date_elem = document.querySelector(".today_date")
+    today_date_elem.style.position = "relative"
+    today_date_elem.innerHTML  = "<span style='position:absolute; top:-20px; left: 35%' class='today_date_pointer'>today</span>" + today_date_elem.innerHTML
+</script>
+
+
 {% endblock %}

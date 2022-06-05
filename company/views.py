@@ -1,4 +1,5 @@
 # Create your views here.
+from datetime import datetime
 from artist.decorators import user_has_perm_to_change
 from customer.services import handle_customer
 from django.contrib import messages
@@ -16,6 +17,8 @@ from company.models import Company
 from company.services import handle_company
 
 from .forms import CompanyForm, TermsForm
+from artist.services import user_artists, constants as artist_constants
+from contract.services import handle_contract
 
 
 @method_decorator(user_has_perm_to_change, name="dispatch")
@@ -72,7 +75,8 @@ def get_company_details(request, company_id):
     company = handle_company.get_company_by_id(company_id)
     context = {
         "company": company,
-        "my_contracts": handle_company.get_company_contracts(company),
+        "my_contracts": handle_company.get_all_company_contracts(company),
+        "today_today": str(datetime.today().date()),
     }
 
     return render(request, "company/details.html", context=context)
@@ -147,16 +151,85 @@ def load_company_terms(request, company_id):
 
 
 @login_required(login_url="login")
-def get_company_contracts(request, company_id):
+def get_company_contracts(request, company_id, date):
 
     company = handle_company.get_company_by_id(company_id)
 
     try:
-        company_contracts = handle_company.get_company_contracts(company)
+        company_contracts = handle_company.get_company_contracts(company, date)
     except Exception as err:
         print(err)
         messages(request, "Something went wrong")
 
-    context = {"company": company, "contracts": company_contracts}
+    context = {
+        "company": company,
+        "contracts": company_contracts,
+        "today_date": date,
+        "today_today": str(datetime.today().date()),
+        "week_days_list": user_artists.get_week_days_list(
+            datetime.strptime(date, "%Y-%m-%d").date(),
+            artist_constants.week_names_count[
+                datetime.strptime(date, "%Y-%m-%d").date().strftime("%A")
+            ],
+        ),
+        "visible": True,
+    }
 
     return render(request, "company/company_contracts.html", context)
+
+
+@login_required(login_url="login")
+def get_company_hiden_contracts(request, company_id):
+
+    company = handle_company.get_company_by_id(company_id)
+
+    try:
+        company_contracts = handle_company.get_company_hiden_contracts(company)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+
+    context = {
+        "company": company,
+        "contracts": company_contracts,
+        "today_today": str(datetime.today().date()),
+        "visible": False,
+    }
+
+    return render(request, "company/company_contracts.html", context)
+
+
+@login_required(login_url="login")
+def hide_artist_contract(request, contract_id, date):
+
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+    try:
+        handle_contract.hide_contract(contract)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse(
+            "get_company_contracts",
+            kwargs={"company_id": contract.company.id, "date": date},
+        )
+    )
+
+
+@login_required(login_url="login")
+def unhide_artist_contract(request, contract_id):
+
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+    try:
+        handle_contract.unhide_contract(contract)
+    except Exception as err:
+        print(err)
+        messages(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse(
+            "get_company_hiden_contracts",
+            kwargs={"company_id": contract.company.id},
+        )
+    )

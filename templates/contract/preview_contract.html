@@ -125,7 +125,9 @@
             if (!batailing){
                 batailing = " ";
             }
+            
             if (!comment){
+                console.log("here")
                 comment = " ";
             }
             var block_width = [];
@@ -137,7 +139,7 @@
                 
             }
 
-
+            console.log(comment,comment.length)
             var url = "{% url 'save_contract_data' %}"
             document.location.href = url + eventArtistId + "/" + date + 
                                     '/' + honorar + "/" + batailing + "/" + comment + "/" + 

@@ -1,5 +1,6 @@
 from django.urls import path
 
+
 from .views import (
     MyVenueListView,
     add_new_venue,
@@ -14,6 +15,9 @@ from .views import (
     send_request_to_change_venue,
     upload_picture_handle,
     invite_user,
+    get_venue_hidden_contracts,
+    hide_artist_contract,
+    unhide_artist_contract,
 )
 
 urlpatterns = [
@@ -66,8 +70,28 @@ urlpatterns = [
         name="delete_venue_picture",
     ),
     # venue events
-    path("<venue_id>/all_contracts/", get_venue_contracts, name="get_venue_contracts"),
+    path(
+        "<venue_id>/all_contracts/<date>/",
+        get_venue_contracts,
+        name="get_venue_contracts",
+    ),
+    path(
+        "<venue_id>/hidden_venue_contracts/",
+        get_venue_hidden_contracts,
+        name="get_hidden_contracts_venue",
+    ),
     # invite user
     path("invite_user/", invite_user, name="venue_invite_user"),
     path("invite_user/<venue_id>/<user_email>/", invite_user, name="venue_invite_user"),
+    # hide / unhide contract
+    path(
+        "<contract_id>/hide_contract_venue/<date>/",
+        hide_artist_contract,
+        name="hide_contract_venue",
+    ),
+    path(
+        "<contract_id>/unhide_contract_venue/",
+        unhide_artist_contract,
+        name="unhide_contract_venue",
+    ),
 ]

@@ -684,8 +684,6 @@ PDF_CONTRACT = """
 	<p>&nbsp;</p>
 	<div">
 		{{contract_add_staff}}
-	</div>
-	<p>&nbsp;</p>
 	{% if comment.strip %}
 		<p><em>Annet&nbsp; &nbsp; &nbsp;<span style="color:#2c3e50">{{comment}}</span></em><br />
 		&nbsp; &nbsp; &nbsp; &nbsp;</p>
@@ -759,7 +757,6 @@ PDF_CONTRACT = """
 
 		<p>{{company_image}}</p>
 	</p>
-44444.0
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
 	<h2 style="text-align:center"><strong>{{artist.name}}</strong></h2>

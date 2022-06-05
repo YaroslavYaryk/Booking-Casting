@@ -1,3 +1,4 @@
+from datetime import datetime
 from artist.decorators import user_has_perm_to_change
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -138,6 +139,7 @@ def get_customer_details(request, customer_id):
         "aval_users": handle_customer.get_avaluable_users(customer),
         "us": user_handle.get_user_by_email(customer_contacts.email),
         "my_contracts": handle_customer.get_my_contracts(customer),
+        "today_today": str(datetime.today().date()),
     }
 
     return render(request, "customer/customer_details.html", context=context)
