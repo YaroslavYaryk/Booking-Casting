@@ -68,6 +68,16 @@ class ContractArtistForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         date = cleaned_data.get("date")
+        venue = cleaned_data.get("venue")
+        artist = cleaned_data.get("artist")
+
+        if venue.contract_set.filter(date=date):
+            msg = "Venue is taken for this date"
+            self.add_error("venue", msg)
+
+        if artist.contract_set.filter(date=date):
+            msg = "Artist is taken for this date"
+            self.add_error("artist", msg)
 
         if date and date < ddd.today():
             msg = "Date cannot be in the past"
@@ -105,6 +115,17 @@ class UserContractArtistForm(forms.ModelForm):
         cleaned_data = super().clean()
         date = cleaned_data.get("date")
 
+        venue = cleaned_data.get("venue")
+        artist = cleaned_data.get("artist")
+
+        if venue.contract_set.filter(date=date):
+            msg = "Venue is taken for this date"
+            self.add_error("venue", msg)
+
+        if artist.contract_set.filter(date=date):
+            msg = "Artist is taken for this date"
+            self.add_error("artist", msg)
+
         if date and date < ddd.today():
             msg = "Date cannot be in the past"
             self.add_error("date", msg)
@@ -140,6 +161,12 @@ class ContractArtistEditForm(forms.ModelForm):
         cleaned_data = super().clean()
         date = cleaned_data.get("date")
 
+        venue = cleaned_data.get("venue")
+
+        if venue.contract_set.filter(date=date):
+            msg = "Venue is taken for this date"
+            self.add_error("venue", msg)
+
         if date and date < ddd.today():
             msg = "Date cannot be in the past"
             self.add_error("date", msg)
@@ -169,6 +196,12 @@ class UserContractArtistEditForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         date = cleaned_data.get("date")
+
+        venue = cleaned_data.get("venue")
+
+        if venue.contract_set.filter(date=date):
+            msg = "Venue is taken for this date"
+            self.add_error("venue", msg)
 
         if date and date < ddd.today():
             msg = "Date cannot be in the past"
