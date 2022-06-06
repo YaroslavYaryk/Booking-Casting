@@ -84,8 +84,15 @@
                 </div>
               </div>
               
-            
-            <button class="btn btn-primary me-1 mb-1" type="submit">To Contract</button>
+            {% if error_message %}
+              <div class="block" style="display: flex; justify-content:space-between;">
+                <a href="{% url 'cancel_contract' contract.id 'customer' %}" class="btn btn-danger">Discard</a>
+                <button class="btn btn-primary me-1 mb-1" type="submit">To Contract</button>
+              </div>
+              {% else %}
+
+              <button class="btn btn-primary me-1 mb-1" type="submit">To Contract</button>
+            {% endif %}
           </div>
       </div>
     </div>

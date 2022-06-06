@@ -8,6 +8,10 @@
       <title>Create Contract: {{customer.name}}</title>
 {% endblock title %}
 
+{% block link %}
+  <link rel="stylesheet" href="{% static 'css/contract_form.css' %}">
+{% endblock link %}
+
 {% block content %}
 
 
@@ -16,7 +20,7 @@
   <div class="col-lg-8 pe-lg-2">
     <div class="card mb-3">
       <div class="card-header d-flex justify-content-between align-items-center" >
-        <h5 class="mb-0">Contract</h5>
+        <h5 class="mb-0">ERROR</h5>
         <div class="add_ability d-flex justify-content-between align-items-center" 
             >
         </div>
@@ -31,10 +35,7 @@
             </div>
             <div class="col-6 mb-3">
               <label class="form-label" for="form.artist">Artist</label>
-              {{ form.artist|add_class:'form-control'}}
-              <div class="form-error">
-                {{ form.artist.errors }}
-              </div>
+              <input type="text" class="form-control" disabled value="{{artist}}">
             </div>
             <div class="col-6 mb-3">
               <label class="form-label" for="form.venue">Venue</label>
@@ -100,21 +101,51 @@
 </form>
 
 
-<script>  
+<div id="contentPopup" class="popup-wrapper">
 
-  //popup
-  function Popup() {
-    var myDialog = document.createElement("dialog");
-    myDialog.innerHTML = `<p>some block</p> 
-      <button class="popupButton">button </button>       
-    `
-    document.body.appendChild(myDialog)
-    {% comment %} var text = document.createTextNode("This is a dialog window");
-    myDialog.appendChild(text); {% endcomment %}
-    myDialog.showModal();
+  <!-- Modal content -->
+  <div class="popup-content">
+    <a href="" class="yes">YES</a>
+    <a href="" class="no">NO</a>
+    <h2 class="popupTitle">Warning</h2>
+    <p class="message_text">{{error_message}}!!!</p>
+    <span>Contract him anyway?</span>
+  </div>
+
+</div>
+
+
+
+<script>
+
+  var contract_id = "{{contract_id}}"
+  var btnYES = document.querySelector(".yes")
+  btnYES.onclick = (e) =>{
+    e.preventDefault()
+    var url = `{% url 'customer_get_contract' contract_id %}`
+    document.location.href = url
+
+  }
+  var btnYES = document.querySelector(".no")
+  btnYES.onclick = (e) =>{
+    e.preventDefault()
+    var url = `{% url 'customer_edit_contract' contract_id %}`
+    document.location.href = url
+
   }
 
-  var popupButton = document.querySelector(".popupButton")
+  var contentPopup = document.getElementById('contentPopup');
+
+  // Get the button that opens the contentPopup
+  var btn = document.getElementById("myBtn");
+
+  // Get the <span> element that closes the contentPopup
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks the button, open the contentPopup
+    contentPopup.style.display = "block";
+
+  // When the user clicks on <span> (x), close the contentPopup
 
 
   var id_aditional_staff = document.getElementById("id_aditional_staff")

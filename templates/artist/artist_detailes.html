@@ -244,28 +244,7 @@
                               <a class="btn btn-secondary" href="">Info</a>
                             </td>
                           </tr>
-                          <tr>
-                            <td colspan=5><div class="block_under_has_access_row" style="display: none; ">
-                              <div class="block-box" style="display: flex;  width: 70%">
-                                <div class="col-lg-6">
-                                  <label class="form-label" for="email1">Last Asset</label>
-                                  <div>{{user_for|artist_access_status_asset}}</div>
-                                </div>
-                                <div class="col-lg-6">
-                                  <label class="form-label" for="email1">Invited</label>
-                                  {% if user_for|artist_access_status_invited %}
-                                      <div style="color: green; font-size: 20px; display: block;" class="far fa-check-circle"></div>
-                                  {% else %}
-                                      <div style="color: red; font-size: 20px; display: block;" class="far fa-times-circle"></div>
-                                  {% endif %}
-                                </div>
-                                <div class="col-lg-6">
-                                  <label class="form-label" for="email1">Last added user</label>
-                                  <div>{{user_for|artist_access_status_user}}</div>
-                                </div>
-                              </div>
-                            </div></td>
-                          </tr>
+                          
                           {% endfor %}
                       </tbody>
                     </table>

@@ -389,6 +389,7 @@ def get_venue_contracts(request, venue_id, date):
             ],
         ),
         "visible": True,
+        "upcoming_contracts": handle_venue.get_upcoming_contracts(venue, date),
     }
 
     return render(request, "venue/venue_contracts.html", context)

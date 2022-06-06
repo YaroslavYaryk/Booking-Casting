@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from http.client import ImproperConnectionState
 
 from django.db.models import Q
@@ -145,3 +146,9 @@ def add_venue_contacts(venue_contacts, cleaned_data):
 
 def get_all_my_contracts(venue):
     return venue.contract_set.all()
+
+
+def get_upcoming_contracts(venue, date):
+    date_today_datetime = datetime.strptime(date, "%Y-%m-%d").date()
+    date_to = str(date_today_datetime + timedelta(days=20))
+    return venue.contract_set.filter(date__gte=date, date__lte=date_to, visible=True)

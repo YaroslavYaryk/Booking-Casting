@@ -18,6 +18,7 @@ from .views import (
     user_edit_contract,
     hide_contract_from_user,
     unhide_contract_from_user,
+    create_contract_with_errors,
 )
 
 urlpatterns = [
@@ -97,5 +98,10 @@ urlpatterns = [
         "<contract_id>/unhide_contract_from_user/",
         unhide_contract_from_user,
         name="unhide_contract_from_user",
+    ),
+    path(
+        "<contract_id>/confirmation_contract_with_errors/",
+        create_contract_with_errors,
+        name="create_contract_with_errors",
     ),
 ]

@@ -1,3 +1,4 @@
+from urllib import response
 from django.shortcuts import render
 from customer.services import handle_customer
 from .forms import (
@@ -32,6 +33,12 @@ def create_contract(request, customer_id):
             contract_obj = form.save()
             contract_obj.customer = customer
             contract_obj.save()
+            taken_artist = handle_contract.handle_artist_taken(contract_obj)
+            if taken_artist:
+                return taken_artist
+            taken_venue = handle_contract.handle_venue_taken(contract_obj)
+            if taken_venue:
+                return taken_venue
             handle_customer.add_team_peermission_to_change_contract_details(
                 contract_obj
             )
@@ -49,6 +56,24 @@ def create_contract(request, customer_id):
 
     context = {"form": form, "customer": customer}
     return render(request, "contract/make_contract.html", context=context)
+
+
+def create_contract_with_errors(request, contract_id):
+
+    companies = handle_event.get_company_queryset(request.user)
+    venues = handle_event.get_venue_queryset(request.user)
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+
+    form = ContractArtistEditForm(companies, venues, instance=contract)
+
+    context = {
+        "form": form,
+        "customer": contract.customer,
+        "artist": contract.artist,
+        "error_message": request.COOKIES.get("error_message"),
+        "contract_id": contract.id,
+    }
+    return render(request, "contract/make_contract_with_error.html", context=context)
 
 
 def get_contract(request, contract_id):
@@ -132,7 +157,7 @@ def get_visible_contracted_artists(request, customer_id, date):
     customer = handle_customer.get_customer_by_id(customer_id)
     artists = handle_contract.get_contracted_artists(customer, date)
     context = {
-        "artists": artists,
+        "contracts": artists,
         "customer": customer,
         "hidden": False,
         "today_date": date,
@@ -143,6 +168,7 @@ def get_visible_contracted_artists(request, customer_id, date):
                 datetime.strptime(date, "%Y-%m-%d").date().strftime("%A")
             ],
         ),
+        "upcoming_contracts": handle_contract.get_upcoming_events(customer, date),
     }
 
     return render(request, "contract/artists_list.html", context=context)
@@ -190,8 +216,16 @@ def edit_contract(request, contract_id):
     else:
         form = ContractArtistEditForm(companies, venues, instance=contract)
 
-    context = {"form": form, "customer": customer, "artist": contract.artist}
-    return render(request, "contract/edit_contract.html", context=context)
+    context = {
+        "form": form,
+        "customer": customer,
+        "artist": contract.artist,
+        "error_message": request.COOKIES.get("error_message"),
+        "contract": contract,
+    }
+    response = render(request, "contract/edit_contract.html", context=context)
+    response.delete_cookie("error_message")
+    return response
 
 
 def get_contract_view(request, contract_id):

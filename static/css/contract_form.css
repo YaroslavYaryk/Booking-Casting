@@ -1,0 +1,87 @@
+/* The popup-wrapper */
+
+#navbarVerticalCollapse {
+    background-color: rgba(255, 255, 255, 0.0);
+}
+
+.popup-wrapper {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 999;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    /* background-color: rgb(0, 0, 0); */
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+
+/* Popup Content */
+
+.popup-content {
+    border-radius: 20px;
+    box-shadow: 0 0 20px black;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+    height: 225px;
+    position: relative;
+}
+
+a {
+    text-decoration: none;
+}
+
+
+/* The Close Button */
+
+.yes {
+    float: right;
+    font-size: 20px;
+    background: #76DE9A;
+    position: absolute;
+    right: 20px;
+    bottom: 30px;
+    padding: 7px 15px;
+    border-radius: 10px;
+    border: 1px #FFFFFF solid;
+    font-family: arial;
+}
+
+.no {
+    float: right;
+    font-size: 20px;
+    background: #EA8585;
+    position: absolute;
+    left: 20px;
+    bottom: 30px;
+    padding: 7px 15px;
+    border-radius: 10px;
+    border: 1px #FFFFFF solid;
+    font-family: arial;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.message_text {
+    font-weight: bold;
+}

@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from os import access
 from contract.models import Contract
 from jinja2 import Template
@@ -272,3 +273,54 @@ def get_contracts_for_user(user, visible=True):
     ]
 
     return Contract.objects.filter(customer__id__in=customer_ids, visible=visible)
+
+
+def artist_taken_for_date(artist, date, contract_id):
+    return artist.contract_set.filter(date=date).exclude(id=contract_id)
+
+
+def handle_artist_taken(contract_obj):
+
+    response = ""
+
+    if artist_taken_for_date(contract_obj.artist, contract_obj.date, contract_obj.id):
+
+        response = HttpResponseRedirect(
+            reverse(
+                "create_contract_with_errors",
+                kwargs={
+                    "contract_id": contract_obj.id,
+                },
+            )
+        )
+        response.set_cookie(
+            "error_message", "This artist already has event for this date"
+        )
+    return response
+
+
+def venue_taken_for_date(venue, date, contract_id):
+    return venue.contract_set.filter(date=date).exclude(id=contract_id)
+
+
+def handle_venue_taken(contract_obj):
+    response = ""
+    if venue_taken_for_date(contract_obj.venue, contract_obj.date, contract_obj.id):
+        response = HttpResponseRedirect(
+            reverse(
+                "create_contract_with_errors",
+                kwargs={
+                    "contract_id": contract_obj.id,
+                },
+            )
+        )
+        response.set_cookie(
+            "error_message", "This venue already has event for this date"
+        )
+    return response
+
+
+def get_upcoming_events(customer, date):
+    date_today_datetime = datetime.strptime(date, "%Y-%m-%d").date()
+    date_to = str(date_today_datetime + timedelta(days=20))
+    return Contract.objects.filter(customer=customer, date__gte=date, date__lte=date_to)

@@ -428,6 +428,7 @@ def get_artist_contracts(request, artist_id, date):
                 datetime.strptime(date, "%Y-%m-%d").date().strftime("%A")
             ],
         ),
+        "upcoming_contracts": user_artists.get_upcoming_artists(artist, date),
         "visible": True,
     }
 
@@ -456,7 +457,7 @@ def get_hiden_artist_contracts(request, artist_id):
 
 @login_required(login_url="login")
 def hide_artist_contract(request, contract_id, date):
-
+    print("here")
     contract = handle_contract.get_contract_artist_by_id(contract_id)
     try:
         handle_contract.hide_contract(contract)

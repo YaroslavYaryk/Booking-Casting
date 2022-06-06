@@ -101,6 +101,11 @@ def get_day_name(date_today):
     return date_today_datetime.strftime("%A")
 
 
+@register.filter
+def get_name_hidden_block_contract(contract_id):
+    return f"contract_id_hidden_block_{contract_id}"
+
+
 @register.inclusion_tag("tags/message_extractor.html")
 def message_creator(message, user, type_of_user, link, message_type_id):
 

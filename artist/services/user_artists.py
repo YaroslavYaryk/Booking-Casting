@@ -208,3 +208,9 @@ def get_week_days_list(today, n):
         arr.append(str(today + timedelta(days=i)))
 
     return arr
+
+
+def get_upcoming_artists(artist, date):
+    date_today_datetime = datetime.strptime(date, "%Y-%m-%d").date()
+    date_to = str(date_today_datetime + timedelta(days=20))
+    return artist.contract_set.filter(date__gte=date, date__lte=date_to, visible=True)
