@@ -1,3 +1,4 @@
+import time
 from artist.decorators import user_has_perm_to_change
 from company.models import Company
 from customer.services import handle_customer
@@ -14,6 +15,7 @@ from venue.services import handle_venue
 from .forms import (
     EventForm,
     EventProductForm,
+    TimeClockForm,
 )
 from .models import EventTeam
 from .services import handle_event, constants
@@ -77,7 +79,7 @@ class MyEventsListView(LoginRequiredMixin, ListView):
 
 
 @login_required(login_url="login")
-def get_event_details(request, event_id):
+def get_event_details(request, event_id, time_clock_id):
 
     try:
         handle_event.is_allowed_to_change(event_id, request.user)
@@ -86,9 +88,15 @@ def get_event_details(request, event_id):
 
     try:
         event = handle_contract.get_contract_artist_by_id(event_id)
-        print(event)
     except:
         event = None
+
+    form_edit_time_clock = (
+        TimeClockForm(instance=handle_event.get_time_clock(time_clock_id))
+        if int(time_clock_id) > 0
+        else 0
+    )
+
     context = {
         "event": event,
         "is_allowed_to_change": handle_event.is_allowed_to_change(
@@ -99,9 +107,81 @@ def get_event_details(request, event_id):
         "my_artists": handle_event.get_my_artists(request.user),
         "aval_users": handle_event.get_avaluable_users(event),
         "form_event": EventProductForm(),
+        "existing_time_clock": handle_event.get_event_time_clock(event),
+        "last_time_clock": handle_event.get_event_time_clock(event).last(),
+        "time_clock_id": int(time_clock_id),
+        "form": TimeClockForm(),
+        "form_edit_time_clock": form_edit_time_clock,
     }
 
     return render(request, "event/event_details.html", context=context)
+
+
+@login_required(login_url="login")
+def add_time_clock_to_event(request, event_id, last_clock_time_id):
+
+    if request.method == "POST":
+        form = TimeClockForm(request.POST)
+        if form.is_valid():
+            time_clock = form.save(commit=False)
+            if (
+                form.cleaned_data["start_time"]
+                < handle_event.get_time_clock(last_clock_time_id).end_time
+            ):
+                messages.error(request, "start time is lover than previous element")
+            else:
+                time_clock.save()
+                contract_time_clock = handle_event.get_or_create_contract_clock(
+                    event_id
+                )[0]
+                handle_event.add_clock_to_event_clock(contract_time_clock, time_clock)
+
+            return HttpResponseRedirect(
+                reverse(
+                    "get_event_details",
+                    kwargs={"event_id": event_id, "time_clock_id": -1},
+                )
+            )
+
+
+@login_required(login_url="login")
+def remove_time_clock_to_event(request, event_id, time_clock_id):
+
+    contract_time_clock = handle_event.get_or_create_contract_clock(event_id)[0]
+    handle_event.remove_clock_to_event_clock(contract_time_clock, time_clock_id)
+
+    return HttpResponseRedirect(
+        reverse("get_event_details", kwargs={"event_id": event_id, "time_clock_id": -1})
+    )
+
+
+@login_required(login_url="login")
+def edit_time_clock_to_event(request, event_id, time_clock_id):
+
+    if request.method == "POST":
+        form = TimeClockForm(
+            request.POST, instance=handle_event.get_time_clock(time_clock_id)
+        )
+        if form.is_valid():
+            elem = form.save(commit=False)
+            if handle_event.is_time_fittable(
+                event_id,
+                form.cleaned_data["start_time"],
+                form.cleaned_data["end_time"],
+                time_clock_id,
+            ):
+                messages.error(request, "This time is not suttable for this time clock")
+            else:
+                elem.save()
+
+            return HttpResponseRedirect(
+                reverse(
+                    "get_event_details",
+                    kwargs={"event_id": event_id, "time_clock_id": -1},
+                )
+            )
+        else:
+            print(form.errors)
 
 
 # @login_required(login_url="login")
@@ -206,7 +286,7 @@ def add_user_to_team(request, event_id):
             messages.error(request, er)
 
     return HttpResponseRedirect(
-        reverse("get_event_details", kwargs={"event_id": event_id})
+        reverse("get_event_details", kwargs={"event_id": event_id, "time_clock_id": -1})
     )
 
 
@@ -220,7 +300,7 @@ def edit_user_in_team(request, event_id, user_email, role):
         messages.error(request, "Something went wrong")
 
     return HttpResponseRedirect(
-        reverse("get_event_details", kwargs={"event_id": event_id})
+        reverse("get_event_details", kwargs={"event_id": event_id, "time_clock_id": -1})
     )
 
 
@@ -234,7 +314,7 @@ def delete_user_from_team(request, event_id, user_email):
         messages.error(request, "Something went wrong")
 
     return HttpResponseRedirect(
-        reverse("get_event_details", kwargs={"event_id": event_id})
+        reverse("get_event_details", kwargs={"event_id": event_id, "time_clock_id": -1})
     )
 
 
@@ -260,7 +340,7 @@ def add_event_product(request, event_id):
             messages.error(request, "Form is invalid")
 
     return HttpResponseRedirect(
-        reverse("get_event_details", kwargs={"event_id": event_id})
+        reverse("get_event_details", kwargs={"event_id": event_id, "time_clock_id": -1})
     )
 
 

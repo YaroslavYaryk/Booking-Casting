@@ -1,4 +1,5 @@
 from django import forms
+from contract.models import ContractTimeClock, TimeClock
 
 from event.models import Event
 
@@ -54,3 +55,15 @@ class EventProductEditForm(forms.Form):
     picture = forms.FileField()
     price = forms.IntegerField()
     count = forms.IntegerField()
+
+
+class TimeClockForm(forms.ModelForm):
+    class Meta:
+        model = TimeClock
+        fields = "__all__"
+
+        widgets = {
+            "start_time": TimePickerInput(),
+            "end_time": TimePickerInput(),
+            # "date" : DatePickerInput()
+        }

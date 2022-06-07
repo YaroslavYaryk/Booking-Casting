@@ -16,12 +16,19 @@ from .views import (
     get_event_products_list,
     # load_contract_for_event,
     # update_event,
+    add_time_clock_to_event,
+    remove_time_clock_to_event,
+    edit_time_clock_to_event,
 )
 
 urlpatterns = [
     path("list/", MyEventsListView.as_view(), name="get_all_events"),
     # path("add_new/", add_new_event, name="add_new_event"),
-    path("<event_id>/details", get_event_details, name="get_event_details"),
+    path(
+        "<event_id>/details/<time_clock_id>/",
+        get_event_details,
+        name="get_event_details",
+    ),
     # path("<event_id>/update/", update_event, name="update_event"),
     # path("<event_id>/delete/", delete_event, name="delete_event"),
     # path(
@@ -61,5 +68,21 @@ urlpatterns = [
         "<event_id>/edit_event_product/<product_id>/",
         edit_event_product,
         name="edit_event_product",
+    ),
+    # time clock
+    path(
+        "<event_id>/add_time_clock_to_event/<last_clock_time_id>/",
+        add_time_clock_to_event,
+        name="add_time_clock_to_event",
+    ),
+    path(
+        "<event_id>/remove_time_clock_to_event/<time_clock_id>",
+        remove_time_clock_to_event,
+        name="remove_time_clock_to_event",
+    ),
+    path(
+        "<event_id>/edit_time_clock_to_event/<time_clock_id>/",
+        edit_time_clock_to_event,
+        name="edit_time_clock_to_event",
     ),
 ]

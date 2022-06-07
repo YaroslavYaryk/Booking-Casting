@@ -44,7 +44,7 @@
         <tbody>
           {% for team in event_team %}
               <tr class="align-middle table_contract_main_row" id="{{team.contract.id|get_name_hidden_block_contract}}">
-                <td><a href="{% url 'get_event_details' team.contract.id %}">{{team.contract.date}}</a></td>
+                <td><a href="{% url 'get_event_details' team.contract.id -1 %}">{{team.contract.date}}</a></td>
                 <td class="text-nowrap">
                     <div class="d-flex align-items-center">
                     <div class="ms-2"><a href="{% url 'artist_details' team.contract.artist.id %}">{{team.contract.artist.name}}</a></div>

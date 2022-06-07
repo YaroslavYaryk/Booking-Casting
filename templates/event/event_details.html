@@ -145,6 +145,99 @@
                   </form>
                 </div>
               </div>
+              <div class="col-lg-8 pe-lg-2" style="width:101%">
+                <div class="card mb-3">
+                  <div class="block d-flex justify-content-between align-items-center">
+                    <div class="card-header">
+                      <h5 class="mb-0">Time Clock</h5>
+                    </div>
+                </div>
+                  <div class="card-body bg-light">
+                    <table class="table table-striped overflow-hidden contract_table_list" style="">
+                      <thead>
+                        <tr>
+                        <th scope="col">Time start</th>
+                        <th scope="col">Time end</th>
+                        <th colspan="5" style="width:65 %" score="col">Action</th>
+                        <th></th>
+                        <th></th>
+                        </tr>
+                    </thead>
+                      <tbody>
+                        <form action="google.com" class="google_com">
+                          <button type="submit">submit</button>
+                        </form>
+                        {% for time_clock in existing_time_clock %}
+                          {% if time_clock.id == time_clock_id %}
+                            
+                              <tr class=" " >
+                                <td colspan="6">
+                                  <form action="{% url 'edit_time_clock_to_event' event.id time_clock.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <div class="block" style="display: flex; justify-content: space-between; gap:30px">
+                                      <div style="align-items: center" >
+                                        <label class="form-label" for="name">Start </label>
+                                        <p >{{form_edit_time_clock.start_time|add_class:'form-control'}}</p>
+                                      </div>
+                                      <div  style="align-items: center" >
+                                        <label class="form-label" for="name">End </label>
+                                        <p>{{form_edit_time_clock.end_time|add_class:'form-control'}}</p>
+                                      </div>
+                                      <div  style="align-items: center; width:230px" >
+                                        <label class="form-label" for="name">Action </label>
+                                        {{form_edit_time_clock.action|add_class:'form-control'}}
+                                      </div>
+                                      <div style="padding-top: 7px;" >
+                                        <label for="d"> </label>
+                                        <button style="display: block;" class="btn btn-info" type="submit">Change</button>
+                                      </div>
+                                    </div>
+                                  </form>
+                                </td>
+                              </tr>
+                            
+                          {% else %}
+                            <tr class="align-middle table_contract_main_row" id="{{team.contract.id|get_name_hidden_block_contract}}">
+
+                              <td>{{ time_clock.start_time }} </td>
+                              <td>{{time_clock.end_time}}</td>
+                              <td colspan="2" class="text-nowrap">
+                                  <p>{{ time_clock.action }}</p>
+                              </td>
+                              <td><a href="{% url 'remove_time_clock_to_event' event.id time_clock.id %}"><span class="fas fa-times" style="color:red; font-size: 20px;"></span></a></td>
+                              <td><a href="{% url 'get_event_details' event.id time_clock.id %}"><span class="fas fa-exchange-alt" ></span></a></td>
+                            </tr>
+                            {% endif %}
+                            
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <form action="{% url 'add_time_clock_to_event' event.id last_time_clock.id %}" method="POST">
+                      {% csrf_token %}
+                      <div class="row">
+                        <div class="col-lg-3" style="align-items: center" >
+                            <label class="form-label" for="name">Start </label>
+                            <p>{{form.start_time|add_class:'form-control'}}</p>
+                        </div>
+                        <div class="col-lg-3" style="align-items: center" >
+                          <label class="form-label" for="name">End </label>
+                          <p>{{form.end_time|add_class:'form-control'}}</p>
+                        </div>
+                        <div class="col-lg-4" style="align-items: center" >
+                          <label class="form-label" for="name">Action </label>
+                          {{form.action|add_class:'form-control'}}
+                        </div>
+                        <div class="col-lg-2" style="align-items: center; margin-top: 8px;" >
+                          <label for="d"> </label>
+                          <button style="display: block;" class="btn btn-success" type="submit">Add</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+
               {% if users_in_team %}          
                 <div class="card mb-3">
                   <div class="card-header">
@@ -307,12 +400,12 @@
         } 
       }
 
-      var reponsibilities = document.getElementById("id_customers_responsibility")
+      {% comment %} var reponsibilities = document.getElementById("id_customers_responsibility")
       reponsibilities.style.cssText = `
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap
-      `
+      ` {% endcomment %}
 
 
     </script>

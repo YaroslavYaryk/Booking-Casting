@@ -15,6 +15,8 @@ from contract.models import (
     ContractEventRentalProducts,
     ContractEventTeam,
     ContractRentalProducts,
+    ContractTimeClock,
+    TimeClock,
 )
 from contract.services import handle_contract
 
@@ -244,6 +246,56 @@ def get_event_rental_product_by_id(event_product_id):
 
 def delete_event_rental_product(event_product_id):
     get_event_rental_product_by_id(event_product_id).delete()
+
+
+def get_event_time_clock(contract):
+    event_time_clock_obj = ContractTimeClock.objects.filter(contract=contract)
+    if not event_time_clock_obj:
+        return None
+
+    event_time_clock = event_time_clock_obj.first()
+    return event_time_clock.day_schedule.all()
+
+
+def get_or_create_contract_clock(contract_id):
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+    return ContractTimeClock.objects.get_or_create(contract=contract)
+
+
+def add_clock_to_event_clock(contract_time_clock, time_clock):
+    contract_time_clock.day_schedule.add(time_clock)
+
+
+def remove_clock_to_event_clock(contract_time_clock, time_clock_id):
+    time_clock = TimeClock.objects.get(id=time_clock_id)
+    contract_time_clock.day_schedule.remove(time_clock)
+
+
+def get_time_clock(id):
+    return TimeClock.objects.get(id=id)
+
+
+def is_time_fittable(event_id, start_time, end_time, time_clock_id):
+    contract_clock_time = ContractTimeClock.objects.get(
+        contract__id=event_id
+    ).day_schedule.all()
+    time_clock = get_time_clock(time_clock_id)
+    index_in_all = list(contract_clock_time).index(
+        time_clock
+    )  # index current clock in all clocks
+    previous_index = index_in_all - 1
+
+    if previous_index >= 0:
+        previous_clock = list(contract_clock_time)[previous_index]
+        if previous_clock.end_time > start_time:
+            print("here1")
+            return True
+    next_index = index_in_all + 1
+    if next_index < len(list(contract_clock_time)):
+        next_clock = list(contract_clock_time)[next_index]
+        if next_clock.start_time < end_time:
+            print("here2")
+            return True
 
 
 # def handle_artist_user_permission(contract, event_artist):
