@@ -22,8 +22,8 @@
             <div class="col-lg-14 mb-4 mb-lg-0">
                 <div class="card" style="padding: 20px;">
                 <form action="" method="POST" enctype="multipart/form-data">
+                    {{product.name}}
                     {% csrf_token %}
-                    
                     <div class="col-lg-12" >
                         <label class="form-label" for="show_duration">Name</label>
                         <input type="text" name="name" value="{{product.rental_products.name}}" class="form-control">

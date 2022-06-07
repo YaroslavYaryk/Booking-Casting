@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="{% static 'css/contract_form.css' %}">
 {% endblock link %}
 
+
 {% block content %}
 
 
@@ -129,7 +130,7 @@
   var btnYES = document.querySelector(".no")
   btnYES.onclick = (e) =>{
     e.preventDefault()
-    var url = `{% url 'customer_edit_contract' contract_id %}`
+    var url = `{% url 'user_edit_contract' contract_id %}`
     document.location.href = url
 
   }

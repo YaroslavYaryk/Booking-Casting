@@ -84,7 +84,7 @@
                 </div>
               </div>
               
-            {% if error_message %}
+            {% if error_message and not from_edit %}
               <div class="block" style="display: flex; justify-content:space-between;">
                 <a href="{% url 'cancel_contract' contract.id 'customer' %}" class="btn btn-danger">Discard</a>
                 <button class="btn btn-primary me-1 mb-1" type="submit">To Contract</button>

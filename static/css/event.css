@@ -36,3 +36,16 @@
     margin: 0;
     padding: 0;
 }
+
+.block_list {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.block_list__elem::before {
+    content: "☑";
+    margin-right: 8px;
+    color: green;
+    flex-wrap: wrap;
+}

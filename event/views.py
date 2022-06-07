@@ -11,14 +11,13 @@ from django.urls.base import reverse
 from django.views.generic.list import ListView
 from users.services import user_handle
 from venue.services import handle_venue
-from jinja2 import Template
 from .forms import (
     EventForm,
-    EventProductEditForm,
     EventProductForm,
 )
 from .models import EventTeam
 from .services import handle_event, constants
+from contract.services import handle_contract
 
 
 class MyEventsListView(LoginRequiredMixin, ListView):
@@ -28,7 +27,7 @@ class MyEventsListView(LoginRequiredMixin, ListView):
     context_object_name = "event_team"
 
     def get_queryset(self):
-        return handle_event.get_event_for_user(self.request.user)
+        return handle_event.get_event_contracts_for_user(self.request.user)
 
     def dispatch(self, *args, **kwargs):
         dispatch_method = super(MyEventsListView, self).dispatch
@@ -47,72 +46,47 @@ class MyEventsListView(LoginRequiredMixin, ListView):
         return context
 
 
-@login_required(login_url="login")
-@user_has_perm_to_change
-def add_new_event(request):
-    venue_queryset = handle_event.get_venue_queryset(request.user)
+# @login_required(login_url="login")
+# @user_has_perm_to_change
+# def add_new_event(request):
+#     venue_queryset = handle_event.get_venue_queryset(request.user)
 
-    if request.method == "POST":
-        form = EventForm(venue_queryset, request.POST)
-        print(request.POST)
-        if form.is_valid():
-            event_obj = form.save()
-            try:
-                event_obj.save()
-                handle_event.add_user_to_event_team(
-                    event_obj.id, request.user, "creator"
-                )
-            except Exception as er:
-                messages.error(request, er)
-            return HttpResponseRedirect(
-                reverse("get_event_details", kwargs={"event_id": event_obj.id})
-            )
-        else:
-            messages.error(request, "Opps, there are some problems")
+#     if request.method == "POST":
+#         form = EventForm(venue_queryset, request.POST)
+#         print(request.POST)
+#         if form.is_valid():
+#             event_obj = form.save()
+#             try:
+#                 event_obj.save()
+#                 handle_event.add_user_to_event_team(
+#                     event_obj.id, request.user, "creator"
+#                 )
+#             except Exception as er:
+#                 messages.error(request, er)
+#             return HttpResponseRedirect(
+#                 reverse("get_event_details", kwargs={"event_id": event_obj.id})
+#             )
+#         else:
+#             messages.error(request, "Opps, there are some problems")
 
-    else:
-        form = EventForm(
-            venue_queryset=venue_queryset,
-        )
-    return render(request, "event/add_new_event.html", {"form": form})
+#     else:
+#         form = EventForm(
+#             venue_queryset=venue_queryset,
+#         )
+#     return render(request, "event/add_new_event.html", {"form": form})
 
 
 @login_required(login_url="login")
 def get_event_details(request, event_id):
 
     try:
-        print(handle_event.is_allowed_to_change(event_id, request.user))
         handle_event.is_allowed_to_change(event_id, request.user)
-    except:
+    except Exception as err:
         return render(request, "dashboard/page_blocked.html")
 
-    # if request.method == "POST":
-    #     if not handle_event.is_allowed_to_change(event_id, request.user):
-    #         raise PermissionDenied
-
-    #     form = EventArtistForm(handle_event.get_active_artists(event_id), request.POST)
-    #     if form.is_valid():
-    #         event = handle_event.get_event_by_id(event_id)
-    #         event_artist = form.save(commit=False)
-    #         event_artist.event = event
-    #         try:
-    #             event_artist.save()
-    #             event.contract = handle_event.get_final_contract(event)
-    #             event.save()
-    #             handle_event.handle_artist_user_permission(event, event_artist)
-    #         except Exception as er:
-    #             messages.error(request, er)
-
-    #         return HttpResponseRedirect(
-    #             reverse("get_event_details", kwargs={"event_id": event_id})
-    #         )
-
-    #     else:
-    #         print("invalid")
-    # else:
-    #     form = EventArtistForm(handle_event.get_active_artists(event_id))
     try:
-        event = handle_event.get_event_by_id(event_id)
+        event = handle_contract.get_contract_artist_by_id(event_id)
+        print(event)
     except:
         event = None
     context = {
@@ -130,117 +104,88 @@ def get_event_details(request, event_id):
     return render(request, "event/event_details.html", context=context)
 
 
-@login_required(login_url="login")
-@user_has_perm_to_change
-def update_event(request, event_id):
-    venue_queryset = handle_event.get_venue_queryset(request.user)
-    event = handle_event.get_event_by_id(event_id)
+# @login_required(login_url="login")
+# @user_has_perm_to_change
+# def update_event(request, event_id):
+#     venue_queryset = handle_event.get_venue_queryset(request.user)
+#     event = handle_event.get_event_by_id(event_id)
 
-    if request.method == "POST":
-        form = EventForm(
-            venue_queryset,
-            request.POST,
-            instance=event,
-        )
-        if form.is_valid():
-            event_obj = form.save()
+#     if request.method == "POST":
+#         form = EventForm(
+#             venue_queryset,
+#             request.POST,
+#             instance=event,
+#         )
+#         if form.is_valid():
+#             event_obj = form.save()
 
-            try:
-                event_obj.save()
-            except Exception as er:
-                messages.error(request, er)
-            return HttpResponseRedirect(
-                reverse("get_event_details", kwargs={"event_id": event_obj.id})
-            )
-        else:
-            messages.error(request, "Opps, there are some problems")
-    else:
-        form = EventForm(
-            venue_queryset=venue_queryset,
-            instance=event,
-        )
-    return render(request, "event/update_event.html", {"form": form})
-
-
-@login_required(login_url="login")
-def delete_event(request, event_id):
-
-    if not handle_event.is_allowed_to_change(event_id, request.user):
-        raise PermissionDenied
-    try:
-        handle_event.delete_event(event_id)
-    except Exception as ex:
-        print(ex)
-    return HttpResponseRedirect(reverse("get_all_events"))
-
-
-@login_required(login_url="login")
-def delete_artist_from_event(request, event_id, artist_id):
-
-    if not handle_event.is_allowed_to_change(event_id, request.user):
-        raise PermissionDenied
-    try:
-        handle_event.delete_artist_from_event(event_id, artist_id)
-        event = handle_event.get_event_by_id(event_id)
-        event.save()
-    except Exception as ex:
-        print(ex)
-    return HttpResponseRedirect(
-        reverse("get_event_artist_list", kwargs={"event_id": event_id})
-    )
-
-
-@login_required(login_url="login")
-def load_contract_for_event(request, event_id):
-
-    event = handle_event.get_event_by_id(event_id)
-    event_contract = event.contract
-
-    return render(
-        request,
-        "event/contract_view.html",
-        {"contract": event_contract, "event": event},
-    )
-
-
-@login_required(login_url="login")
-def get_event_artist_list(request, event_id):
-    event_artists = handle_event.get_event_artists(event_id)
-    event = handle_event.get_event_by_id(event_id)
-    return render(
-        request,
-        "event/event_artists_list.html",
-        {"artists": event_artists, "event": event},
-    )
+#             try:
+#                 event_obj.save()
+#             except Exception as er:
+#                 messages.error(request, er)
+#             return HttpResponseRedirect(
+#                 reverse("get_event_details", kwargs={"event_id": event_obj.id})
+#             )
+#         else:
+#             messages.error(request, "Opps, there are some problems")
+#     else:
+#         form = EventForm(
+#             venue_queryset=venue_queryset,
+#             instance=event,
+#         )
+#     return render(request, "event/update_event.html", {"form": form})
 
 
 # @login_required(login_url="login")
-# def edit_event_artist(request, event_id, ev_artist_id):
+# def delete_event(request, event_id):
 
-#     event_artist = handle_event.get_event_artist_by_id(ev_artist_id)
+#     if not handle_event.is_allowed_to_change(event_id, request.user):
+#         raise PermissionDenied
+#     try:
+#         handle_event.delete_event(event_id)
+#     except Exception as ex:
+#         print(ex)
+#     return HttpResponseRedirect(reverse("get_all_events"))
 
-#     if request.method == "POST":
-#         if not handle_event.is_allowed_to_change(event_id, request.user):
-#             raise PermissionDenied
-#         form = EventArtistEditForm(request.POST, instance=event_artist)
-#         if form.is_valid():
-#             try:
-#                 form.save()
-#             except Exception as er:
-#                 messages.error(request, er)
 
-#             return HttpResponseRedirect(
-#                 reverse("get_event_artist_list", kwargs={"event_id": event_id})
-#             )
+# @login_required(login_url="login")
+# def delete_artist_from_event(request, event_id, artist_id):
 
-#         else:
-#             print("invalid")
-#     else:
-#         form = EventArtistEditForm(instance=event_artist)
+#     if not handle_event.is_allowed_to_change(event_id, request.user):
+#         raise PermissionDenied
+#     try:
+#         handle_event.delete_artist_from_event(event_id, artist_id)
+#         event = handle_event.get_event_by_id(event_id)
+#         event.save()
+#     except Exception as ex:
+#         print(ex)
+#     return HttpResponseRedirect(
+#         reverse("get_event_artist_list", kwargs={"event_id": event_id})
+#     )
 
-#     context = {"form": form, "event_artist": event_artist}
 
-#     return render(request, "event/edit_event_artist.html", context=context)
+# @login_required(login_url="login")
+# def load_contract_for_event(request, event_id):
+
+#     event = handle_event.get_event_by_id(event_id)
+#     event_contract = event.contract
+
+#     return render(
+#         request,
+#         "event/contract_view.html",
+#         {"contract": event_contract, "event": event},
+#     )
+
+
+# @login_required(login_url="login")
+# def get_event_artist_list(request, event_id):
+#     event_artists = handle_event.get_event_artists(event_id)
+#     event = handle_event.get_event_by_id(event_id)
+#     return render(
+#         request,
+#         "event/event_artists_list.html",
+#         {"artists": event_artists, "event": event},
+#     )
 
 
 @login_required(login_url="login")
@@ -248,11 +193,9 @@ def add_user_to_team(request, event_id):
 
     if request.method == "POST":
         try:
-            print(request.POST)
-            event = handle_event.get_event_by_id(event_id)
+            contract = handle_contract.get_contract_artist_by_id(event_id)
             user = user_handle.get_user_by_email(request.POST.get("users_for_adding"))
-            print(user)
-            handle_venue.add_user_can_change(event.venue, user, False)
+            handle_venue.add_user_can_change(contract.venue, user, False)
             handle_event.add_user_to_team(
                 event_id,
                 request.POST.get("users_for_adding"),
@@ -324,11 +267,11 @@ def add_event_product(request, event_id):
 @login_required(login_url="login")
 def get_event_products_list(request, event_id):
     event_products = handle_event.get_event_products(event_id)
-    event = handle_event.get_event_by_id(event_id)
+    contract = handle_contract.get_contract_artist_by_id(event_id)
     return render(
         request,
         "event/event_products_list.html",
-        {"products": event_products, "event": event},
+        {"products": event_products, "event": contract},
     )
 
 
@@ -352,7 +295,6 @@ def edit_event_product(request, event_id, product_id):
     product = handle_event.get_event_product_by_id(product_id)
     if request.method == "POST":
         try:
-            print(request.POST, request.FILES)
             if not handle_event.validate_product(request.POST):
                 messages.error(request, "Form is invalid")
                 return HttpResponseRedirect(

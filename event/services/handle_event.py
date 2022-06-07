@@ -10,12 +10,17 @@ from users.models import User
 from users.services import user_handle
 from venue.models import Venue, VenueAccess
 from event.services import constants
-import pdfcrowd
-import sys
+from contract.models import (
+    Contract,
+    ContractEventRentalProducts,
+    ContractEventTeam,
+    ContractRentalProducts,
+)
+from contract.services import handle_contract
 
 
-def get_event_for_user(user):
-    return EventTeam.objects.filter(user=user)
+def get_event_contracts_for_user(user):
+    return ContractEventTeam.objects.filter(user=user)
 
 
 def get_event_by_id(id):
@@ -75,17 +80,19 @@ def add_user_to_event_team(event_id, user, role):
 
 
 def is_allowed_to_change(event_id, user):
-    event = get_event_by_id(event_id)
-    return EventTeam.objects.filter(event=event, user=user)
+    contract = handle_contract.get_contract_artist_by_id(event_id)
+    return ContractEventTeam.objects.filter(contract=contract, user=user)
 
 
 def get_users_team(event_id, user):
-    event = get_event_by_id(event_id)
-    return EventTeam.objects.filter(event=event).exclude(user=user)
+    event = handle_contract.get_contract_artist_by_id(event_id)
+    return ContractEventTeam.objects.filter(contract=event).exclude(user=user)
 
 
-def get_avaluable_users(event):
-    taken_users = [us.user.email for us in EventTeam.objects.filter(event=event)]
+def get_avaluable_users(contract):
+    taken_users = [
+        us.user.email for us in ContractEventTeam.objects.filter(contract=contract)
+    ]
     taken_users += [us.email for us in User.objects.filter(admin=True)]
     return User.objects.exclude(email__in=taken_users)
 
@@ -120,33 +127,39 @@ def get_my_artists(user):
 
 
 def is_allowed_to_change(event_id, user):
-    return EventTeam.objects.get(event__id=event_id, user=user)
+    return ContractEventTeam.objects.get(contract__id=event_id, user=user)
 
 
-def add_user_to_team(event_id, us_email, role):
-    event = get_event_by_id(event_id)
+def add_user_to_team(contract_id, us_email, role):
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
     user = user_handle.get_user_by_email(us_email)
-    obj = EventTeam.objects.filter(event__id=event_id, user__email=us_email)
+    obj = ContractEventTeam.objects.filter(
+        contract__id=contract_id, user__email=us_email
+    )
 
     if obj:
         raise Exception("User is already member of a team")
 
-    EventTeam.objects.create(event=event, user=user, role=role)
+    ContractEventTeam.objects.create(contract=contract, user=user, role=role)
 
 
-def update_user_in_team(event_id, user_email, rolle):
-    event_team_obj = EventTeam.objects.get(event__id=event_id, user__email=user_email)
+def update_user_in_team(contract_id, user_email, rolle):
+    event_team_obj = ContractEventTeam.objects.get(
+        contract__id=contract_id, user__email=user_email
+    )
     if event_team_obj.role != rolle:
         event_team_obj.role = rolle
         event_team_obj.save()
 
 
-def delete_user_from_team(event_id, user_email):
-    EventTeam.objects.get(event__id=event_id, user__email=user_email).delete()
+def delete_user_from_team(contract_id, user_email):
+    ContractEventTeam.objects.get(
+        contract__id=contract_id, user__email=user_email
+    ).delete()
 
 
 def create_rental_product(name, picture):
-    return RentalProducts.objects.create(name=name, picture=picture)
+    return ContractRentalProducts.objects.create(name=name, picture=picture)
 
 
 def update_rental_product(name, picture, product):
@@ -164,45 +177,45 @@ def update_rental_product(name, picture, product):
     return product.rental_products
 
 
-def add_event_rental_product(event_id, rental_product, price, count):
-    event = get_event_by_id(event_id)
+def add_event_rental_product(contract_id, rental_product, price, count):
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
 
-    EventRentalProducts.objects.create(
-        event=event, rental_products=rental_product, price=price, count=count
+    ContractEventRentalProducts.objects.create(
+        contract=contract, rental_products=rental_product, price=price, count=count
     )
 
 
 def update_event_rental_product(product, rental_product, price, count):
-    print(rental_product.picture)
     product.rental_products = rental_product
     product.price = price
     product.count = count
     product.save()
 
 
-def get_event_products(event_id):
-    return EventRentalProducts.objects.filter(event__id=event_id)
+def get_event_products(contract_id):
+    print(ContractEventRentalProducts.objects.filter(contract__id=contract_id))
+    return ContractEventRentalProducts.objects.filter(contract__id=contract_id)
 
 
 def delete_event_product(product_id):
-    RentalProducts.objects.get(pk=product_id).delete()
+    ContractRentalProducts.objects.get(pk=product_id).delete()
 
 
 def get_event_product_by_id(product_id):
-    return EventRentalProducts.objects.get(pk=product_id)
+    return ContractEventRentalProducts.objects.get(pk=product_id)
 
 
 def validate_product(post):
     return all([post.get("name"), post.get("price"), post.get("count")])
 
 
-def get_all_events():
-    event_ids = [el.event.id for el in EventTeam.objects.all()]
-    return Event.objects.filter(id__in=event_ids)
+# def get_all_events():
+#     event_ids = [el.contract.id for el in ContractEventTeam.objects.all()]
+#     return Contract.objects.filter(id__in=event_ids)
 
 
 def get_event_team_by_id(event_team_id):
-    return EventTeam.objects.get(pk=event_team_id)
+    return ContractEventTeam.objects.get(pk=event_team_id)
 
 
 def delete_event_team(event_team_id):
@@ -218,7 +231,7 @@ def delete_event_team(event_team_id):
 
 
 def get_rental_product_by_id(rental_product_id):
-    return RentalProducts.objects.get(pk=rental_product_id)
+    return ContractRentalProducts.objects.get(pk=rental_product_id)
 
 
 def delete_rental_product(rental_product_id):
@@ -226,20 +239,20 @@ def delete_rental_product(rental_product_id):
 
 
 def get_event_rental_product_by_id(event_product_id):
-    return EventRentalProducts.objects.get(pk=event_product_id)
+    return ContractEventRentalProducts.objects.get(pk=event_product_id)
 
 
 def delete_event_rental_product(event_product_id):
     get_event_rental_product_by_id(event_product_id).delete()
 
 
-def handle_artist_user_permission(event, event_artist):
-    users_in_team = EventTeam.objects.filter(event=event)
-    for us in users_in_team:
-        if not ArtistAccess.objects.filter(artist=event_artist.artist, access=us.user):
-            ArtistAccess.objects.create(
-                artist=event_artist.artist, access=us.user, admin=False
-            )
+# def handle_artist_user_permission(contract, event_artist):
+#     users_in_team = ContractEventTeam.objects.filter(contract=contract)
+#     for us in users_in_team:
+#         if not ArtistAccess.objects.filter(artist=event_artist.artist, access=us.user):
+#             ArtistAccess.objects.create(
+#                 artist=event_artist.artist, access=us.user, admin=False
+#             )
 
 
 # def handle_artist_user_permission_in_team(event, user):

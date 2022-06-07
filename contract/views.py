@@ -33,15 +33,18 @@ def create_contract(request, customer_id):
             contract_obj = form.save()
             contract_obj.customer = customer
             contract_obj.save()
+            handle_customer.add_team_peermission_to_change_contract_details(
+                contract_obj
+            )
+            handle_contract.add_user_to_event_contract_team(
+                contract_obj.id, request.user, "creator"
+            )
             taken_artist = handle_contract.handle_artist_taken(contract_obj)
             if taken_artist:
                 return taken_artist
             taken_venue = handle_contract.handle_venue_taken(contract_obj)
             if taken_venue:
                 return taken_venue
-            handle_customer.add_team_peermission_to_change_contract_details(
-                contract_obj
-            )
             return HttpResponseRedirect(
                 reverse(
                     "customer_get_contract",
@@ -74,6 +77,26 @@ def create_contract_with_errors(request, contract_id):
         "contract_id": contract.id,
     }
     return render(request, "contract/make_contract_with_error.html", context=context)
+
+
+def create_contract_with_errors_from_user(request, contract_id):
+
+    companies = handle_event.get_company_queryset(request.user)
+    venues = handle_event.get_venue_queryset(request.user)
+    contract = handle_contract.get_contract_artist_by_id(contract_id)
+
+    form = UserContractArtistEditForm(companies, venues, instance=contract)
+
+    context = {
+        "form": form,
+        "customer": contract.customer,
+        "artist": contract.artist,
+        "error_message": request.COOKIES.get("error_message_from_user"),
+        "contract_id": contract.id,
+    }
+    return render(
+        request, "contract/make_contract_from_user_with_error.html", context=context
+    )
 
 
 def get_contract(request, contract_id):
@@ -156,6 +179,7 @@ def get_visible_contracted_artists(request, customer_id, date):
 
     customer = handle_customer.get_customer_by_id(customer_id)
     artists = handle_contract.get_contracted_artists(customer, date)
+    print(artists)
     context = {
         "contracts": artists,
         "customer": customer,
@@ -208,6 +232,12 @@ def edit_contract(request, contract_id):
             contr.customer = customer
             contr.artist = contract.artist
             contr.contract = handle_contract.rerender_contract(contr)
+            taken_artist = handle_contract.handle_artist_taken(contr, True)
+            if taken_artist:
+                return taken_artist
+            taken_venue = handle_contract.handle_venue_taken(contr, True)
+            if taken_venue:
+                return taken_venue
             contr.save()
             return HttpResponseRedirect(
                 reverse("preview_artist_contract", kwargs={"contract_id": contract.id})
@@ -221,10 +251,12 @@ def edit_contract(request, contract_id):
         "customer": customer,
         "artist": contract.artist,
         "error_message": request.COOKIES.get("error_message"),
+        "from_edit": request.COOKIES.get("from_edit"),
         "contract": contract,
     }
     response = render(request, "contract/edit_contract.html", context=context)
     response.delete_cookie("error_message")
+    response.delete_cookie("from_edit")
     return response
 
 
@@ -261,7 +293,7 @@ def get_contract_view(request, contract_id):
 #     )
 
 
-def hide_contract(request, contract_id):
+def hide_contract(request, contract_id, date):
 
     contract = handle_contract.get_contract_artist_by_id(contract_id)
     try:
@@ -275,7 +307,7 @@ def hide_contract(request, contract_id):
             "get_all_contracted_artists",
             kwargs={
                 "customer_id": contract.customer.id,
-                "date": str(datetime.today().date()),
+                "date": date,
             },
         )
     )
@@ -300,10 +332,9 @@ def get_hidden_contracts_list(request, customer_id):
 
     customer = handle_customer.get_customer_by_id(customer_id)
     contracts = handle_contract.get_hidden_contracts(customer)
-
     context = {
         "hidden": True,
-        "artists": contracts,
+        "contracts": contracts,
         "customer": customer,
         "today_today": str(datetime.today().date()),
     }
@@ -362,10 +393,19 @@ def customer_create_contract_from_user(request, user_id):
         if form.is_valid():
 
             contract_obj = form.save()
-
             handle_customer.add_team_peermission_to_change_contract_details(
                 contract_obj
             )
+            handle_contract.add_user_to_event_contract_team(
+                contract_obj.id, request.user, "creator"
+            )
+            taken_artist = handle_contract.handle_artist_taken_from_user(contract_obj)
+            if taken_artist:
+                return taken_artist
+            taken_venue = handle_contract.handle_venue_taken_from_user(contract_obj)
+            if taken_venue:
+                return taken_venue
+
             return HttpResponseRedirect(
                 reverse(
                     "customer_get_contract",
@@ -410,6 +450,12 @@ def user_edit_contract(request, contract_id):
             contr.customer = customer
             contr.artist = contract.artist
             contr.contract = handle_contract.rerender_contract(contr)
+            taken_artist = handle_contract.handle_artist_taken_from_user(contr, True)
+            if taken_artist:
+                return taken_artist
+            taken_venue = handle_contract.handle_venue_taken_from_user(contr, True)
+            if taken_venue:
+                return taken_venue
             contr.save()
             return HttpResponseRedirect(
                 reverse("preview_artist_contract", kwargs={"contract_id": contract.id})
@@ -418,8 +464,18 @@ def user_edit_contract(request, contract_id):
     else:
         form = ContractArtistEditForm(companies, venues, instance=contract)
 
-    context = {"form": form, "customer": customer, "artist": contract.artist}
-    return render(request, "contract/user_edit_contract.html", context=context)
+    context = {
+        "form": form,
+        "customer": customer,
+        "artist": contract.artist,
+        "error_message": request.COOKIES.get("error_message_from_user"),
+        "from_edit": request.COOKIES.get("from_edit_user"),
+        "contract": contract,
+    }
+    response = render(request, "contract/user_edit_contract.html", context=context)
+    response.delete_cookie("error_message_from_user")
+    response.delete_cookie("from_edit_user")
+    return response
 
 
 def hide_contract_from_user(request, contract_id):

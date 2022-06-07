@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from os import access
-from contract.models import Contract
+from contract.models import Contract, ContractEventTeam
 from jinja2 import Template
 from .constants import BASE_CONTRACT, EDIT_CONTRACT, PDF_CONTRACT, additinal_staff_list
 from customer.models import CustomerAccess, CustomerContacts
@@ -92,6 +92,7 @@ def get_contracted_artists(customer, date):
 
 
 def get_hidden_contracts(customer):
+    print(Contract.objects.filter(customer=customer, visible=False))
     return Contract.objects.filter(customer=customer, visible=False)
 
 
@@ -279,7 +280,7 @@ def artist_taken_for_date(artist, date, contract_id):
     return artist.contract_set.filter(date=date).exclude(id=contract_id)
 
 
-def handle_artist_taken(contract_obj):
+def handle_artist_taken(contract_obj, edit=False):
 
     response = ""
 
@@ -293,6 +294,8 @@ def handle_artist_taken(contract_obj):
                 },
             )
         )
+        if edit:
+            response.set_cookie("from_edit", True)
         response.set_cookie(
             "error_message", "This artist already has event for this date"
         )
@@ -303,7 +306,7 @@ def venue_taken_for_date(venue, date, contract_id):
     return venue.contract_set.filter(date=date).exclude(id=contract_id)
 
 
-def handle_venue_taken(contract_obj):
+def handle_venue_taken(contract_obj, edit=False):
     response = ""
     if venue_taken_for_date(contract_obj.venue, contract_obj.date, contract_obj.id):
         response = HttpResponseRedirect(
@@ -314,6 +317,8 @@ def handle_venue_taken(contract_obj):
                 },
             )
         )
+        if edit:
+            response.set_cookie("from_edit", True)
         response.set_cookie(
             "error_message", "This venue already has event for this date"
         )
@@ -323,4 +328,50 @@ def handle_venue_taken(contract_obj):
 def get_upcoming_events(customer, date):
     date_today_datetime = datetime.strptime(date, "%Y-%m-%d").date()
     date_to = str(date_today_datetime + timedelta(days=20))
-    return Contract.objects.filter(customer=customer, date__gte=date, date__lte=date_to)
+    return Contract.objects.filter(
+        customer=customer, date__gte=date, date__lte=date_to, visible=True
+    )
+
+
+def handle_artist_taken_from_user(contract_obj, edit=False):
+    response = ""
+    if artist_taken_for_date(contract_obj.artist, contract_obj.date, contract_obj.id):
+
+        response = HttpResponseRedirect(
+            reverse(
+                "create_contract_with_errors_from_user",
+                kwargs={
+                    "contract_id": contract_obj.id,
+                },
+            )
+        )
+        if edit:
+            response.set_cookie("from_edit_user", True)
+        response.set_cookie(
+            "error_message_from_user", "This artist already has event for this date"
+        )
+    return response
+
+
+def handle_venue_taken_from_user(contract_obj, edit=False):
+    response = ""
+    if venue_taken_for_date(contract_obj.venue, contract_obj.date, contract_obj.id):
+        response = HttpResponseRedirect(
+            reverse(
+                "create_contract_with_errors_from_user",
+                kwargs={
+                    "contract_id": contract_obj.id,
+                },
+            )
+        )
+        if edit:
+            response.set_cookie("from_edit_user", True)
+        response.set_cookie(
+            "error_message_from_user", "This venue already has event for this date"
+        )
+    return response
+
+
+def add_user_to_event_contract_team(contract_id, user, role):
+    contract = get_contract_artist_by_id(contract_id)
+    ContractEventTeam.objects.create(contract=contract, user=user, role=role)

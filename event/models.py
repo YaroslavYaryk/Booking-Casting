@@ -47,38 +47,6 @@ class EventTeam(models.Model):
         return self.event.name
 
 
-# class EventArtists(models.Model):
-#     """ class of single product """
-
-#     event = models.ForeignKey(Event, verbose_name="event_artists", on_delete=models.CASCADE)
-#     artist = models.ForeignKey(Artist, verbose_name=("Event artist"), on_delete=models.CASCADE, null=True)
-#     show_duration = models.CharField("Show Duration", max_length=255)
-#     price = models.CharField(("Price"), max_length=255)
-#     payment_methods = models.CharField(("Payment Methods"), max_length=100, null=True)
-#     date = models.DateField("Date", null=True)
-#     comment = models.CharField(("Comment"), max_length=50, null=True, blank=True)
-#     contract = RichTextField("Artist Contract", null=True, blank=True)
-
-#     POWER_CHOICES =(
-#         ("Reise", "Reise"),
-#         ("Opphold", "Opphold"),
-#         ("Kost", "Kost"),
-#         ("Interntransport", "Interntransport"),
-#         ("Tono", "Tono"),
-#         ("Technicalraider", "Technicalraider"),
-#         ("Hospitalityrider", "Hospitalityrider"),
-#     )
-
-#     customers_responsibility = MultiSelectField(choices=POWER_CHOICES)
-
-#     class Meta:
-#         unique_together = ('event', 'artist',)
-
-
-#     def __str__(self):
-#         return self.event.name
-
-
 class RentalProducts(models.Model):
 
     name = models.CharField(("Product name"), max_length=150)

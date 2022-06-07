@@ -1,13 +1,13 @@
 from datetime import date
 from django.db import models
 from django.forms import ValidationError
-from pkg_resources import require
 from artist.models import Artist
 from ckeditor.fields import RichTextField
 from company.models import Company
 from customer.models import Customer
 from venue.models import Venue
 from multiselectfield import MultiSelectField
+from users.models import User
 
 
 class Contract(models.Model):
@@ -57,3 +57,77 @@ class Contract(models.Model):
 
     def __str__(self):
         return self.artist.name
+
+
+class ContractEventTeam(models.Model):
+    """class of single product"""
+
+    contract = models.ForeignKey(
+        Contract, verbose_name=("Event"), on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User, verbose_name=("Event User"), on_delete=models.CASCADE
+    )
+    role = models.CharField("role", max_length=255)
+
+    class Meta:
+        unique_together = (
+            "contract",
+            "user",
+        )
+
+    def __str__(self):
+        return f"{self.contract.artist} - {self.contract.customer}"
+
+
+class ContractRentalProducts(models.Model):
+
+    name = models.CharField(("Product name"), max_length=150)
+    picture = models.FileField(("Picture"), upload_to="event_rental_products/")
+
+    def __str__(self):
+        return self.name
+
+
+class ContractEventRentalProducts(models.Model):
+
+    contract = models.ForeignKey(
+        Contract, verbose_name="event_artists", on_delete=models.CASCADE
+    )
+    rental_products = models.ForeignKey(
+        ContractRentalProducts,
+        verbose_name="event_rental_products",
+        on_delete=models.CASCADE,
+    )
+    price = models.IntegerField(("Price"))
+    count = models.IntegerField(("Count"))
+
+    class Meta:
+        unique_together = (
+            "contract",
+            "rental_products",
+        )
+
+    def __str__(self):
+        return f"{self.contract.artist.name} - { self.contract.customer.name}"
+
+
+class TimeClock(models.Model):
+
+    start_time = models.TimeField(
+        ("Action Start Tume"), auto_now=False, auto_now_add=False
+    )
+    end_time = models.TimeField(("Action End Tume"), auto_now=False, auto_now_add=False)
+    action = models.CharField(("Action"), max_length=100)
+
+    def __str__(self):
+        return f"{self.start_time} - {self.end_time} - {self.action}"
+
+
+class ContractTimeClock(models.Model):
+
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
+    day_schedule = models.ManyToManyField(TimeClock, verbose_name=("Day Schedule"))
+
+    def __str__(self):
+        return f"{self.contract.artist} - {self.contract.customer}"

@@ -84,12 +84,12 @@
                                         {% else %}
                                             <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
                                         {% endif %}
-                                        {% if not visible %}
-                                            <a class="btn btn-warning" href="{% url 'unhide_artist_contract' contract.id  %}">Unhide</a>
+                                        {% if hidden %}
+                                            <a class="btn btn-warning" href="{% url 'unhide_contract_from_user' contract.id  %}">Unhide</a>
                                         {% else %}
-                                            <a class="btn btn-warning" href="{% url 'hide_artist_contract' contract.id today_date %}">Hide</a>
+                                            <a class="btn btn-warning" href="{% url 'hide_contract_from_user' contract.id  %}">Hide</a>
                                         {% endif %}
-                                        <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
+                                        <a class="btn btn-info" href="{% url 'user_edit_contract' contract.id %}">Edit</a>
                                         <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
                                     </div>
                                 </td>
