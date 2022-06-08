@@ -2,6 +2,7 @@
 {% load static %}
 {% load widget_tweaks %}
 {% load artist_tags %}
+{% load customer_tags %}
 
 {% block link %}
     <link rel="stylesheet" href="{% static  'css/artist_events.css' %}">
@@ -90,11 +91,16 @@
       <div class="block-flex mt-3" style="display: flex; justify-content: space-between" >
           <div class="elem"></div>
         <div class="block">
-            {% if not hidden %}
-                <a class="btn btn-light" href="{% url 'get_hidden_contracts_list' customer.id %}">Hidden</a>
-                <a class="btn btn-outline-primary  me-1 mb-1"   href="{% url 'customer_create_contract' customer.id %}">Make Contract</a>
+            {% if user|is_allowed_to_change_customer:customer %}
+                {% if not hidden %}
+                
+                    <a class="btn btn-light" href="{% url 'get_hidden_contracts_list' customer.id %}">Hidden</a>
+                    {% if user|user_has_customer_or_can_create_contract %}
+                        <a class="btn btn-outline-primary  me-1 mb-1"   href="{% url 'customer_create_contract' customer.id %}">Make Contract</a>
+                    {% endif %}
+                {% endif %}
             {% endif %}
-            </div>
+        </div>
       </div>
     </div>
   </div>
@@ -142,12 +148,14 @@
                                         {% else %}
                                             <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
                                         {% endif %}
-                                        {% if hidden %}
-                                            <a class="btn btn-warning" href="{% url 'unhide_contract' contract.id  %}">Unhide</a>
-                                        {% else %}
-                                            <a class="btn btn-warning" href="{% url 'hide_contract' contract.id today_date %}">Hide</a>
+                                        {% if user|is_allowed_to_change:contract %}
+                                            {% if hidden %}
+                                                <a class="btn btn-warning" href="{% url 'unhide_contract' contract.id  %}">Unhide</a>
+                                            {% else %}
+                                                <a class="btn btn-warning" href="{% url 'hide_contract' contract.id today_date %}">Hide</a>
+                                            {% endif %}
+                                            <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                         {% endif %}
-                                        <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                         <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
                                     </div>
                                 </td>
@@ -187,7 +195,7 @@
                                             <td>{{contract.date}}</td>
                                             
                                             <td><div class="block">
-                                                <a href="{% url 'customer_details' contract.customer.id %}">{{contract.customer.name}}</a>
+                                                <a href="{% url 'artist_details' contract.artist.id %}">{{contract.artist.name}}</a>
                                             </div></td>
                                             <td><div class="block">
                                                 <a href="{% url 'get_company_details' contract.company.id %}">{{contract.company.name}}</a>
@@ -207,12 +215,14 @@
                                                     {% else %}
                                                         <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
                                                     {% endif %}
-                                                    {% if hidden %}
-                                                        <a class="btn btn-warning" href="{% url 'unhide_contract' contract.id  %}">Unhide</a>
-                                                    {% else %}
-                                                        <a class="btn btn-warning" href="{% url 'hide_contract' contract.id today_date %}">Hide</a>
+                                                    {% if user|is_allowed_to_change:contract %}
+                                                        {% if hidden %}
+                                                            <a class="btn btn-warning" href="{% url 'unhide_contract' contract.id  %}">Unhide</a>
+                                                        {% else %}
+                                                            <a class="btn btn-warning" href="{% url 'hide_contract' contract.id today_date %}">Hide</a>
+                                                        {% endif %}
+                                                        <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                                     {% endif %}
-                                                    <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                                     <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
                                                 </div>
                                             </td>

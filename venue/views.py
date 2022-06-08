@@ -397,6 +397,10 @@ def get_venue_contracts(request, venue_id, date):
 
 @login_required(login_url="login")
 def get_venue_hidden_contracts(request, venue_id):
+    try:
+        handle_venue.is_allowed_to_change_venue(venue_id, request.user)
+    except:
+        return render(request, "dashboard/page_blocked.html")
 
     venue = handle_venue.get_venue_by_id(venue_id)
     try:
@@ -417,6 +421,11 @@ def get_venue_hidden_contracts(request, venue_id):
 
 @login_required(login_url="login")
 def hide_artist_contract(request, contract_id, date):
+
+    try:
+        handle_contract.is_allowed_to_change_contract(contract_id, request.user)
+    except:
+        return render(request, "dashboard/page_blocked.html")
 
     contract = handle_contract.get_contract_artist_by_id(contract_id)
     try:

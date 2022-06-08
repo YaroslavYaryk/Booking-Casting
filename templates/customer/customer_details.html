@@ -60,11 +60,12 @@
                     </div>
                   </div> 
                 </div>
+                {% if user.is_staff or is_allowed_to_change %}
                 <div class="block" style="display: flex; justify-content:space-between; margin: -50px 20px 20px 0;">
                   <div class="block"></div>
                   <a class="btn btn-outline-primary btn-lg me-1 mb-1"  href="{% url 'customer_create_contract' customer.id %}">Make Contract</a>
                 </div>
-                
+                {% endif %}
               </div>
             </div>
           </div>

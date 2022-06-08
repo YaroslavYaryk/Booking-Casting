@@ -17,6 +17,7 @@ from contract.models import (
     ContractRentalProducts,
     ContractTimeClock,
     TimeClock,
+    ArtistTeamEvent,
 )
 from contract.services import handle_contract
 
@@ -83,7 +84,7 @@ def add_user_to_event_team(event_id, user, role):
 
 def is_allowed_to_change(event_id, user):
     contract = handle_contract.get_contract_artist_by_id(event_id)
-    return ContractEventTeam.objects.filter(contract=contract, user=user)
+    return ContractEventTeam.objects.get(contract=contract, user=user)
 
 
 def get_users_team(event_id, user):
@@ -296,6 +297,44 @@ def is_time_fittable(event_id, start_time, end_time, time_clock_id):
         if next_clock.start_time < end_time:
             print("here2")
             return True
+
+
+def artist_user_team(artist):
+    user_ids = [el.access.id for el in ArtistAccess.objects.filter(artist=artist)]
+    return [(el, el) for el in User.objects.filter(id__in=user_ids)]
+
+
+def artist_user_team_queryset(artist):
+    user_ids = [el.access.id for el in ArtistAccess.objects.filter(artist=artist)]
+    return User.objects.filter(id__in=user_ids)
+
+
+def get_artist_event_team(contract):
+    return ArtistTeamEvent.objects.filter(contract=contract)
+
+
+def add_event_artist_team(contract, artist_team):
+    event_team_obj = ArtistTeamEvent.objects.get_or_create(contract=contract)[0]
+    for el in artist_team:
+        event_team_obj.artist_team.add(User.objects.get(email=el))
+
+
+def get_all_event_artist_team(contract):
+    event_artist_team_obj = get_artist_event_team(contract)
+    if event_artist_team_obj:
+        return event_artist_team_obj.first().artist_team.all()
+
+
+def edit_event_artist_team(contract, artist_users_team):
+    if not bool(artist_users_team.strip()):
+        users_ids = []
+    else:
+        users_ids = artist_users_team.split("_")
+    event_artist_team_obj = get_artist_event_team(contract).first()
+    print(bool(artist_users_team.strip()))
+    new_users_team = User.objects.filter(id__in=users_ids)
+    event_artist_team_obj.artist_team.set(new_users_team)
+    event_artist_team_obj.save()
 
 
 # def handle_artist_user_permission(contract, event_artist):

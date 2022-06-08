@@ -131,3 +131,13 @@ class ContractTimeClock(models.Model):
 
     def __str__(self):
         return f"{self.contract.artist} - {self.contract.customer}"
+
+
+class ArtistTeamEvent(models.Model):
+    # artist team who will be on event
+
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
+    artist_team = models.ManyToManyField(User, verbose_name=("Artist Team"))
+
+    def __str__(self):
+        return f"{self.contract.artist} - {self.contract.customer}"

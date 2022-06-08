@@ -152,3 +152,7 @@ def get_upcoming_contracts(venue, date):
     date_today_datetime = datetime.strptime(date, "%Y-%m-%d").date()
     date_to = str(date_today_datetime + timedelta(days=20))
     return venue.contract_set.filter(date__gte=date, date__lte=date_to, visible=True)
+
+
+def is_allowed_to_change_venue(venue_id, user):
+    return VenueAccess.objects.get(venue__id=venue_id, access=user, admin=True)

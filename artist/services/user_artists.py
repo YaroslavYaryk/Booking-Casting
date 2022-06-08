@@ -214,3 +214,7 @@ def get_upcoming_artists(artist, date):
     date_today_datetime = datetime.strptime(date, "%Y-%m-%d").date()
     date_to = str(date_today_datetime + timedelta(days=20))
     return artist.contract_set.filter(date__gte=date, date__lte=date_to, visible=True)
+
+
+def is_allowed_to_change_artist(artist_id, user):
+    return ArtistAccess.objects.get(artist__id=artist_id, access=user, admin=True)

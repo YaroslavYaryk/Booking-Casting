@@ -140,12 +140,14 @@
                                         {% else %}
                                             <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
                                         {% endif %}
-                                        {% if not visible %}
-                                            <a class="btn btn-warning" href="{% url 'unhide_contract_venue' contract.id  %}">Unhide</a>
-                                        {% else %}
-                                            <a class="btn btn-warning" href="{% url 'hide_contract_venue' contract.id today_date %}">Hide</a>
+                                        {% if user|is_allowed_to_change:contract %}
+                                            {% if not visible %}
+                                                <a class="btn btn-warning" href="{% url 'unhide_contract_venue' contract.id  %}">Unhide</a>
+                                            {% else %}
+                                                <a class="btn btn-warning" href="{% url 'hide_contract_venue' contract.id today_date %}">Hide</a>
+                                            {% endif %}
+                                            <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                         {% endif %}
-                                        <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                         <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
                                     </div>
                                 </td>
@@ -205,12 +207,14 @@
                                                     {% else %}
                                                         <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
                                                     {% endif %}
-                                                    {% if not visible %}
-                                                        <a class="btn btn-warning" href="{% url 'unhide_contract_venue' contract.id  %}">Unhide</a>
-                                                    {% else %}
-                                                        <a class="btn btn-warning" href="{% url 'hide_contract_venue' contract.id today_date %}">Hide</a>
+                                                    {% if user|is_allowed_to_change:contract %}
+                                                        {% if not visible %}
+                                                            <a class="btn btn-warning" href="{% url 'unhide_contract_venue' contract.id  %}">Unhide</a>
+                                                        {% else %}
+                                                            <a class="btn btn-warning" href="{% url 'hide_contract_venue' contract.id today_date %}">Hide</a>
+                                                        {% endif %}
+                                                        <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                                     {% endif %}
-                                                    <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
                                                     <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
                                                 </div>
                                             </td>
@@ -233,12 +237,14 @@
 
       {% endif %}
     </div>
-    {% if visible %}
+    {% if user|is_allowed_to_change_venue:venue %}
+        {% if visible %}
             <div class="block_flex mb-3" style="display: flex; justify-content:space-between; width:98%">
                 <div class=""></div>
                 <a href="{% url 'get_hidden_contracts_venue' venue.id %}" class="btn btn-success">Hiden</a>
             </div>
         {% endif %}
+    {% endif %}
   </div>
   
   </div>

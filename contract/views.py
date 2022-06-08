@@ -37,8 +37,9 @@ def create_contract(request, customer_id):
                 contract_obj
             )
             handle_contract.add_user_to_event_contract_team(
-                contract_obj.id, request.user, "creator"
+                contract_obj.id, request.user, "admin"
             )
+            handle_contract.add_permission_participants_to_contract_event(contract_obj)
             taken_artist = handle_contract.handle_artist_taken(contract_obj)
             if taken_artist:
                 return taken_artist
@@ -100,6 +101,11 @@ def create_contract_with_errors_from_user(request, contract_id):
 
 
 def get_contract(request, contract_id):
+
+    try:
+        handle_contract.is_allowed_to_change_contract(contract_id, request.user)
+    except:
+        return render(request, "dashboard/page_blocked.html")
 
     cotract_artist = handle_contract.get_contract_artist_by_id(contract_id)
     rendered_template = handle_contract.rerender_contract(cotract_artist)
@@ -330,6 +336,11 @@ def unhide_contract(request, contract_id):
 
 def get_hidden_contracts_list(request, customer_id):
 
+    try:
+        handle_customer.is_allowed_to_change_customer(customer_id, request.user)
+    except:
+        return render(request, "dashboard/page_blocked.html")
+
     customer = handle_customer.get_customer_by_id(customer_id)
     contracts = handle_contract.get_hidden_contracts(customer)
     context = {
@@ -343,6 +354,11 @@ def get_hidden_contracts_list(request, customer_id):
 
 
 def get_visible_contracts_for_user(request, user_id):
+
+    try:
+        user_handle.is_allowed_to_create_contract(user_id)
+    except:
+        return render(request, "dashboard/page_blocked.html")
 
     user = user_handle.get_user_by_id(user_id)
 
@@ -377,6 +393,11 @@ def get_hidden_contracts_for_user(request, user_id):
 
 
 def customer_create_contract_from_user(request, user_id):
+
+    try:
+        user_handle.is_allowed_to_create_contract(user_id)
+    except:
+        return render(request, "dashboard/page_blocked.html")
 
     user = user_handle.get_user_by_id(user_id)
 

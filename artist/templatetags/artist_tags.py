@@ -1,8 +1,10 @@
 from datetime import timedelta, datetime
 from artist.models import ArtistAccess, ArtistAssets, ArtistUserStatus
 from django import template
-from venue.models import VenuePictures
+from venue.models import VenueAccess, VenuePictures
 from customer.models import CustomerAccess
+from contract.models import ArtistTeamEvent, ContractEventTeam
+
 
 register = template.Library()
 
@@ -104,6 +106,36 @@ def get_day_name(date_today):
 @register.filter
 def get_name_hidden_block_contract(contract_id):
     return f"contract_id_hidden_block_{contract_id}"
+
+
+@register.filter
+def artist_admin(user, artist):
+    return ArtistAccess.objects.filter(artist=artist, access=user, admin=True)
+
+
+@register.filter
+def artist_event_team_exists(contract):
+    return ArtistTeamEvent.objects.filter(contract=contract)
+
+
+@register.filter
+def is_allowed_to_change(user, contract):
+    return ContractEventTeam.objects.filter(contract=contract, user=user, role="admin")
+
+
+@register.filter
+def is_allowed_to_change_artist(user, artist):
+    return ArtistAccess.objects.filter(artist=artist, access=user, admin=True)
+
+
+@register.filter
+def is_allowed_to_change_customer(user, customer):
+    return CustomerAccess.objects.filter(customer=customer, access=user, admin=True)
+
+
+@register.filter
+def is_allowed_to_change_venue(user, venue):
+    return VenueAccess.objects.filter(venue=venue, access=user, admin=True)
 
 
 @register.inclusion_tag("tags/message_extractor.html")

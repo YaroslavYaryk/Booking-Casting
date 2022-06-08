@@ -245,3 +245,7 @@ def add_team_peermission_to_change_contract_details(contract_obj):
 def get_customer_contact(customer):
 
     return CustomerContacts.objects.get(customer=customer)
+
+
+def is_allowed_to_change_customer(customer_id, user):
+    return CustomerAccess.objects.get(customer__id=customer_id, access=user)

@@ -258,7 +258,7 @@ EDIT_CONTRACT = """
 			</tr>
 			<tr>
 				<td>Datoer:&nbsp;</td>
-				<td><span style="color:#2c3e50">{{contract.date}}</span></td>
+				<td><span style="color:black">{{contract.date}}</span></td>
 			</tr>
 			<tr>
 				<td>Spillested:</td>
@@ -278,15 +278,15 @@ EDIT_CONTRACT = """
 			</tr>
 			<tr>
 				<td><strong>Honorar:</strong></td>
-				<td><strong>NOK</strong> <span style="color:#2c3e50"><strong>{{contract.price}}</strong></span></td>
+				<td><strong>NOK</strong> <span style="color:black"><strong>{{contract.price}}</strong></span></td>
 			</tr>
 			<tr>
 				<td>Betaling:</td>
-				<td><span style="color:#2c3e50">{{p_methods_one}}</span></td>
+				<td><span style="color:black">{{p_methods_one}}</span></td>
 			</tr>
 			<tr>
 				<td>&nbsp;</td>
-				<td><span style="color:#2c3e50">{{p_methods_two}}</span></td>
+				<td><span style="color:black">{{p_methods_two}}</span></td>
 			</tr>
 		</tbody>
 	</table>
@@ -296,7 +296,7 @@ EDIT_CONTRACT = """
 		{{contract_add_staff}}
 	</div>
 	<p>&nbsp;</p>
-	<p><em>Annet&nbsp; &nbsp; &nbsp;<span style="color:#2c3e50">{{comment}}</span></em><br />
+	<p><em>Annet&nbsp; &nbsp; &nbsp;<span style="color:black">{{comment}}</span></em><br />
 	&nbsp; &nbsp; &nbsp; &nbsp;</p>
 
 	

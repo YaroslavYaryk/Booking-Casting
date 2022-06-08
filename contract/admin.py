@@ -6,6 +6,7 @@ from .models import (
     ContractEventTeam,
     ContractRentalProducts,
     TimeClock,
+    ArtistTeamEvent,
 )
 
 # Register your models here.
@@ -16,3 +17,4 @@ admin.site.register(ContractEventRentalProducts)
 admin.site.register(ContractEventTeam)
 admin.site.register(ContractRentalProducts)
 admin.site.register(TimeClock)
+admin.site.register(ArtistTeamEvent)

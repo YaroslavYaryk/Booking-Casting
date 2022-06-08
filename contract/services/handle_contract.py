@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from os import access
+from artist.models import ArtistAccess
+from venue.models import VenueAccess
 from contract.models import Contract, ContractEventTeam
 from jinja2 import Template
 from .constants import BASE_CONTRACT, EDIT_CONTRACT, PDF_CONTRACT, additinal_staff_list
@@ -135,11 +137,15 @@ def get_payment_methods_rows(text):
     else:
         p_methods_two = ""
     if p_methods_one and p_methods_two:
-        return "".join([el for el in p_methods_one]), "".join(
-            [el for el in p_methods_two]
+
+        return (
+            "".join([el for el in p_methods_one]),
+            "".join([el for el in p_methods_two]) or " ",
         )
-    return " ".join([el for el in p_methods_one]), " ".join(
-        [el for el in p_methods_two]
+
+    return (
+        " ".join([el for el in p_methods_one]),
+        " ".join([el for el in p_methods_two]) or " ",
     )
 
 
@@ -375,3 +381,79 @@ def handle_venue_taken_from_user(contract_obj, edit=False):
 def add_user_to_event_contract_team(contract_id, user, role):
     contract = get_contract_artist_by_id(contract_id)
     ContractEventTeam.objects.create(contract=contract, user=user, role=role)
+
+
+def add_perm_to_event_to_all_users_of_artist(artist, contract):
+    artist_access_obj = ArtistAccess.objects.filter(artist=artist)
+    for elem in artist_access_obj:
+        event_team_user = ContractEventTeam.objects.filter(
+            contract=contract, user=elem.access
+        )
+        if not event_team_user:
+            if elem.admin:
+                ContractEventTeam.objects.create(
+                    contract=contract, user=elem.access, role="admin"
+                )
+            else:
+                ContractEventTeam.objects.create(
+                    contract=contract, user=elem.access, role="user"
+                )
+
+
+def add_perm_to_event_to_all_users_of_customer(customer, contract):
+    customer_access_obj = CustomerAccess.objects.filter(customer=customer)
+    for elem in customer_access_obj:
+        event_team_user = ContractEventTeam.objects.filter(
+            contract=contract, user=elem.access
+        )
+        if not event_team_user:
+            if elem.admin:
+                ContractEventTeam.objects.create(
+                    contract=contract, user=elem.access, role="admin"
+                )
+            else:
+                ContractEventTeam.objects.create(
+                    contract=contract, user=elem.access, role="user"
+                )
+
+
+def add_perm_to_event_to_all_users_of_venue(venue, contract):
+    venue_access_obj = VenueAccess.objects.filter(venue=venue)
+    for elem in venue_access_obj:
+        event_team_user = ContractEventTeam.objects.filter(
+            contract=contract, user=elem.access
+        )
+        if not event_team_user:
+            ContractEventTeam.objects.create(
+                contract=contract, user=elem.access, role="user"
+            )
+
+
+def add_perm_to_event_company_creator(company, contract):
+
+    event_team_user = ContractEventTeam.objects.filter(
+        contract=contract, user=company.creator
+    )
+    if not event_team_user:
+        ContractEventTeam.objects.get_or_create(
+            contract=contract, user=company.creator, role="admin"
+        )
+
+
+def add_permission_participants_to_contract_event(contract):
+    artist = contract.artist
+    customer = contract.customer
+    venue = contract.venue
+    company = contract.company
+    print("here")
+
+    add_perm_to_event_to_all_users_of_artist(artist, contract)
+    add_perm_to_event_to_all_users_of_customer(customer, contract)
+    add_perm_to_event_to_all_users_of_venue(venue, contract)
+    add_perm_to_event_company_creator(company, contract)
+
+
+def is_allowed_to_change_contract(contract_id, user):
+    return ContractEventTeam.objects.get(
+        contract__id=contract_id, user=user, role="admin"
+    )

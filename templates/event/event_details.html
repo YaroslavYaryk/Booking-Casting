@@ -135,7 +135,7 @@
                       {% endif %}
                     
                     
-                    {% if is_allowed_to_change %}
+                    {% if user|is_allowed_to_change:event %}
                     <div  class="button-edit-delete d-flex justify-content-between">                    
                         <div class="block"></div>
                         <a class="btn btn-primary" href="{% url 'user_edit_contract' event.id %}" type="submit">Edit </a>
@@ -145,6 +145,96 @@
                   </form>
                 </div>
               </div>
+              {% if user|is_allowed_to_change:event %}
+                <div class="col-lg-8 pe-lg-2" style="width:101%">
+                  <div class="card mb-3">
+                    <div class="block d-flex justify-content-between align-items-center">
+                      <div class="card-header">
+                        <h5 class="mb-0">Time Clock</h5>
+                      </div>
+                  </div>
+                    <div class="card-body bg-light">
+                      <table class="table table-striped overflow-hidden contract_table_list" style="">
+                        <thead>
+                          <tr>
+                          <th scope="col">Time start</th>
+                          <th scope="col">Time end</th>
+                          <th colspan="5" style="width:65 %" score="col">Action</th>
+                          <th></th>
+                          <th></th>
+                          </tr>
+                      </thead>
+                        <tbody>
+                          {% for time_clock in existing_time_clock %}
+                            {% if time_clock.id == time_clock_id %}
+                              
+                                <tr class=" " >
+                                  <td colspan="6">
+                                    <form action="{% url 'edit_time_clock_to_event' event.id time_clock.id %}" method="POST">
+                                      {% csrf_token %}
+                                      <div class="block" style="display: flex; justify-content: space-between; gap:30px">
+                                        <div style="align-items: center" >
+                                          <label class="form-label" for="name">Start </label>
+                                          <p >{{form_edit_time_clock.start_time|add_class:'form-control'}}</p>
+                                        </div>
+                                        <div  style="align-items: center" >
+                                          <label class="form-label" for="name">End </label>
+                                          <p>{{form_edit_time_clock.end_time|add_class:'form-control'}}</p>
+                                        </div>
+                                        <div  style="align-items: center; width:230px" >
+                                          <label class="form-label" for="name">Action </label>
+                                          {{form_edit_time_clock.action|add_class:'form-control'}}
+                                        </div>
+                                        <div style="padding-top: 7px;" >
+                                          <label for="d"> </label>
+                                          <button style="display: block;" class="btn btn-info" type="submit">Change</button>
+                                        </div>
+                                      </div>
+                                    </form>
+                                  </td>
+                                </tr>
+                              
+                            {% else %}
+                              <tr class="align-middle table_contract_main_row" id="{{team.contract.id|get_name_hidden_block_contract}}">
+
+                                <td>{{ time_clock.start_time }} </td>
+                                <td>{{time_clock.end_time}}</td>
+                                <td colspan="2" class="text-nowrap">
+                                    <p>{{ time_clock.action }}</p>
+                                </td>
+                                <td><a href="{% url 'remove_time_clock_to_event' event.id time_clock.id %}"><span class="fas fa-times" style="color:red; font-size: 20px;"></span></a></td>
+                                <td><a href="{% url 'get_event_details' event.id time_clock.id %}"><span class="fas fa-exchange-alt" ></span></a></td>
+                              </tr>
+                              {% endif %}
+                              
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                      <form action="{% url 'add_time_clock_to_event' event.id last_time_clock_id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                          <div class="col-lg-3" style="align-items: center" >
+                              <label class="form-label" for="name">Start </label>
+                              <p>{{form.start_time|add_class:'form-control'}}</p>
+                          </div>
+                          <div class="col-lg-3" style="align-items: center" >
+                            <label class="form-label" for="name">End </label>
+                            <p>{{form.end_time|add_class:'form-control'}}</p>
+                          </div>
+                          <div class="col-lg-4" style="align-items: center" >
+                            <label class="form-label" for="name">Action </label>
+                            {{form.action|add_class:'form-control'}}
+                          </div>
+                          <div class="col-lg-2" style="align-items: center; margin-top: 8px;" >
+                            <label for="d"> </label>
+                            <button style="display: block;" class="btn btn-success" type="submit">Add</button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% else %}
               <div class="col-lg-8 pe-lg-2" style="width:101%">
                 <div class="card mb-3">
                   <div class="block d-flex justify-content-between align-items-center">
@@ -152,6 +242,7 @@
                       <h5 class="mb-0">Time Clock</h5>
                     </div>
                 </div>
+                  {% if existing_time_clock %}
                   <div class="card-body bg-light">
                     <table class="table table-striped overflow-hidden contract_table_list" style="">
                       <thead>
@@ -159,44 +250,11 @@
                         <th scope="col">Time start</th>
                         <th scope="col">Time end</th>
                         <th colspan="5" style="width:65 %" score="col">Action</th>
-                        <th></th>
-                        <th></th>
                         </tr>
                     </thead>
                       <tbody>
-                        <form action="google.com" class="google_com">
-                          <button type="submit">submit</button>
-                        </form>
                         {% for time_clock in existing_time_clock %}
-                          {% if time_clock.id == time_clock_id %}
-                            
-                              <tr class=" " >
-                                <td colspan="6">
-                                  <form action="{% url 'edit_time_clock_to_event' event.id time_clock.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <div class="block" style="display: flex; justify-content: space-between; gap:30px">
-                                      <div style="align-items: center" >
-                                        <label class="form-label" for="name">Start </label>
-                                        <p >{{form_edit_time_clock.start_time|add_class:'form-control'}}</p>
-                                      </div>
-                                      <div  style="align-items: center" >
-                                        <label class="form-label" for="name">End </label>
-                                        <p>{{form_edit_time_clock.end_time|add_class:'form-control'}}</p>
-                                      </div>
-                                      <div  style="align-items: center; width:230px" >
-                                        <label class="form-label" for="name">Action </label>
-                                        {{form_edit_time_clock.action|add_class:'form-control'}}
-                                      </div>
-                                      <div style="padding-top: 7px;" >
-                                        <label for="d"> </label>
-                                        <button style="display: block;" class="btn btn-info" type="submit">Change</button>
-                                      </div>
-                                    </div>
-                                  </form>
-                                </td>
-                              </tr>
-                            
-                          {% else %}
+                          
                             <tr class="align-middle table_contract_main_row" id="{{team.contract.id|get_name_hidden_block_contract}}">
 
                               <td>{{ time_clock.start_time }} </td>
@@ -204,157 +262,89 @@
                               <td colspan="2" class="text-nowrap">
                                   <p>{{ time_clock.action }}</p>
                               </td>
-                              <td><a href="{% url 'remove_time_clock_to_event' event.id time_clock.id %}"><span class="fas fa-times" style="color:red; font-size: 20px;"></span></a></td>
-                              <td><a href="{% url 'get_event_details' event.id time_clock.id %}"><span class="fas fa-exchange-alt" ></span></a></td>
+                              
                             </tr>
-                            {% endif %}
                             
                         {% endfor %}
                       </tbody>
                     </table>
-                    <form action="{% url 'add_time_clock_to_event' event.id last_time_clock.id %}" method="POST">
-                      {% csrf_token %}
-                      <div class="row">
-                        <div class="col-lg-3" style="align-items: center" >
-                            <label class="form-label" for="name">Start </label>
-                            <p>{{form.start_time|add_class:'form-control'}}</p>
-                        </div>
-                        <div class="col-lg-3" style="align-items: center" >
-                          <label class="form-label" for="name">End </label>
-                          <p>{{form.end_time|add_class:'form-control'}}</p>
-                        </div>
-                        <div class="col-lg-4" style="align-items: center" >
-                          <label class="form-label" for="name">Action </label>
-                          {{form.action|add_class:'form-control'}}
-                        </div>
-                        <div class="col-lg-2" style="align-items: center; margin-top: 8px;" >
-                          <label for="d"> </label>
-                          <button style="display: block;" class="btn btn-success" type="submit">Add</button>
-                        </div>
-                      </div>
-                    </form>
                   </div>
+                  {% else %}
+                    <p style="margin: 20px;">There is no any time clock for now</p>
+                  {% endif %}
                 </div>
               </div>
+              {% endif %}
 
-
-              {% if users_in_team %}          
-                <div class="card mb-3">
-                  <div class="card-header">
-                    <h5 class="mb-0">Users in a team</h5>
-                  </div>
-                  <div class="card-body bg-light">
-                    <table class="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th  scope="col">User</th>
-                          <th  scope="col">Role</th>
-                          <th class="text-center">Action</th>
-                          <th class="text-center">Delete</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for user_for in users_in_team %}
-
-                          <tr style="align-items:center">
-                            <td >{{user_for.user.email}}</td>
-                            <td ><input class="form-control" style="width:100px" id="{{user_for.id}}" name="{{user_for.user.email}}" type="text" value="{{user_for.role}}"></td>
-                           
-                            <td>
-
-                              <div class="my-box text-center" id="userChange" name={{user_for.id}} style="width:100%">
-                                <a class="btn btn-info" name={{user_for.id}} href="#popup1">Change</a>
-                              </div>
-                              
-                            </td>
-                            <td><div class="my-box text-center" style="width:100%">
-                              
-                              <a href="{% url 'delete_user_from_team' event.id user_for.user.email %}" class="btn btn-danger">Delete</a>
-                            </div></td>
+              {% if user|is_allowed_to_change:event %}
+                {% if users_in_team %}          
+                  <div class="card mb-3">
+                    <div class="card-header">
+                      <h5 class="mb-0">Users in a team</h5>
+                    </div>
+                    <div class="card-body bg-light">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th  scope="col">User</th>
+                            <th  scope="col">Role</th>
+                            <th class="text-center">Action</th>
+                            <th class="text-center">Delete</th>
                           </tr>
-                          
-                        {% endfor %}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {% for user_for in users_in_team %}
+
+                            <tr style="align-items:center">
+                              <td >{{user_for.user.email}}</td>
+                              <td ><input class="form-control" style="width:100px" id="{{user_for.id}}" name="{{user_for.user.email}}" type="text" value="{{user_for.role}}"></td>
+                            
+                              <td>
+
+                                <div class="my-box text-center" id="userChange" name={{user_for.id}} style="width:100%">
+                                  <a class="btn btn-info" name={{user_for.id}} href="#popup1">Change</a>
+                                </div>
+                                
+                              </td>
+                              <td><div class="my-box text-center" style="width:100%">
+                                
+                                <a href="{% url 'delete_user_from_team' event.id user_for.user.email %}" class="btn btn-danger">Delete</a>
+                              </div></td>
+                            </tr>
+                            
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+
                   </div>
 
-                </div>
-
-              {% endif %}  
-              
+                {% endif %}  
+              {% endif %}
               
             </div>
             <div class="col-lg-4 ps-lg-2">
-            <div class="col-lg-12 ps-lg-2">
-              <div class="sticky-sidebar">
-                <div class="card mb-3 overflow-hidden">
-                  <div class="card-header">
-                    <h5 class="mb-0">Team Users</h5>
-                  </div>
-
-                  <form class="form_add_user" method="POST" action="{% url 'add_user_to_team' event.id %}" style="height:180px; align-items:center; padding:20px" >
-                    {% csrf_token %}
-                    <select class="form-control mb-2" name="users_for_adding" id="users_for_adding">
-                      <option value="">--Please choose an option--</option>
-                      {% for us in aval_users %}
-                            <option value="{{us.email}}">{{us.email}}</option>
-                      {% endfor %}
-                      
-                    </select>
-
-                    <div class="col-lg-12 " >
-                      <input class="form-control" placeholder="Role...." name="users_for_adding_role" id="users_for_adding_role" type="text">
-                    </div>
-
-                    <div class="block_add_user" style="display: flex; justify-content:space-between; margin-top: 10px;">
-                      <div></div>
-                      <button type="submit" class='btn btn-primary' >ADD</button>
-                    </div>
-                  </form>
-                
-              </div>
-            </div>
-            
-            <div class="col-lg-4 ps-lg-2" style="width: 104%; margin-left: -4%;">
+                {% if user|is_allowed_to_change:event %}
               <div class="col-lg-12 ps-lg-2">
                 <div class="sticky-sidebar">
                   <div class="card mb-3 overflow-hidden">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items:center">
-                      <h5 class="mb-0">Rental Products</h5>
-                      <a class="btn btn-success" href="{% url 'get_event_products_list' event.id %}">All Products</a>
+                    <div class="card-header">
+                      <h5 class="mb-0">Team Users</h5>
                     </div>
-  
-                    <form class="form_add_user" enctype="multipart/form-data" method="POST" action="{% url 'add_event_product' event.id %}" style="height:220px; align-items:center; padding:20px" >
+
+                    <form class="form_add_user" method="POST" action="{% url 'add_user_to_team' event.id %}" style="height:180px; align-items:center; padding:20px" >
                       {% csrf_token %}
-                      {% comment %} <input placeholder="Name" type="text" name="product_name" id="" style="margin-top: -10px;" class=" mb-2 form-control"> {% endcomment %}
-                      {% comment %} {{form.file_field|add_class:'form-control'}} {% endcomment %}
-                      <div class="col-lg-12 mb-2"  >
-                        {{form_event.name|add_class:'form-control'}}
-                        <div class="form-error" style="color: red;">
-                          {{ form_event.name.errors }}
-                        </div>
+                      <select class="form-control mb-2" name="users_for_adding" id="users_for_adding">
+                        <option value="">--Please choose an option--</option>
+                        {% for us in aval_users %}
+                              <option value="{{us.email}}">{{us.email}}</option>
+                        {% endfor %}
+                        
+                      </select>
+
+                      <div class="col-lg-12 " >
+                        <input class="form-control" placeholder="Role...." name="users_for_adding_role" id="users_for_adding_role" type="text">
                       </div>
-                      <div class="col-lg-12" >
-                        {{form_event.picture|add_class:'form-control'}}
-                        <div class="form-error" style="color: red;">
-                          {{ form_event.picture.errors }}
-                        </div>
-                      </div>
-                      
-                      <div class="block mb-3" style="margin-top: 8px; width:100%; display: flex; justify-content:space-between">  
-                        <div class="col-lg-5" >
-                          {{form_event.price|add_class:'form-control'}}
-                          <div class="form-error" style="color: red;">
-                            {{ form_event.price.errors }}
-                          </div>
-                        </div>
-                        <div class="col-lg-5" >
-                          {{form_event.count|add_class:'form-control'}}
-                          <div class="form-error" style="color: red;">
-                            {{ form_event.count.errors }}
-                          </div>
-                        </div>
-                      </div> 
 
                       <div class="block_add_user" style="display: flex; justify-content:space-between; margin-top: 10px;">
                         <div></div>
@@ -364,6 +354,126 @@
                   
                 </div>
               </div>
+              {% endif %}
+            <div class="col-lg-4 ps-lg-2" style="width: 104%; margin-left: -4%;">
+              <div class="col-lg-12 ps-lg-2">
+                <div class="sticky-sidebar">
+                  <div class="card mb-3 overflow-hidden">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items:center">
+                      <h5 class="mb-0">Rental Products</h5>
+                      <a class="btn btn-success" href="{% url 'get_event_products_list' event.id %}">All Products</a>
+                    </div>
+                    {% if user|is_allowed_to_change:event %}
+                      <form class="form_add_user" enctype="multipart/form-data" method="POST" action="{% url 'add_event_product' event.id %}" style="height:220px; align-items:center; padding:20px" >
+                        {% csrf_token %}
+                        {% comment %} <input placeholder="Name" type="text" name="product_name" id="" style="margin-top: -10px;" class=" mb-2 form-control"> {% endcomment %}
+                        {% comment %} {{form.file_field|add_class:'form-control'}} {% endcomment %}
+                        <div class="col-lg-12 mb-2"  >
+                          {{form_event.name|add_class:'form-control'}}
+                          <div class="form-error" style="color: red;">
+                            {{ form_event.name.errors }}
+                          </div>
+                        </div>
+                        <div class="col-lg-12" >
+                          {{form_event.picture|add_class:'form-control'}}
+                          <div class="form-error" style="color: red;">
+                            {{ form_event.picture.errors }}
+                          </div>
+                        </div>
+                        
+                        <div class="block mb-3" style="margin-top: 8px; width:100%; display: flex; justify-content:space-between">  
+                          <div class="col-lg-5" >
+                            {{form_event.price|add_class:'form-control'}}
+                            <div class="form-error" style="color: red;">
+                              {{ form_event.price.errors }}
+                            </div>
+                          </div>
+                          <div class="col-lg-5" >
+                            {{form_event.count|add_class:'form-control'}}
+                            <div class="form-error" style="color: red;">
+                              {{ form_event.count.errors }}
+                            </div>
+                          </div>
+                        </div> 
+
+                        <div class="block_add_user" style="display: flex; justify-content:space-between; margin-top: 10px;">
+                          <div></div>
+                          <button type="submit" class='btn btn-primary' >ADD</button>
+                        </div>
+                      </form>
+                  {% endif %}
+                </div>
+              </div>
+                {% if user|artist_admin:event.artist %}
+                  
+                    <div class="col-lg-12 ps-lg-2" style="margin-left: -2%; width: 102%">
+                      <div class="sticky-sidebar">
+                        <div class="card mb-3 overflow-hidden">
+                          <div class="card-header">
+                            <h5 class="mb-0">Artist Event Team</h5>
+                          </div>
+                            {% if not event|artist_event_team_exists %}
+                                {% if user|artist_admin:event.artist  %}
+                                    <form action="{% url 'add_event_artist_team' event.id %}" method="POST" >
+                                        {% csrf_token %}
+                                        <div class="col-lg-12 mb-2" style="max-height:150px; overflow-y: scroll; margin: 20px"  >
+                                            {{form_event_user_team.artist_team}}
+                                            
+                                        </div>
+                                        
+                                        <div class="block" style="display: flex; justify-content: space-between">
+                                          <div class="span"></div>
+                                          <button type="submit" style="margin: 20px;" class="btn btn-success"> Submit </button>
+                                        </div>
+                                      </form>
+                                {% endif %}
+
+                            {% else %}
+                                <div class="col-lg-12 mb-2" style="max-height:150px; overflow-y: scroll; margin: 20px"  >
+                                    {% for element in artist_team_users  %}
+                                        {% if element in chosen_event_artist_users %}
+                                            <div class="form-check"><input class="form-check-input" id="{{element.id}}" type="checkbox" value="" checked="" /><label class="form-check-label" for="flexCheckChecked">{{element.get_full_name}}</label></div>
+                                        {% else %}
+                                            <div class="form-check"><input class="form-check-input" id="{{element.id}}" type="checkbox" value="" /><label class="form-check-label" for="flexCheckChecked">{{element.get_full_name}}</label></div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="block" style="display: flex; justify-content: space-between">
+                                    <div class="span"></div>
+                                    <a style="margin: 20px;" class="btn btn-info event_artist_team" href="">Edit</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                      </div>    
+                    </div>
+              {% else %}
+
+              <div class="col-lg-12 ps-lg-2" style="margin-left: -2%; width: 102%">
+                <div class="sticky-sidebar">
+                  <div class="card mb-3 overflow-hidden">
+                    <div class="card-header">
+                      <h5 class="mb-0">Artist Event Team</h5>
+                    </div>
+                      {% if not event|artist_event_team_exists %}
+                          <p style="margin: 20px;"> Artist team os not picked yet </p>
+
+                      {% else %}
+                          
+                        <div class="col-lg-12 mb-2" style="max-height:150px; overflow-y: scroll; margin: 20px"  >
+                          {% for element in artist_team_users  %}
+                              {% if element in chosen_event_artist_users %}
+                                  <div class="form-check"><input disabled class="form-check-input" id="{{element.id}}" type="checkbox" value="" checked="" /><label class="form-check-label" for="flexCheckChecked">{{element.get_full_name}}</label></div>
+                              {% else %}
+                                  <div class="form-check"><input disabled class="form-check-input" id="{{element.id}}" type="checkbox" value="" /><label class="form-check-label" for="flexCheckChecked">{{element.get_full_name}}</label></div>
+                              {% endif %}
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                  </div>
+                </div>    
+              </div>
+
+              {% endif %}
           
         </div>
         
@@ -399,6 +509,27 @@
             }
         } 
       }
+      
+        //event_artist_team
+        var event_artist_team = document.querySelector(".event_artist_team")
+        var array_users = []
+        event_artist_team.onclick = (e) => {
+            e.preventDefault()
+            var flexCheckChecked = document.querySelectorAll(".form-check-input")
+            for(let i=0; i<flexCheckChecked.length; i++){
+                if(flexCheckChecked[i].checked){
+                    array_users.push(flexCheckChecked[i].id)
+                }
+            }
+            var artist_users_team = array_users.join("_")
+            if (!artist_users_team){
+                artist_users_team = " "
+            }
+            var url = `{% url 'edit_event_artist_team'  %}`
+            document.location.href = url + eventId + "/" + artist_users_team + "/"
+        }
+
+
 
       {% comment %} var reponsibilities = document.getElementById("id_customers_responsibility")
       reponsibilities.style.cssText = `

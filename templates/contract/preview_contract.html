@@ -68,35 +68,42 @@
 
             for(var i=0; i<elements.length; i++){
                 var el = elements[i].innerText.replaceAll("_", '') 
-                if (i === 0){
-                    var date = el;
-                    const pattern = /^(\d{2})\.(\d{2})\.(\d{4})/g;
-                    const pattern2 = /^(\d{4})-(\d{2})-(\d{2})/g;
-
-                    if (date.match(pattern)){
-                        var res = date.split(".") 
-                        date = res[2]+"-"+res[1]+"-"+res[0]
+                if (elements[i].style.color == "black"){
+                    console.log(elements[i], i)
+                    if (i === 0){
+                        var date = el;
+                        const pattern = /^(\d{2})\.(\d{2})\.(\d{4})/g;
+                        const pattern2 = /^(\d{4})-(\d{2})-(\d{2})/g;
+    
+                        if (date.match(pattern)){
+                            var res = date.split(".") 
+                            date = res[2]+"-"+res[1]+"-"+res[0]
+                        }
+                        if (! date.match(pattern2)){
+                            var block_critical = document.querySelector(".block_critical")
+                            var block_critical2 = document.querySelector(".block_critical2")
+    
+                            block_critical.style.display = "block"
+                            block_critical2.style.display = "block"
+    
+                            return
+                        }
                     }
-                    if (! date.match(pattern2)){
-                        var block_critical = document.querySelector(".block_critical")
-                        var block_critical2 = document.querySelector(".block_critical2")
-
-                        block_critical.style.display = "block"
-                        block_critical2.style.display = "block"
-
-                        return
+                    if( i === 1){
+                        var honorar = el
                     }
+                    if( i === 2 || i === 3 ){
+                        if(!el.startsWith("* All")){
+    
+                            batailing += el + " ";
+                        }
+                    }
+                    if( i === 4 ){
+                        comment += el ;
+                    } 
                 }
-                if( i === 1){
-                    var honorar = el
                 }
-                if( i === 2 || i === 3 ){
-                    batailing += el + " ";
-                }
-                if( i === 4 ){
-                    comment += el ;
-                } 
-            }
+                
             if (!(date || honorar || batailing)){
                 return
             }
@@ -127,7 +134,6 @@
             }
             
             if (!comment){
-                console.log("here")
                 comment = " ";
             }
             var block_width = [];
@@ -138,8 +144,9 @@
                 }
                 
             }
+            console.log(batailing, "batatalonh")
+            console.log(comment)
 
-            console.log(comment,comment.length)
             var url = "{% url 'save_contract_data' %}"
             document.location.href = url + eventArtistId + "/" + date + 
                                     '/' + honorar + "/" + batailing + "/" + comment + "/" + 

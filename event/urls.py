@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     MyEventsListView,
+    add_event_artist_team,
     add_event_product,
     # add_new_event,
     add_user_to_team,
@@ -19,6 +20,7 @@ from .views import (
     add_time_clock_to_event,
     remove_time_clock_to_event,
     edit_time_clock_to_event,
+    edit_event_artist_team,
 )
 
 urlpatterns = [
@@ -84,5 +86,21 @@ urlpatterns = [
         "<event_id>/edit_time_clock_to_event/<time_clock_id>/",
         edit_time_clock_to_event,
         name="edit_time_clock_to_event",
+    ),
+    # artist event team users
+    path(
+        "<event_id>/specify_event_artist_team/",
+        add_event_artist_team,
+        name="add_event_artist_team",
+    ),
+    path(
+        "edit_event_artist_team/",
+        edit_event_artist_team,
+        name="edit_event_artist_team",
+    ),
+    path(
+        "edit_event_artist_team/<event_id>/<artist_users_team>/",
+        edit_event_artist_team,
+        name="edit_event_artist_team_two",
     ),
 ]

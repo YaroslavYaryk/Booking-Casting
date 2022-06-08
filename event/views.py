@@ -1,3 +1,4 @@
+from cgitb import handler
 import time
 from artist.decorators import user_has_perm_to_change
 from company.models import Company
@@ -13,6 +14,7 @@ from django.views.generic.list import ListView
 from users.services import user_handle
 from venue.services import handle_venue
 from .forms import (
+    ArtistEventTeamForm,
     EventForm,
     EventProductForm,
     TimeClockForm,
@@ -97,6 +99,16 @@ def get_event_details(request, event_id, time_clock_id):
         else 0
     )
 
+    # form event_user_team
+    artist_team_users = handle_event.artist_user_team(event.artist)
+    form_event_user_team = ArtistEventTeamForm(artist_team_users, request.POST)
+    # --------------------
+
+    if handle_event.get_event_time_clock(event):
+        last_time_clock = handle_event.get_event_time_clock(event).last()
+    else:
+        last_time_clock = -1
+
     context = {
         "event": event,
         "is_allowed_to_change": handle_event.is_allowed_to_change(
@@ -108,10 +120,13 @@ def get_event_details(request, event_id, time_clock_id):
         "aval_users": handle_event.get_avaluable_users(event),
         "form_event": EventProductForm(),
         "existing_time_clock": handle_event.get_event_time_clock(event),
-        "last_time_clock": handle_event.get_event_time_clock(event).last(),
+        "last_time_clock_id": last_time_clock,
         "time_clock_id": int(time_clock_id),
         "form": TimeClockForm(),
         "form_edit_time_clock": form_edit_time_clock,
+        "form_event_user_team": form_event_user_team,
+        "artist_team_users": handle_event.artist_user_team_queryset(event.artist),
+        "chosen_event_artist_users": handle_event.get_all_event_artist_team(event),
     }
 
     return render(request, "event/event_details.html", context=context)
@@ -125,7 +140,8 @@ def add_time_clock_to_event(request, event_id, last_clock_time_id):
         if form.is_valid():
             time_clock = form.save(commit=False)
             if (
-                form.cleaned_data["start_time"]
+                int(last_clock_time_id) > 0
+                and form.cleaned_data["start_time"]
                 < handle_event.get_time_clock(last_clock_time_id).end_time
             ):
                 messages.error(request, "start time is lover than previous element")
@@ -182,6 +198,40 @@ def edit_time_clock_to_event(request, event_id, time_clock_id):
             )
         else:
             print(form.errors)
+
+
+@login_required(login_url="login")
+def add_event_artist_team(request, event_id):
+    contract = handle_contract.get_contract_artist_by_id(event_id)
+    artist_team_users = handle_event.artist_user_team(contract.artist)
+
+    if request.method == "POST":
+        form = ArtistEventTeamForm(artist_team_users, request.POST)
+        if form.is_valid():
+            handle_event.add_event_artist_team(
+                contract, form.cleaned_data["artist_team"]
+            )
+            return HttpResponseRedirect(
+                reverse(
+                    "get_event_details",
+                    kwargs={"event_id": event_id, "time_clock_id": -1},
+                )
+            )
+        else:
+            messages.error(request, "Opps, there are some problems")
+
+
+@login_required(login_url="login")
+def edit_event_artist_team(request, event_id, artist_users_team):
+    contract = handle_contract.get_contract_artist_by_id(event_id)
+
+    handle_event.edit_event_artist_team(contract, artist_users_team)
+    return HttpResponseRedirect(
+        reverse(
+            "get_event_details",
+            kwargs={"event_id": event_id, "time_clock_id": -1},
+        )
+    )
 
 
 # @login_required(login_url="login")
@@ -348,6 +398,7 @@ def add_event_product(request, event_id):
 def get_event_products_list(request, event_id):
     event_products = handle_event.get_event_products(event_id)
     contract = handle_contract.get_contract_artist_by_id(event_id)
+    print(contract)
     return render(
         request,
         "event/event_products_list.html",

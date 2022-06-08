@@ -1,5 +1,5 @@
 from django import forms
-from contract.models import ContractTimeClock, TimeClock
+from contract.models import ContractTimeClock, TimeClock, ArtistTeamEvent
 
 from event.models import Event
 
@@ -67,3 +67,12 @@ class TimeClockForm(forms.ModelForm):
             "end_time": TimePickerInput(),
             # "date" : DatePickerInput()
         }
+
+
+class ArtistEventTeamForm(forms.Form):
+
+    artist_team = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple())
+
+    def __init__(self, team_users, *args, **kwargs):
+        super(ArtistEventTeamForm, self).__init__(*args, **kwargs)
+        self.fields["artist_team"].choices = team_users
