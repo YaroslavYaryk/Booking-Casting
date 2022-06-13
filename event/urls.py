@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views import (
     MyEventsListView,
@@ -22,8 +22,10 @@ from .views import (
     edit_time_clock_to_event,
     edit_event_artist_team,
 )
+from .api import urls as event_api
 
 urlpatterns = [
+    path("api/", include(event_api)),
     path("list/", MyEventsListView.as_view(), name="get_all_events"),
     # path("add_new/", add_new_event, name="add_new_event"),
     path(

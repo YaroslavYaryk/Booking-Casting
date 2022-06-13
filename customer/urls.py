@@ -13,6 +13,9 @@ from .views import (
     handle_change_request,
     send_request_to_change_customer,
     invite_user,
+    get_customer_details_for_non_user,
+    change_details_customer_non_user,
+    delete_non_user_from_editing,
 )
 
 urlpatterns = [
@@ -21,9 +24,24 @@ urlpatterns = [
     path("add_new/", add_new_customer, name="add_new_customer"),
     path("<customer_id>/details/", get_customer_details, name="customer_details"),
     path(
+        "<customer_id>/details_non_user/<non_user_id>/",
+        get_customer_details_for_non_user,
+        name="get_customer_details_for_non_user",
+    ),
+    path(
         "<customer_id>/update/", change_details_customer, name="change_details_customer"
     ),
+    path(
+        "<customer_id>/update_non_user/<non_user_id>/",
+        change_details_customer_non_user,
+        name="change_details_customer_non_user",
+    ),
     path("<customer_id>/delete/", delete_customer, name="delete_customer"),
+    path(
+        "<customer_id>/delete_non_user_editable/<non_user_id>/",
+        delete_non_user_from_editing,
+        name="delete_non_user_from_editing",
+    ),
     path(
         "send_request_to_change_customer/<customer_id>/",
         send_request_to_change_customer,

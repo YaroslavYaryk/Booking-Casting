@@ -20,7 +20,7 @@ from django.urls import include, path
 from users.views import index
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("users/", include("users.urls")),
     path("artist/", include("artist.urls")),
     path("company/", include("company.urls")),
@@ -30,12 +30,9 @@ urlpatterns = [
     path("venue/", include("venue.urls")),
     path("admin_site/", include("admin_app.urls")),
     path("", index, name="home"),
-    
-    path('ckeditor/', include('ckeditor_uploader.urls')),
-
-    
-    
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path("ckeditor/", include("ckeditor_uploader.urls")),
+    path("api-auth/", include("rest_framework.urls")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 handler403 = "users.views.handler_forbiden"

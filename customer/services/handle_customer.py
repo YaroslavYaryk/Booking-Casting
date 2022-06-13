@@ -1,4 +1,5 @@
-from os import access
+from django.core import mail
+
 from venue.models import VenueAccess
 from artist.models import Artist, ArtistAccess
 from customer.models import (
@@ -6,11 +7,14 @@ from customer.models import (
     CustomerAccess,
     CustomerContacts,
     CustomerRequestsStorage,
+    CustomerNonUserEdit,
 )
 from event.models import Event
 from users.models import User
 from users.services import user_handle
 from contract.models import Contract
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 
 def get_customer_by_id(customer_id):
@@ -249,3 +253,47 @@ def get_customer_contact(customer):
 
 def is_allowed_to_change_customer(customer_id, user):
     return CustomerAccess.objects.get(customer__id=customer_id, access=user)
+
+
+def send_invitation_message(
+    sender, user_email, template_link, host, port, customer, non_user
+):
+    subject = "Invitation Message"
+    html_message = render_to_string(
+        template_link,
+        {
+            "sender": sender,
+            "host": host,
+            "port": port,
+            "customer": customer,
+            "user_email": user_email,
+            "non_user": non_user,
+        },
+    )
+    plain_message = strip_tags(html_message)
+    from_email = "bookingdjangoprojkpi@gmail.com"
+    to = user_email
+    print("here")
+    mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
+
+
+def add_user_to_non_user_customer_table(customer, user_email):
+    return CustomerNonUserEdit.objects.get_or_create(
+        customer=customer, user_email=user_email
+    )
+
+
+def check_customer_non_user_elem(customer, user_email):
+    return CustomerNonUserEdit.objects.filter(customer=customer, user_email=user_email)
+
+
+def get_customer_non_user_elem(customer):
+    return CustomerNonUserEdit.objects.filter(customer=customer)
+
+
+def delete_non_user_from_editing(non_user_id):
+    CustomerNonUserEdit.objects.get(id=non_user_id).delete()
+
+
+def check_customer_non_user_elem_by_id(non_user_id):
+    return CustomerNonUserEdit.objects.filter(id=non_user_id)

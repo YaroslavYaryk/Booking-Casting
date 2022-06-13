@@ -413,10 +413,11 @@
                             <h5 class="mb-0">Artist Event Team</h5>
                           </div>
                             {% if not event|artist_event_team_exists %}
+                            
                                 {% if user|artist_admin:event.artist  %}
                                     <form action="{% url 'add_event_artist_team' event.id %}" method="POST" >
                                         {% csrf_token %}
-                                        <div class="col-lg-12 mb-2" style="max-height:150px; overflow-y: scroll; margin: 20px"  >
+                                        <div class="col-lg-12 mb-2 " style="max-height:150px; overflow-y: scroll; margin: 20px; padding-left: 5px;"   >
                                             {{form_event_user_team.artist_team}}
                                             
                                         </div>
@@ -429,7 +430,7 @@
                                 {% endif %}
 
                             {% else %}
-                                <div class="col-lg-12 mb-2" style="max-height:150px; overflow-y: scroll; margin: 20px"  >
+                                <div class="col-lg-12 mb-2" style="max-height:150px; overflow-y: scroll; margin: 20px; padding-left: 5px;"  >
                                     {% for element in artist_team_users  %}
                                         {% if element in chosen_event_artist_users %}
                                             <div class="form-check"><input class="form-check-input" id="{{element.id}}" type="checkbox" value="" checked="" /><label class="form-check-label" for="flexCheckChecked">{{element.get_full_name}}</label></div>

@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from os import access
 from artist.models import ArtistAccess
 from venue.models import VenueAccess
 from contract.models import Contract, ContractEventTeam
@@ -380,7 +379,7 @@ def handle_venue_taken_from_user(contract_obj, edit=False):
 
 def add_user_to_event_contract_team(contract_id, user, role):
     contract = get_contract_artist_by_id(contract_id)
-    ContractEventTeam.objects.create(contract=contract, user=user, role=role)
+    ContractEventTeam.objects.get_or_create(contract=contract, user=user, role=role)
 
 
 def add_perm_to_event_to_all_users_of_artist(artist, contract):
@@ -454,6 +453,7 @@ def add_permission_participants_to_contract_event(contract):
 
 
 def is_allowed_to_change_contract(contract_id, user):
+    print(ContractEventTeam.objects.filter(contract__id=contract_id, user=user))
     return ContractEventTeam.objects.get(
         contract__id=contract_id, user=user, role="admin"
     )

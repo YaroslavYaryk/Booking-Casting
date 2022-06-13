@@ -105,7 +105,7 @@ def get_event_details(request, event_id, time_clock_id):
     # --------------------
 
     if handle_event.get_event_time_clock(event):
-        last_time_clock = handle_event.get_event_time_clock(event).last()
+        last_time_clock = handle_event.get_event_time_clock(event).last().id
     else:
         last_time_clock = -1
 

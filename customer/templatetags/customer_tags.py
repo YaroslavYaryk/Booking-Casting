@@ -12,4 +12,5 @@ def has_access_to_customer(user):
 
 @register.filter
 def user_has_customer_or_can_create_contract(user):
-    return CustomerAccess.objects.filter(access=user, admin=True)
+    if user.is_authenticated:
+        return CustomerAccess.objects.filter(access=user, admin=True)

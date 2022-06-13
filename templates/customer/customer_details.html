@@ -107,6 +107,7 @@
                       </div>
                       <div class="col-lg-6">
                         <label class="form-label" for="email1">Active - </label>
+                        <br>
                         {% if customer.active %}
                             <span style="color: green; font-size: 20px;" class="far fa-check-circle"></span>
                         {% else %}
@@ -350,6 +351,38 @@
                 </div>
               </div>
             </div>
+            <div class="col-lg-4 ps-lg-2 " style="width:101%; margin-left:-1%">
+              <div class="sticky-sidebar">
+                <div class="card mb-3 overflow-hidden">
+                  <div class="card-header" style="display: flex; justify-content: space-between; align-items:center">
+                    <h5 class="mb-0">NonUsers editors</h5>
+                  </div>
+                  {% if non_artists_edit %}
+                  <div class="table-responsive scrollbar">
+                    <table class="table table-striped overflow-hidden">
+                      <thead>
+                        <tr class="btn-reveal-trigger">
+                          <th scope="col">User</th>
+                          <th class="text-end" scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for user in non_artists_edit %}
+                        <tr class="btn-reveal-trigger">
+                          <td>{{user.user_email}}</td>
+                          <td style="text-align: center;"><a href="{% url 'delete_non_user_from_editing' customer.id user.id %}"><span class="far fa-times-circle" style="font-size: 20px; color:red"></span></a></td>
+                        </tr>
+                      {% endfor %}
+
+                      </tbody>
+                    </table>
+                  </div>
+                  {% else %}
+                    <p class="mb-4"  style="padding-top: 10px; margin-bottom: 5px; text-align:center">This customer is not edited by any non user</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       
@@ -406,9 +439,11 @@
       if (form_invite_user.style.display !== "block"){
         form_invite_user.style.display = "block";
         myForm.style.display = "none"
+        inviteAddSwitch.innerText = "Add User"
       }else{
         form_invite_user.style.display = "none";
         myForm.style.display = "block"
+        inviteAddSwitch.innerText = "Invite User"
       }
     }
 
