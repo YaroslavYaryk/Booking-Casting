@@ -22,7 +22,7 @@ from datetime import datetime
 def create_contract(request, customer_id):
 
     customer = handle_customer.get_customer_by_id(customer_id)
-    aval_arists = handle_customer.get_avaluable_artists(customer)
+    aval_arists = handle_customer.get_all_artists(request.user)
     companies = handle_event.get_company_queryset(request.user)
     venues = handle_event.get_venue_queryset(request.user)
 
@@ -30,9 +30,26 @@ def create_contract(request, customer_id):
         form = ContractArtistForm(aval_arists, companies, venues, request.POST)
 
         if form.is_valid():
-            contract_obj = form.save()
-            contract_obj.customer = customer
-            contract_obj.save()
+            try:
+                contract_obj = form.save()
+                contract_obj.customer = customer
+                contract_obj.save()
+            except Exception as err:
+                messages.error(
+                    request,
+                    "Contract with this customer and artist for this date already exists",
+                )
+                contract_obj.delete()
+                # raise err
+                return HttpResponseRedirect(
+                    reverse(
+                        "customer_create_contract",
+                        kwargs={
+                            "customer_id": customer_id,
+                        },
+                    )
+                )
+
             handle_customer.add_team_peermission_to_change_contract_details(
                 contract_obj
             )
@@ -149,6 +166,16 @@ def preview_artist_contract(request, contract_id):
             "customer_email": handle_customer.get_customer_contact(
                 contract_artist.customer
             ).email,
+            "taken_artist_dates": handle_contract.get_artist_taken_dates(
+                contract_artist
+            ),
+            "taken_venues_dates": handle_contract.get_venues_taken_dates(
+                contract_artist
+            ),
+            "taken_contract_artist_date": handle_contract.get_contract_artist_date(
+                contract_artist
+            )
+            # get date of contracs of these customer and artist
         },
     )
 
@@ -234,17 +261,29 @@ def edit_contract(request, contract_id):
         )
 
         if form.is_valid():
-            contr = form.save()
-            contr.customer = customer
-            contr.artist = contract.artist
-            contr.contract = handle_contract.rerender_contract(contr)
-            taken_artist = handle_contract.handle_artist_taken(contr, True)
-            if taken_artist:
-                return taken_artist
-            taken_venue = handle_contract.handle_venue_taken(contr, True)
-            if taken_venue:
-                return taken_venue
-            contr.save()
+            try:
+                contr = form.save()
+                contr.customer = customer
+                contr.artist = contract.artist
+                contr.contract = handle_contract.rerender_contract(contr)
+                taken_artist = handle_contract.handle_artist_taken(contr, True)
+                if taken_artist:
+                    return taken_artist
+                taken_venue = handle_contract.handle_venue_taken(contr, True)
+                if taken_venue:
+                    return taken_venue
+                contr.save()
+            except Exception as err:
+                messages.error(
+                    request,
+                    "Contract with this customer and artist for this date already exists",
+                )
+                return HttpResponseRedirect(
+                    reverse(
+                        "customer_edit_contract", kwargs={"contract_id": contract.id}
+                    )
+                )
+
             return HttpResponseRedirect(
                 reverse("preview_artist_contract", kwargs={"contract_id": contract.id})
             )
@@ -403,15 +442,14 @@ def customer_create_contract_from_user(request, user_id):
     aval_arists = handle_event.get_artist_queryset(user)
     companies = handle_event.get_company_queryset(user)
     venues = handle_event.get_venue_queryset(user)
-
     if request.method == "POST":
         form = UserContractArtistForm(
             customers, aval_arists, companies, venues, request.POST
         )
 
         if form.is_valid():
-
             contract_obj = form.save()
+
             handle_customer.add_team_peermission_to_change_contract_details(
                 contract_obj
             )
@@ -435,6 +473,7 @@ def customer_create_contract_from_user(request, user_id):
             )
         else:
             pass
+            print(form.errors)
             # messages.error(request, form.errors.as_text)
 
     else:
@@ -465,17 +504,30 @@ def user_edit_contract(request, contract_id):
         )
 
         if form.is_valid():
-            contr = form.save()
-            contr.customer = customer
-            contr.artist = contract.artist
-            contr.contract = handle_contract.rerender_contract(contr)
-            taken_artist = handle_contract.handle_artist_taken_from_user(contr, True)
-            if taken_artist:
-                return taken_artist
-            taken_venue = handle_contract.handle_venue_taken_from_user(contr, True)
-            if taken_venue:
-                return taken_venue
-            contr.save()
+            try:
+                contr = form.save()
+                print(contr)
+                contr.customer = customer
+                contr.artist = contract.artist
+                contr.contract = handle_contract.rerender_contract(contr)
+                taken_artist = handle_contract.handle_artist_taken_from_user(
+                    contr, True
+                )
+                if taken_artist:
+                    return taken_artist
+                taken_venue = handle_contract.handle_venue_taken_from_user(contr, True)
+                if taken_venue:
+                    return taken_venue
+                contr.save()
+            except Exception as err:
+                messages.error(
+                    request,
+                    "Contract with this customer and artist for this date already exists",
+                )
+                return HttpResponseRedirect(
+                    reverse("user_edit_contract", kwargs={"contract_id": contract.id})
+                )
+
             return HttpResponseRedirect(
                 reverse("preview_artist_contract", kwargs={"contract_id": contract.id})
             )

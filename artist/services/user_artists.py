@@ -197,6 +197,7 @@ def create_user_access_status(artist_id, user_phone):
     artist = get_artist_by_id(artist_id)
     user = user_handle.get_user_by_phone(user_phone)
     user_access = ArtistAccess.objects.get(artist=artist, access=user)
+    print(user_access)
     ArtistUserStatus.objects.create(user_access=user_access, invited=True)
 
 
@@ -212,8 +213,11 @@ def get_week_days_list(today, n):
 
 def get_upcoming_artists(artist, date):
     date_today_datetime = datetime.strptime(date, "%Y-%m-%d").date()
+    date_from = str(date_today_datetime + timedelta(days=1))
     date_to = str(date_today_datetime + timedelta(days=20))
-    return artist.contract_set.filter(date__gte=date, date__lte=date_to, visible=True)
+    return artist.contract_set.filter(
+        date__gte=date_from, date__lte=date_to, visible=True
+    )
 
 
 def is_allowed_to_change_artist(artist_id, user):

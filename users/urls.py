@@ -1,6 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import PasswordChangeDoneView, PasswordChangeView
-from django.urls import path
+from django.urls import path, include
 
 from .views import (
     LoginUser,
@@ -14,7 +14,10 @@ from .views import (
     user_profile_view,
 )
 
+from .api import urls as users_api
+
 urlpatterns = [
+    path("api/", include(users_api)),
     path("login/", LoginUser.as_view(), name="login"),
     path("register/", RegisterUser.as_view(), name="register"),
     path("update_data/", update_view, name="update_user_data"),

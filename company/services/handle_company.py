@@ -31,5 +31,8 @@ def get_company_hiden_contracts(company):
 
 def get_upcoming_contracts(company, date):
     date_today_datetime = datetime.strptime(date, "%Y-%m-%d").date()
+    date_from = str(date_today_datetime + timedelta(days=1))
     date_to = str(date_today_datetime + timedelta(days=20))
-    return company.contract_set.filter(date__gte=date, date__lte=date_to, visible=True)
+    return company.contract_set.filter(
+        date__gte=date_from, date__lte=date_to, visible=True
+    )

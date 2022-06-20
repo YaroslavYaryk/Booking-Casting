@@ -195,6 +195,12 @@ def get_avaluable_artists(customer):
     return Artist.objects.exclude(id__in=made_contracts)
 
 
+def get_all_artists(user):
+    artists_access = [el.artist.id for el in ArtistAccess.objects.filter(access=user)]
+    print(artists_access)
+    return Artist.objects.filter(id__in=artists_access, active=True)
+
+
 def get_my_contracts(customer):
 
     return Contract.objects.filter(customer=customer)

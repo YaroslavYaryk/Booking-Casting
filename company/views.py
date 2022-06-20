@@ -175,7 +175,7 @@ def get_company_contracts(request, company_id, date):
         "visible": True,
         "upcoming_contracts": handle_company.get_upcoming_contracts(company, date),
     }
-
+    print(handle_company.get_upcoming_contracts(company, date))
     return render(request, "company/company_contracts.html", context)
 
 

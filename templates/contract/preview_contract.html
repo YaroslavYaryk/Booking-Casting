@@ -7,12 +7,15 @@
       <title>Preview Contract: {{artist.artist.name}}</title>
 {% endblock title %}
 
+{% block link %}
+  <link rel="stylesheet" href="{% static 'css/contract_form.css' %}">
+{% endblock link %}
 
 {% block content %}
     <div class="block_critical_date" style="display: none;">
         <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
         <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
-        <p class="mb-0 flex-1">Invalid date</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        <p class="mb-0 flex-1 innerText">Invalid date</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div> <div class="block_critical_price" style="display: none;">
         <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
@@ -23,7 +26,7 @@
     <div class="block_critical" style="display: none;">
         <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
         <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
-        <p class="mb-0 flex-1">Invalid date format</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        <p class="mb-0 flex-1 innerText">Invalid date format</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
     <h3 class="mb-3" style="text-align: center;">Contract: {{artist.customer.name}} -  {{artist.artist.name}} </h3>
@@ -33,13 +36,13 @@
     <div class="block_critical2" style="display: none;">
         <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
         <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
-        <p class="mb-0 flex-1">Invalid date format</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        <p class="mb-0 flex-1 innerText">Invalid date format</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
     <div class="block_critical_date2" style="display: none;">
         <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
         <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
-        <p class="mb-0 flex-1">Invalid date</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        <p class="mb-0 flex-1 innerText">Invalid date</p><button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div> <div class="block_critical_price2" style="display: none;">
         <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
@@ -54,6 +57,18 @@
         <a class="btn btn-danger btn-lg discard_contract" style="padding: 7px 60px;" > DISCARD </a>
         <a class="btn btn-success btn-lg save_contract"style="padding: 7px 60px;" > SAVE </a>
     </div>
+    <div id="contentPopup" class="popup-wrapper ">
+
+        <!-- Modal content -->
+        <div class="popup-content">
+          <a href="" class="yes">YES</a>
+          <a href="" class="no">NO</a>
+          <h2 class="popupTitle">Warning</h2>
+          <p class="message_text">{{error_message}}!!!</p>
+          <span>Make contract anyway?</span>
+        </div>
+      
+      </div>
 
 
     <script type="text/javascript">
@@ -68,13 +83,11 @@
 
             for(var i=0; i<elements.length; i++){
                 var el = elements[i].innerText.replaceAll("_", '') 
-                if (elements[i].style.color == "black"){
-                    console.log(elements[i], i)
-                    if (i === 0){
+                if (elements[i].style.color ==  "black"){
                         var date = el;
                         const pattern = /^(\d{2})\.(\d{2})\.(\d{4})/g;
                         const pattern2 = /^(\d{4})-(\d{2})-(\d{2})/g;
-    
+                        
                         if (date.match(pattern)){
                             var res = date.split(".") 
                             date = res[2]+"-"+res[1]+"-"+res[0]
@@ -89,24 +102,24 @@
                             return
                         }
                     }
-                    if( i === 1){
-                        var honorar = el
-                    }
-                    if( i === 2 || i === 3 ){
-                        if(!el.startsWith("* All")){
-    
-                            batailing += el + " ";
-                        }
-                    }
-                    if( i === 4 ){
-                        comment += el ;
-                    } 
+                if (elements[i].style.color == "rgb(12, 12, 12)"){
+                    var honorar = el
                 }
+                if (elements[i].style.color == "rgb(10, 10, 10)"){
+                    batailing += el + " ";
+                }    
+                    
+                if (elements[i].style.color == "rgb(9, 9, 9)"){
+                    comment += el ;
+                }    
+                    
                 }
                 
             if (!(date || honorar || batailing)){
                 return
             }
+
+
             
             daysInMonth = new Date(date.split("-")[0], date.split("-")[1], 0).getDate();
             if (date.split("-")[2] > daysInMonth || !Number(new Date(date))){
@@ -127,7 +140,33 @@
                 return
             }
 
-            
+            if (Date.parse(date)-Date.parse(new Date())<0){
+                var block_critical = document.querySelector(".block_critical")
+                var block_critical2 = document.querySelector(".block_critical2")
+
+                block_critical.querySelector(".innerText").innerText = "Date cannot be in the past"
+                block_critical2.querySelector(".innerText").innerText = "Date cannot be in the past"
+
+                block_critical.style.display = "block"
+                block_critical2.style.display = "block"
+                return 
+            }
+
+            var artistDates = JSON.parse("{{taken_artist_dates}}")
+            var artistTakenDates = artistDates.map(el => {
+                return (new Date(el)).toISOString().substring(0, 10);
+            })
+
+            var venueDates = JSON.parse("{{taken_venues_dates}}")
+            var venueTakenDates = venueDates.map(el => {
+                return (new Date(el)).toISOString().substring(0, 10);
+            })
+
+            var taken_contract_artist_date = JSON.parse("{{taken_contract_artist_date}}") 
+            var takenContractArtistDates = taken_contract_artist_date.map(el => {
+                return (new Date(el)).toISOString().substring(0, 10);
+            })
+            console.log(takenContractArtistDates)
 
             if (!batailing){
                 batailing = " ";
@@ -144,17 +183,76 @@
                 }
                 
             }
+            console.log(date)
+            console.log(honorar)
+
             console.log(batailing, "batatalonh")
             console.log(comment)
 
             var url = "{% url 'save_contract_data' %}"
-            document.location.href = url + eventArtistId + "/" + date + 
-                                    '/' + honorar + "/" + batailing + "/" + comment + "/" + 
-                                    "page_height/" + `${block_width[0]}_${block_width[1]}_${block_width[2]}_${block_width[3]}` + "/" 
+
+            if(takenContractArtistDates.filter(elem => elem == date).length){
+                var block_critical = document.querySelector(".block_critical")
+                var block_critical2 = document.querySelector(".block_critical2")
+
+                block_critical.querySelector(".innerText").innerText = "Contract of this customer and artist for this date already exists."
+                block_critical2.querySelector(".innerText").innerText = "Contract of this customer and artist for this date already exists."
+
+                block_critical.style.display = "block"
+                block_critical2.style.display = "block"
+                return 
+            }
+
+
+            if (artistTakenDates.filter(elem => elem == date).length ||
+                venueTakenDates.filter(elem => elem == date).length){
+
+                console.log(artistTakenDates.filter(elem => elem == date))
+                console.log(venueTakenDates.filter(elem => elem == date))
+
+                var btnYES = document.querySelector(".yes")
+                btnYES.onclick = (e) =>{
+                    document.location.href = url + eventArtistId + "/" + date + 
+                                        '/' + honorar + "/" + batailing + "/" + comment + "/" + 
+                                        "page_height/" + `${block_width[0]}_${block_width[1]}_${block_width[2]}_${block_width[3]}` + "/"
+                    e.preventDefault()
+                }
+                var btnYES = document.querySelector(".no")
+                btnYES.onclick = (e) =>{
+                    contentPopup.style.display = "none";
+                    e.preventDefault()
+                }
+
+                var contentPopup = document.getElementById('contentPopup');
+
+                // Get the button that opens the contentPopup
+                var btn = document.getElementById("myBtn");
+
+                if (!venueTakenDates.filter(elem => elem == date).length){
+                    contentPopup.querySelector(".message_text").innerText = "This artist is taken for this date"
+                }else{
+                    contentPopup.querySelector(".message_text").innerText = "This venue is taken for this date"
+                }
+                // Get the <span> element that closes the contentPopup
+                var span = document.getElementsByClassName("close")[0];
+
+                contentPopup.style.display = "block";
+                return
+            }else{
+                document.location.href = url + eventArtistId + "/" + date + 
+                                        '/' + honorar + "/" + batailing + "/" + comment + "/" + 
+                                        "page_height/" + `${block_width[0]}_${block_width[1]}_${block_width[2]}_${block_width[3]}` + "/"
+            }
 
 
          
         }
+        
+        {% comment %} for(var i=0; i<artistDates.length; i++){
+            if ( artistDates[i] == date){
+                
+            }
+        } {% endcomment %}
 
         var discardButton = document.querySelector(".discard_contract")
         discardButton.onclick = () =>{
@@ -197,6 +295,7 @@
             }
                 
     }   
+
 
     var tbody = document.getElementsByTagName("table")
     var tbody1 = tbody[0]

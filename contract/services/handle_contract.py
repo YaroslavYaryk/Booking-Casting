@@ -11,6 +11,8 @@ import pdfkit
 from django.template.loader import render_to_string
 from django.utils.text import slugify
 from .static_function import get_company_image
+import time
+import json
 
 
 def get_contract_artist_by_id(id):
@@ -253,7 +255,6 @@ def create_pdf_contract(contract_artist, page_heights):
     contract = rerender_contract(contract_artist, PDF_CONTRACT, to_pdf=True)
 
     context = {"contract": contract, "first": a, "second": b, "third": c, "forth": d}
-
     t = render_to_string("contract/contract_to_pdf.html", context)
     pdfkit.from_string(
         t,
@@ -456,4 +457,52 @@ def is_allowed_to_change_contract(contract_id, user):
     print(ContractEventTeam.objects.filter(contract__id=contract_id, user=user))
     return ContractEventTeam.objects.get(
         contract__id=contract_id, user=user, role="admin"
+    )
+
+
+def get_artist_taken_dates(contract_artist):
+    artist = contract_artist.artist
+
+    return json.dumps(
+        [
+            int(time.mktime(el.date.timetuple())) * 1000
+            for el in Contract.objects.filter(artist=artist).exclude(
+                id=contract_artist.id
+            )
+        ]
+    )
+
+
+def get_venues_taken_dates(contract_artist):
+    venue = contract_artist.venue
+    print(
+        json.dumps(
+            [
+                time.mktime(el.date.timetuple()) * 1000
+                for el in Contract.objects.filter(venue=venue).exclude(
+                    id=contract_artist.id
+                )
+            ]
+        )
+    )
+    return json.dumps(
+        [
+            time.mktime(el.date.timetuple()) * 1000
+            for el in Contract.objects.filter(venue=venue).exclude(
+                id=contract_artist.id
+            )
+        ]
+    )
+
+
+def get_contract_artist_date(contract_artist):
+    customer = contract_artist.customer
+    artist = contract_artist.artist
+    return json.dumps(
+        [
+            time.mktime(el.date.timetuple()) * 1000
+            for el in Contract.objects.filter(artist=artist, customer=customer).exclude(
+                id=contract_artist.id
+            )
+        ]
     )

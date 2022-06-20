@@ -95,139 +95,137 @@
 
   <div class="card-body bg-light pb-0">
     <div class="table-responsive scrollbar">
-      {% if contracts|length %}
-      <div class="container">
-        <div class="row" id="main">
-            <div class="card mb-3" style="max-width: 1800px;">
-                <div class="row g-0" id="row_row">
-                    <table class="table table-hover table-striped overflow-hidden contract_table_list">
-                    <thead>
-                        <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Customer</th>
-                        <th scope="col">Venue</th>
-                        <th scope="col">Company</th>
-                        <th score="col">Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for contract in contracts %}
-                            <tr class="align-middle table_contract_main_row" id="{{contract.id|get_name_hidden_block_contract}}">
-                                <td>{{contract.date}}</td>
-                                
-                                <td><div class="block">
-                                    <a href="{% url 'customer_details' contract.customer.id %}">{{contract.customer.name}}</a>
-                                </div></td>
-                                <td><div class="block">
-                                    <a href="{% url 'get_company_details' contract.company.id %}">{{contract.company.name}}</a>
-                                </div></td>
-                                <td><div class="block">
-                                    <a href="{% url 'get_venue_details' contract.venue.id %}">{{contract.venue.name}}</a>
-                                </div></td>
-                                
-                                <td>{{contract.price}} <span>NOK</span></td>
+      {% if contracts|length or upcoming_contracts %}
+        {% if contracts|length %}
+        <div class="container">
+            <div class="row" id="main">
+                <div class="card mb-3" style="max-width: 1800px;">
+                    <div class="row g-0" id="row_row">
+                        <table class="table table-hover table-striped overflow-hidden contract_table_list">
+                        <thead>
+                            <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Customer</th>
+                            <th scope="col">Venue</th>
+                            <th scope="col">Company</th>
+                            <th score="col">Price</th>
                             </tr>
-                            <tr class="{{contract.id|get_name_hidden_block_contract}}" style="display: none;">
-                                <td colspan="6">
-                                    <div class="block" style="display: flex; justify-content:space-around; width: 100%">
-                                        {% if contract.contract_pdf_url %}
-                                            <a class="btn btn-success" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
-                                        {% else %}
-                                            <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
-                                        {% endif %}
-                                        {% if user|is_allowed_to_change:contract %}
-                                            {% if not visible %}
-                                                <a class="btn btn-warning" href="{% url 'unhide_artist_contract' contract.id  %}">Unhide</a>
+                        </thead>
+                        <tbody>
+                            {% for contract in contracts %}
+                                <tr class="align-middle table_contract_main_row" id="{{contract.id|get_name_hidden_block_contract}}">
+                                    <td>{{contract.date}}</td>
+                                    
+                                    <td><div class="block">
+                                        <a href="{% url 'customer_details' contract.customer.id %}">{{contract.customer.name}}</a>
+                                    </div></td>
+                                    <td><div class="block">
+                                        <a href="{% url 'get_company_details' contract.company.id %}">{{contract.company.name}}</a>
+                                    </div></td>
+                                    <td><div class="block">
+                                        <a href="{% url 'get_venue_details' contract.venue.id %}">{{contract.venue.name}}</a>
+                                    </div></td>
+                                    
+                                    <td>{{contract.price}} <span>NOK</span></td>
+                                </tr>
+                                <tr class="{{contract.id|get_name_hidden_block_contract}}" style="display: none;">
+                                    <td colspan="6">
+                                        <div class="block" style="display: flex; justify-content:space-around; width: 100%">
+                                            {% if contract.contract_pdf_url %}
+                                                <a class="btn btn-success" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
                                             {% else %}
-                                                <a class="btn btn-warning" href="{% url 'hide_artist_contract' contract.id today_date %}">Hide</a>
+                                                <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
                                             {% endif %}
-                                            <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
-                                        {% endif %}
-                                        <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                    </table>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-    </div>
-      {% else %}
-      
-        {% if visible %}
-            <h4 style="">Upcoming Event</h4>
-            {% if upcoming_contracts %}
-                <div class="container">
-                    <div class="row" id="main">
-                        <div class="card mb-3" style="max-width: 1800px;">
-                            <div class="row g-0" id="row_row">
-                                <table class="table table-hover table-striped overflow-hidden contract_table_list">
-                                <thead>
-                                    <tr>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Customer</th>
-                                    <th scope="col">Venue</th>
-                                    <th scope="col">Company</th>
-                                    <th score="col">Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for contract in upcoming_contracts %}
-                                        <tr class="align-middle table_contract_main_row" id="{{contract.id|get_name_hidden_block_contract}}">
-                                            <td>{{contract.date}}</td>
-                                            
-                                            <td><div class="block">
-                                                <a href="{% url 'customer_details' contract.customer.id %}">{{contract.customer.name}}</a>
-                                            </div></td>
-                                            <td><div class="block">
-                                                <a href="{% url 'get_company_details' contract.company.id %}">{{contract.company.name}}</a>
-                                            </div></td>
-                                            <td><div class="block">
-                                                <a href="{% url 'get_venue_details' contract.venue.id %}">{{contract.venue.name}}</a>
-                                            </div></td>
-                                            
-                                            <td>{{contract.price}} <span>NOK</span></td>
-                                        </tr>
-                                        <tr class="{{contract.id|get_name_hidden_block_contract}}" style="display: none;">
-                                            <td colspan="6">
-                                                <div class="block" style="display: flex; justify-content:space-around; width: 100%">
-                                                    {% if contract.contract_pdf_url %}
-                                                        <a class="btn btn-success" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
-                                                    {% else %}
-                                                        <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
-                                                    {% endif %}
-                                                    {% if user|is_allowed_to_change:contract %}
-                                                        {% if not visible %}
-                                                            <a class="btn btn-warning" href="{% url 'unhide_artist_contract' contract.id  %}">Unhide</a>
-                                                        {% else %}
-                                                            <a class="btn btn-warning" href="{% url 'hide_artist_contract' contract.id today_date %}">Hide</a>
-                                                        {% endif %}
-                                                        <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
-                                                    {% endif %}
-                                                    <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                                </table>
-                                </div>
-                            </div>
-                            
+                                            {% if user|is_allowed_to_change:contract %}
+                                                {% if not visible %}
+                                                    <a class="btn btn-warning" href="{% url 'unhide_artist_contract' contract.id  %}">Unhide</a>
+                                                {% else %}
+                                                    <a class="btn btn-warning" href="{% url 'hide_artist_contract' contract.id today_date %}">Hide</a>
+                                                {% endif %}
+                                                <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
+                                            {% endif %}
+                                            <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
                         </div>
                     </div>
+                    
                 </div>
-            {% else %}
-                <p>There are no any upcoming events</p>
+            </div>
+        </div>
+        {% endif %}
+      
+        {% if visible %}
+            {% if upcoming_contracts %}
+                <h4 style="">Upcoming Event</h4>
+                    <div class="container">
+                        <div class="row" id="main">
+                            <div class="card mb-3" style="max-width: 1800px;">
+                                <div class="row g-0" id="row_row">
+                                    <table class="table table-hover table-striped overflow-hidden contract_table_list">
+                                    <thead>
+                                        <tr>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Customer</th>
+                                        <th scope="col">Venue</th>
+                                        <th scope="col">Company</th>
+                                        <th score="col">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for contract in upcoming_contracts %}
+                                            <tr class="align-middle table_contract_main_row" id="{{contract.id|get_name_hidden_block_contract}}">
+                                                <td>{{contract.date}}</td>
+                                                
+                                                <td><div class="block">
+                                                    <a href="{% url 'customer_details' contract.customer.id %}">{{contract.customer.name}}</a>
+                                                </div></td>
+                                                <td><div class="block">
+                                                    <a href="{% url 'get_company_details' contract.company.id %}">{{contract.company.name}}</a>
+                                                </div></td>
+                                                <td><div class="block">
+                                                    <a href="{% url 'get_venue_details' contract.venue.id %}">{{contract.venue.name}}</a>
+                                                </div></td>
+                                                
+                                                <td>{{contract.price}} <span>NOK</span></td>
+                                            </tr>
+                                            <tr class="{{contract.id|get_name_hidden_block_contract}}" style="display: none;">
+                                                <td colspan="6">
+                                                    <div class="block" style="display: flex; justify-content:space-around; width: 100%">
+                                                        {% if contract.contract_pdf_url %}
+                                                            <a class="btn btn-success" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
+                                                        {% else %}
+                                                            <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
+                                                        {% endif %}
+                                                        {% if user|is_allowed_to_change:contract %}
+                                                            {% if not visible %}
+                                                                <a class="btn btn-warning" href="{% url 'unhide_artist_contract' contract.id  %}">Unhide</a>
+                                                            {% else %}
+                                                                <a class="btn btn-warning" href="{% url 'hide_artist_contract' contract.id today_date %}">Hide</a>
+                                                            {% endif %}
+                                                            <a class="btn btn-info" href="{% url 'customer_edit_contract' contract.id %}">Edit</a>
+                                                        {% endif %}
+                                                        <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    </table>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
             {% endif %}
         {% else %}
-            <p>There are no hiden contracts</p>
-        {% endif %}
-
+        <p>There are no any upcoming events</p>
       {% endif %}
     </div>
     {% if user|is_allowed_to_change_artist:artist %}

@@ -65,7 +65,7 @@ class User(AbstractBaseUser):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     picture = models.ImageField(upload_to="images/users", blank=True)
-    phone = models.CharField(max_length=50, blank=True, unique=True)
+    phone = models.CharField(max_length=50, blank=True)
     driver_licens_classes = models.CharField(max_length=50, blank=True)
     birthdate = models.DateField(null=True, blank=True)
     last_login = models.DateTimeField(auto_now_add=True)

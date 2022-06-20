@@ -50,10 +50,7 @@ class Contract(models.Model):
     )
 
     class Meta:
-        unique_together = (
-            "artist",
-            "customer",
-        )
+        unique_together = ("artist", "customer", "date")
 
     def __str__(self):
         return self.artist.name
@@ -109,7 +106,7 @@ class ContractEventRentalProducts(models.Model):
         )
 
     def __str__(self):
-        return f"{self.contract.artist.name} - { self.contract.customer.name}"
+        return f"contrId - {self.contract.id}; {self.contract.artist.name} - { self.contract.customer.name}"
 
 
 class TimeClock(models.Model):
@@ -132,6 +129,9 @@ class ContractTimeClock(models.Model):
     def __str__(self):
         return f"{self.contract.artist} - {self.contract.customer}"
 
+    def event_time_clock(self):
+        return self.day_schedule.all()
+
 
 class ArtistTeamEvent(models.Model):
     # artist team who will be on event
@@ -141,3 +141,6 @@ class ArtistTeamEvent(models.Model):
 
     def __str__(self):
         return f"{self.contract.artist} - {self.contract.customer}"
+
+    def artist_event_team(self):
+        return self.artist_team.all()

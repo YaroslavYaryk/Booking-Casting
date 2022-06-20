@@ -20,10 +20,23 @@ from contract.models import (
     ArtistTeamEvent,
 )
 from contract.services import handle_contract
+from datetime import datetime, timedelta
 
 
-def get_event_contracts_for_user(user):
-    return ContractEventTeam.objects.filter(user=user)
+def get_event_contracts_for_user(user, date):
+    return ContractEventTeam.objects.filter(user=user, contract__date=date)
+
+
+def get_upcoming_events(user, date):
+    date_today_datetime = datetime.strptime(date, "%Y-%m-%d").date()
+    date_from = str(date_today_datetime + timedelta(days=1))
+    date_to = str(date_today_datetime + timedelta(days=20))
+    return ContractEventTeam.objects.filter(
+        user=user,
+        contract__date__gte=date_from,
+        contract__date__lte=date_to,
+        contract__visible=True,
+    )
 
 
 def get_event_by_id(id):

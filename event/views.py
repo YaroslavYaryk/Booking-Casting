@@ -1,4 +1,5 @@
 from cgitb import handler
+from datetime import datetime
 import time
 from artist.decorators import user_has_perm_to_change
 from company.models import Company
@@ -22,6 +23,7 @@ from .forms import (
 from .models import EventTeam
 from .services import handle_event, constants
 from contract.services import handle_contract
+from artist.services import user_artists, constants as artist_constants
 
 
 class MyEventsListView(LoginRequiredMixin, ListView):
@@ -30,7 +32,7 @@ class MyEventsListView(LoginRequiredMixin, ListView):
     template_name = "event/my_events_list.html"
     context_object_name = "event_team"
 
-    def get_queryset(self):
+    def get_queryset(self, *args, **kwargs):
         return handle_event.get_event_contracts_for_user(self.request.user)
 
     def dispatch(self, *args, **kwargs):
@@ -48,6 +50,34 @@ class MyEventsListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["has_perm"] = self.request.user.is_staff
         return context
+
+
+@login_required(login_url="login")
+def get_my_events(request, date):
+
+    if date == "0":
+        event_date = str(datetime.today().date())
+    else:
+        event_date = date
+    context = {
+        "event_team": handle_event.get_event_contracts_for_user(
+            request.user, event_date
+        ),
+        "has_perm": request.user.is_staff,
+        "today_date": event_date,
+        "today_today": str(datetime.today().date()),
+        "week_days_list": user_artists.get_week_days_list(
+            datetime.strptime(event_date, "%Y-%m-%d").date(),
+            artist_constants.week_names_count[
+                datetime.strptime(event_date, "%Y-%m-%d").date().strftime("%A")
+            ],
+        ),
+        "upcoming_contracts": handle_event.get_upcoming_events(
+            request.user, event_date
+        ),
+    }
+    print(handle_event.get_upcoming_events(request.user, event_date))
+    return render(request, "event/my_events_list.html", context)
 
 
 # @login_required(login_url="login")

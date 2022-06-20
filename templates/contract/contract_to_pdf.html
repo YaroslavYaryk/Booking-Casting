@@ -6,25 +6,20 @@
 
 
 <script type="text/javascript">
-var block = document.querySelector('.block_contract').children
-{% comment %} console.log(document.querySelector('.block_contract')) {% endcomment %}
-for(var i=0; i<block.length; i++){
-    if (block[i].tagName =="DIV"){
-        if (i === 0){
-            block[i].style.height = "{{first}}";
-        }
-        if (i === 2){
-            block[i].style.height = "{{second}}";
-        }
-        if (i === 4){
-            block[i].style.height = "{{third}}";
-        }
-        if (i === 6){
-            block[i].style.height = "{{forth}}";
-        }
-    }
-    console.log(block[i])
-}
+    var block = document.querySelector('.block_contract')
+    
+    var contractDiv = block.querySelector(".contract_div")
+    contractDiv.style.height = "{{first}}";
+
+    var companyDiv = block.querySelector(".company_div")
+    companyDiv.style.height = "{{second}}";
+
+    var hospitalityDiv = block.querySelector(".hospitality_div")
+    hospitalityDiv.style.height = "{{third}}";
+
+    var technicalDiv = block.querySelector(".technical_div")
+    technicalDiv.style.height = "{{forth}}";
+
 </script>
 
 

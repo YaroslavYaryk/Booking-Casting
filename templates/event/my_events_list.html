@@ -4,7 +4,9 @@
 {% load artist_tags %}
 
 {% block messages %}{% endblock messages %}
-
+{% block link %}
+    <link rel="stylesheet" href="{% static  'css/artist_events.css' %}">
+{% endblock link %}
 
 {% block title %}
       <title>My Events</title>
@@ -15,78 +17,170 @@
 <div class="card">
   <div class="card-header">
     <div class="row flex-between-center">
-      <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0" style="display: flex; justify-content:space-between; width: 100%">
         <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Events</h5>
+        <ul class="align-items-center" type="none" style="display: flex; gap:10px; justify-content:space-between;">
+          {% if today_today not in week_days_list %}
+              <li style="font-size: 10px;  background: wheat;" class="btn">
+                  <a style="color: blue"  href="{% url 'get_all_events' today_today %}">
+                      today
+                  </a>
+              </li>
+          {% endif %}
+          <li class="page-item "><a class="page-link " href="{% url 'get_all_events'  today_date|get_date_with_time_delta:-7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&laquo;</span><span class="sr-only "></span></a></li>
+          {% for elem in week_days_list %}
+              {% if elem == today_today %}
+                  
+                  {% if elem == today_date %}
+                      <li style="font-size: 10px;  box-shadow: 0 0 10px black;" class="btn today_date" id="{{elem|get_day_name}}">
+                          <a  href="{% url 'get_all_events'  elem %}">
+                              <div class="day_name">
+                                  {{elem|get_day_name}}
+                              </div>
+                              <div class="date_date">
+                                  {{ elem }}
+                              </div>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li style="font-size: 10px; " class="btn today_date" id="{{elem|get_day_name}}">
+                          <a  href="{% url 'get_all_events' elem %}">
+                              <div class="day_name">
+                                  {{elem|get_day_name}}
+                              </div>
+                              <div class="date_date">
+                                  {{ elem }}
+                              </div>
+                          </a>
+                      </li>
+                  {% endif %}
+              {% else %}
+                  {% if elem == today_date %}
+                      <li style="font-size: 10px; box-shadow: 0 0 10px black;" class="btn" id="{{elem|get_day_name}}">
+                          <a  href="{% url 'get_all_events'  elem %}">
+                              <div class="day_name">
+                                  {{elem|get_day_name}}
+                              </div>
+                              <div class="date_date">
+                                  {{ elem }}
+                              </div>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li style="font-size: 10px;" class="btn " id="{{elem|get_day_name}}">
+                          <a  href="{% url 'get_all_events' elem %}">
+                              <div class="day_name">
+                                  {{elem|get_day_name}}
+                              </div>
+                              <div class="date_date">
+                                  {{ elem }}
+                              </div>
+                          </a>
+                      </li>
+                  {% endif %}
+              {% endif %}
+          
+          {% endfor %}
+          <li class="page-item "><a class="page-link " href="{% url 'get_all_events' today_date|get_date_with_time_delta:7%}" aria-label="Previous"><span class='btn btn-danger' aria-hidden="true">&raquo;</span><span class="sr-only "></span></a></li>
+          
+      </ul>
       </div>
 
-      {% if has_perm %}
-      <div class="col-8 col-sm-auto text-end ps-2">
-        
-      </div>
-      {% endif %}
+      
         
     </div>
   </div>
   <div class="card-body bg-light pb-0">
     <div class="table-responsive scrollbar">
-      {% if event_team|length %}
-      <table class="table table-hover table-striped overflow-hidden contract_table_list">
-        <thead>
-          <tr>
-          <th scope="col">Date</th>
-          <th scope="col">Artist</th>
-          <th scope="col">Customer</th>
-          <th scope="col">Venue</th>
-          <th scope="col">Company</th>
-          <th score="col">Price</th>
-          </tr>
-      </thead>
-        <tbody>
-          {% for team in event_team %}
-              <tr class="align-middle table_contract_main_row" id="{{team.contract.id|get_name_hidden_block_contract}}">
-                <td><a href="{% url 'get_event_details' team.contract.id -1 %}">{{team.contract.date}}</a></td>
-                <td class="text-nowrap">
-                    <div class="d-flex align-items-center">
-                    <div class="ms-2"><a href="{% url 'artist_details' team.contract.artist.id %}">{{team.contract.artist.name}}</a></div>
-                    </div>
-                </td>
-                <td><div class="block">
-                    <a href="{% url 'customer_details' team.contract.customer.id %}">{{team.contract.customer.name}}</a>
-                </div></td>
-                <td><div class="block">
-                    <a href="{% url 'get_company_details' team.contract.company.id %}">{{team.contract.company.name}}</a>
-                </div></td>
-                <td><div class="block">
-                    <a href="{% url 'get_venue_details' team.contract.venue.id %}">{{team.contract.venue.name}}</a>
-                </div></td>
-                
-                <td>{{team.contract.price}} <span>NOK</span></td>
+      {% if event_team|length or upcoming_contracts%}
+      {% if  event_team|length %}
+        <table class="table table-hover table-striped overflow-hidden contract_table_list">
+          <thead>
+            <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Artist</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Venue</th>
+            <th scope="col">Company</th>
+            <th score="col">Price</th>
             </tr>
-            {% comment %} <tr class="{{team.contract.id|get_name_hidden_block_contract}}" style="display: none;">
-                <td colspan="6">
-                    <div class="block" style="display: flex; justify-content:space-around; width: 100%">
-                        {% if team.contract.contract_pdf_url %}
-                            <a class="btn btn-success" target="blank" href="{{team.contract.contract_pdf_url}}">Contract</a>
-                        {% else %}
-                            <a class="btn btn-success disabled" target="blank" href="{{team.contract.contract_pdf_url}}">Contract</a>
-                        {% endif %}
-                        {% if hidden %}
-                            <a class="btn btn-warning" href="{% url 'unhide_contract_from_user' team.contract.id  %}">Unhide</a>
-                        {% else %}
-                            <a class="btn btn-warning" href="{% url 'hide_contract_from_user' team.contract.id  %}">Hide</a>
-                        {% endif %}
-                        <a class="btn btn-info" href="{% url 'user_edit_contract' team.contract.id %}">Edit</a>
-                        <a class="btn btn-secondary" href="{% url 'preview_artist_contract' team.contract.id %}">Read more</a>
+        </thead>
+          <tbody>
+            {% for team in event_team %}
+                <tr class="align-middle table_contract_main_row" id="{{team.contract.id|get_name_hidden_block_contract}}">
+                  <td><a href="{% url 'get_event_details' team.contract.id -1 %}">{{team.contract.date}}</a></td>
+                  <td class="text-nowrap">
+                      <div class="d-flex align-items-center">
+                      <div class="ms-2"><a href="{% url 'artist_details' team.contract.artist.id %}">{{team.contract.artist.name}}</a></div>
+                      </div>
+                  </td>
+                  <td><div class="block">
+                      <a href="{% url 'customer_details' team.contract.customer.id %}">{{team.contract.customer.name}}</a>
+                  </div></td>
+                  <td><div class="block">
+                      <a href="{% url 'get_company_details' team.contract.company.id %}">{{team.contract.company.name}}</a>
+                  </div></td>
+                  <td><div class="block">
+                      <a href="{% url 'get_venue_details' team.contract.venue.id %}">{{team.contract.venue.name}}</a>
+                  </div></td>
+                  
+                  <td>{{team.contract.price}} <span>NOK</span></td>
+              </tr>
+              
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% if upcoming_contracts %}
+        <h4 style="">Upcoming Event</h4>
+            <div class="container">
+                <div class="row" id="main">
+                    <div class="card mb-3" style="max-width: 1800px;">
+                        <div class="row g-0" id="row_row">
+                            <table class="table table-hover table-striped overflow-hidden contract_table_list">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Artist</th>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Venue</th>
+                                    <th scope="col">Company</th>
+                                    <th score="col">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for team in upcoming_contracts %}
+                                <tr class="align-middle table_contract_main_row" id="{{team.contract.id|get_name_hidden_block_contract}}">
+                                    <td><a href="{% url 'get_event_details' team.contract.id -1 %}">{{team.contract.date}}</a></td>
+                                    <td class="text-nowrap">
+                                        <div class="d-flex align-items-center">
+                                        <div class="ms-2"><a href="{% url 'artist_details' team.contract.artist.id %}">{{team.contract.artist.name}}</a></div>
+                                        </div>
+                                    </td>
+                                    <td><div class="block">
+                                        <a href="{% url 'customer_details' team.contract.customer.id %}">{{team.contract.customer.name}}</a>
+                                    </div></td>
+                                    <td><div class="block">
+                                        <a href="{% url 'get_company_details' team.contract.company.id %}">{{team.contract.company.name}}</a>
+                                    </div></td>
+                                    <td><div class="block">
+                                        <a href="{% url 'get_venue_details' team.contract.venue.id %}">{{team.contract.venue.name}}</a>
+                                    </div></td>
+                                    
+                                    <td>{{team.contract.price}} <span>NOK</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        
                     </div>
-                </td>
-            </tr> {% endcomment %}
-          {% endfor %}
-        </tbody>
-      </table>
+                </div>
+            </div>
+        {% endif %}
       {% else %}
-        
-          <p>There is no event yet, try to add some</p>
-        
+        <p>There are no any upcoming events</p>
       {% endif %}
     </div>
   </div>
@@ -94,22 +188,13 @@
   </div>
 
   <script>
-    var contract_table = document.querySelector(".contract_table_list")
-    contract_table.onclick = (e) => {
-        var contract_main_row = e.target.closest(".table_contract_main_row"); 
-        if (contract_main_row){
-            var hidden_table_block = document.querySelector(`.${contract_main_row.id}`)
-            console.log(hidden_table_block)
-            if (hidden_table_block.style.display == ""){
-                console.log('here1')
-                hidden_table_block.style.display = "none"
-            }else{
-                console.log('here2')
-                hidden_table_block.style.display = ""
-            }
-            console.log(hidden_table_block)
-        }
-    }
+   
+    var today_date_elem = document.querySelector(".today_date")
+      if (today_date_elem){
+          console.log("here")
+          today_date_elem.style.position = "relative"
+          today_date_elem.innerHTML  = "<span style='position:absolute; top:-20px; left: 35%' class='today_date_pointer'>today</span>" + today_date_elem.innerHTML
+      }
   </script>
 
 {% endblock %}

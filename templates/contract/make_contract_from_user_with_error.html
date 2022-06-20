@@ -15,7 +15,13 @@
 
 {% block content %}
 
-
+{% if messages %}
+ {% for message in messages %}
+       <div class="alert alert-primary">
+           <strong>{{ message }}</strong>
+       </div>
+ {% endfor %}
+{% endif %}
 <form method="POST" class="contract_form" enctype="multipart/form-data">{% csrf_token %}
 <div class="row g-0">
   <div class="col-lg-8 pe-lg-2">
@@ -110,7 +116,7 @@
     <a href="" class="no">NO</a>
     <h2 class="popupTitle">Warning</h2>
     <p class="message_text">{{error_message}}!!!</p>
-    <span>Contract him anyway?</span>
+    <span>Make contract anyway?</span>
   </div>
 
 </div>

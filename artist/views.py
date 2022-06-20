@@ -278,8 +278,8 @@ def add_user_permission_to_change_or_see(request, artist_id, user_phone, perm_ty
 
     try:
         user_artists.add_permission_to_change(artist_id, user_phone, perm_type)
-        user_artists.create_user_access_status(artist_id, user_phone)
     except Exception as er:
+        raise er
         print(er)
         # if er == "Can't add user that already exists":
         messages.error(request, er)

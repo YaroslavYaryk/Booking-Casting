@@ -10,6 +10,14 @@
 
 {% block content %}
 
+{% if messages %}
+ {% for message in messages %}
+       <div class="alert alert-danger">
+           <strong>{{ message }}</strong>
+       </div>
+ {% endfor %}
+{% endif %}
+
 
 <form method="POST" class="contract_form" enctype="multipart/form-data">{% csrf_token %}
 <div class="row g-0">

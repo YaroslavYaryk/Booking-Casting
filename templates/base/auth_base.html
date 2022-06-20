@@ -163,7 +163,7 @@
 
                   {% if user|has_access_to_event or user.is_staff %}
                     
-                    <a class="nav-link" href="{% url 'get_all_events' %}" role="button" data-bs-toggle="" aria-expanded="false">
+                    <a class="nav-link" href="{% url 'get_all_events' 0 %}" role="button" data-bs-toggle="" aria-expanded="false">
                       <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-store"></span></span><span class="nav-link-text ps-1">My Events</span>
                       </div>
                     </a>

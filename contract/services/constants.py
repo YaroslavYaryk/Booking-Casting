@@ -278,15 +278,15 @@ EDIT_CONTRACT = """
 			</tr>
 			<tr>
 				<td><strong>Honorar:</strong></td>
-				<td><strong>NOK</strong> <span style="color:black"><strong>{{contract.price}}</strong></span></td>
+				<td><strong>NOK</strong> <span style="color:#0C0C0C"><strong>{{contract.price}}</strong></span></td>
 			</tr>
 			<tr>
 				<td>Betaling:</td>
-				<td><span style="color:black">{{p_methods_one}}</span></td>
+				<td><span style="color:#0A0A0A">{{p_methods_one}}</span></td>
 			</tr>
 			<tr>
 				<td>&nbsp;</td>
-				<td><span style="color:black">{{p_methods_two}}</span></td>
+				<td><span style="color:#0A0A0A">{{p_methods_two}}&nbsp;</span></td>
 			</tr>
 		</tbody>
 	</table>
@@ -296,7 +296,7 @@ EDIT_CONTRACT = """
 		{{contract_add_staff}}
 	</div>
 	<p>&nbsp;</p>
-	<p><em>Annet&nbsp; &nbsp; &nbsp;<span style="color:black">{{comment}}</span></em><br />
+	<p><em>Annet&nbsp; &nbsp; &nbsp;<span style="color:#090909">{{comment}}</span></em><br />
 	&nbsp; &nbsp; &nbsp; &nbsp;</p>
 
 	
@@ -561,7 +561,7 @@ BASE_FIELD_LENGTH = 30
 
 
 PDF_CONTRACT = """
-<div style="position: relative;">
+<div class="contract_div" style="position: relative;">
 	<p>
 		<p>
 			{% if company %}
@@ -717,7 +717,7 @@ PDF_CONTRACT = """
 	<center>2 of 4</center>
 {% endif %}
 
-<div style="position: relative; ">
+<div  class="hospitality_div" style="position: relative; ">
 	<p>
 		<p style="padding-top:5px">
 			{% if company %}
@@ -743,7 +743,7 @@ PDF_CONTRACT = """
 	<p>{{artist.hospitality_raider}}</p>
 </div>
 <center>3 of 4</center>
-<div style="position: relative; margin-top: 5px">
+<div  class="technical_div" style="position: relative; margin-top: 5px">
 	<p>
 		<p style="padding-top:5px">
 			{% if company %}
