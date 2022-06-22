@@ -25,7 +25,9 @@
         <div class="block">
             {% if not hidden %}
                 <a class="btn btn-light" href="{% url 'get_hidden_contracts_for_user' user.id %}">Hidden</a>
-                <a class="btn btn-outline-primary  me-1 mb-1"   href="{% url 'customer_create_contract_from_user' user.id %}">Make Contract</a>
+                {% if user|user_company_admin %}
+                    <a class="btn btn-outline-primary  me-1 mb-1"   href="{% url 'customer_create_contract_from_user' user.id %}">Make Contract</a>
+                {% endif %}
             {% else %}
                 <a class="btn btn-success" href="{% url 'get_visible_contracts_for_user' user.id %}">Visible</a>
             {% endif %}
@@ -84,12 +86,14 @@
                                         {% else %}
                                             <a class="btn btn-success disabled" target="blank" href="{{contract.contract_pdf_url}}">Contract</a>
                                         {% endif %}
-                                        {% if hidden %}
-                                            <a class="btn btn-warning" href="{% url 'unhide_contract_from_user' contract.id  %}">Unhide</a>
-                                        {% else %}
-                                            <a class="btn btn-warning" href="{% url 'hide_contract_from_user' contract.id  %}">Hide</a>
+                                        {% if user|is_allowed_to_change:contract %}
+                                            {% if hidden %}
+                                                <a class="btn btn-warning" href="{% url 'unhide_contract_from_user' contract.id  %}">Unhide</a>
+                                            {% else %}
+                                                <a class="btn btn-warning" href="{% url 'hide_contract_from_user' contract.id  %}">Hide</a>
+                                            {% endif %}
+                                            <a class="btn btn-info" href="{% url 'user_edit_contract' contract.id %}">Edit</a>
                                         {% endif %}
-                                        <a class="btn btn-info" href="{% url 'user_edit_contract' contract.id %}">Edit</a>
                                         <a class="btn btn-secondary" href="{% url 'preview_artist_contract' contract.id %}">Read more</a>
                                     </div>
                                 </td>

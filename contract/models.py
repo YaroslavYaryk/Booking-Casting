@@ -144,3 +144,67 @@ class ArtistTeamEvent(models.Model):
 
     def artist_event_team(self):
         return self.artist_team.all()
+
+
+class RentalProductImage(models.Model):
+    image = models.FileField(("Image"), upload_to="company_products/")
+
+    def __str__(self):
+        return self.image.name
+
+
+class CRentalProduct(models.Model):
+
+    product_name = models.CharField(("Product Name"), max_length=150)
+    product_image = models.ManyToManyField(
+        RentalProductImage, verbose_name=("RentalProductImage")
+    )
+    in_stock = models.IntegerField(("In stock"))
+    price = models.FloatField(("Price"))
+
+    def __str__(self):
+        return self.product_name
+
+    class Meta:
+
+        """our model display in django-admin"""
+
+        verbose_name = "Rental Product"
+        verbose_name_plural = "Rental Products"
+
+
+class CompanyRentalProduct(models.Model):
+
+    company = models.ForeignKey(
+        Company, verbose_name=("Company"), on_delete=models.CASCADE
+    )
+    product_type = models.CharField(("Product Type"), max_length=50)
+    products = models.ManyToManyField(CRentalProduct, verbose_name=("Product"))
+
+    def __str__(self):
+        return f"{self.company.name} - {self.product_type}"
+
+
+class CompanyContractRentalProduct(models.Model):
+
+    company = models.ForeignKey(
+        Company, verbose_name=("Company"), on_delete=models.CASCADE
+    )
+    contract = models.ForeignKey(
+        Contract, verbose_name=("Contract"), on_delete=models.CASCADE
+    )
+    product = models.ForeignKey(
+        CRentalProduct, verbose_name=("Product"), on_delete=models.CASCADE
+    )
+    count = models.IntegerField(("Product Count"))
+
+    def __str__(self):
+        return f"{self.company.name} - {self.contract.id} - {self.product.product_name}"
+
+    def save(self, *args, **kwargs):
+        if self.count and self.count > self.product.in_stock:
+            raise ValidationError("There are no as many of this product")
+        else:
+            self.product.in_stock -= self.count
+            self.product.save()
+        super(CompanyContractRentalProduct, self).save(*args, **kwargs)

@@ -12,6 +12,8 @@ from .views import (
     get_company_hiden_contracts,
     hide_artist_contract,
     unhide_artist_contract,
+    change_user_permission_to_change_or_see_company,
+    delete_user_from_changeble,
 )
 
 urlpatterns = [
@@ -50,5 +52,20 @@ urlpatterns = [
         "<contract_id>/unhide_contract_company/",
         unhide_artist_contract,
         name="unhide_artist_company_contract",
+    ),
+    # company access
+    path(
+        "change_user_permission/",
+        change_user_permission_to_change_or_see_company,
+        name="change_user_permission_to_change_or_see_company",
+    ),
+    path(
+        "change_user_permission/<access_id>/<perm_type>/",
+        change_user_permission_to_change_or_see_company,
+    ),
+    path(
+        "company/delete_user_from_changeble/<access_id>/",
+        delete_user_from_changeble,
+        name="delete_user_from_changeble_company",
     ),
 ]

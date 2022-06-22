@@ -7,14 +7,22 @@ from .models import (
     ContractRentalProducts,
     TimeClock,
     ArtistTeamEvent,
+    CRentalProduct,
+    CompanyContractRentalProduct,
+    CompanyRentalProduct,
+    RentalProductImage,
 )
 
 # Register your models here.
 
 admin.site.register(Contract)
 admin.site.register(ContractTimeClock)
-admin.site.register(ContractEventRentalProducts)
+# admin.site.register(ContractEventRentalProducts)
 admin.site.register(ContractEventTeam)
-admin.site.register(ContractRentalProducts)
+# admin.site.register(ContractRentalProducts)
 admin.site.register(TimeClock)
 admin.site.register(ArtistTeamEvent)
+admin.site.register(CRentalProduct)
+admin.site.register(CompanyContractRentalProduct)
+admin.site.register(CompanyRentalProduct)
+admin.site.register(RentalProductImage)

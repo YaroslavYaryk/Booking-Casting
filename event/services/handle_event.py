@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from artist.models import Artist, ArtistAccess
 from artist.services import user_artists
-from company.models import Company
+from company.models import Company, CompanyAccess
 from customer.models import Customer, CustomerAccess
 from event.models import Event, EventRentalProducts, EventTeam, RentalProducts
 from jinja2 import Template
@@ -48,7 +48,10 @@ def delete_event(event_id):
 
 
 def get_company_queryset(user):
-    return Company.objects.filter(creator=user, active=True)
+    my_companies_ids = [
+        el.company.id for el in CompanyAccess.objects.filter(access=user, admin=True)
+    ]
+    return Company.objects.filter(id__in=my_companies_ids, active=True)
 
 
 def get_venue_queryset(user):

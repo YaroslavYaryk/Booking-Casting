@@ -21,7 +21,6 @@ from artist.services import user_artists, constants as artist_constants
 from contract.services import handle_contract
 
 
-@method_decorator(user_has_perm_to_change, name="dispatch")
 class CompanyListView(LoginRequiredMixin, ListView):
 
     model = Company
@@ -30,7 +29,7 @@ class CompanyListView(LoginRequiredMixin, ListView):
     context_object_name = "companies"
 
     def get_queryset(self):
-        return Company.objects.filter(creator=self.request.user)
+        return handle_company.get_company_for_user(self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -46,7 +45,7 @@ def add_new_company(request):
 
         if form.is_valid():
             company_obj = form.save()
-            company_obj.creator = request.user
+            handle_company.add_user_to_company_access(company_obj, request.user, True)
             company_obj.save()
             return HttpResponseRedirect(
                 reverse(
@@ -64,11 +63,10 @@ def add_new_company(request):
 
 
 @login_required(login_url="login")
-@user_has_perm_to_change
 def get_company_details(request, company_id):
 
     try:
-        handle_company.is_allowed_to_change(company_id, request.user)
+        handle_company.is_allowed_to_see(company_id, request.user)
     except:
         return render(request, "dashboard/page_blocked.html")
 
@@ -77,6 +75,7 @@ def get_company_details(request, company_id):
         "company": company,
         "my_contracts": handle_company.get_all_company_contracts(company),
         "today_today": str(datetime.today().date()),
+        "users_has_access": handle_company.get_users_have_access(company, request.user),
     }
 
     return render(request, "company/details.html", context=context)
@@ -84,6 +83,11 @@ def get_company_details(request, company_id):
 
 @login_required(login_url="login")
 def change_company_details(request, company_id):
+
+    try:
+        handle_company.is_allowed_to_see(company_id, request.user)
+    except:
+        return render(request, "dashboard/page_blocked.html")
 
     company = handle_company.get_company_by_id(company_id)
     if request.method == "POST":
@@ -232,5 +236,44 @@ def unhide_artist_contract(request, contract_id):
         reverse(
             "get_company_hiden_contracts",
             kwargs={"company_id": contract.company.id},
+        )
+    )
+
+
+@login_required(login_url="login")
+def change_user_permission_to_change_or_see_company(request, access_id, perm_type):
+    try:
+        company = handle_company.change_permission_to_change(
+            access_id, perm_type, request.user
+        )
+    except Exception as er:
+        print(er)
+        messages.error(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse(
+            "get_company_details",
+            kwargs={
+                "company_id": company.id,
+            },
+        )
+    )
+
+
+@login_required(login_url="login")
+def delete_user_from_changeble(request, access_id):
+
+    try:
+        company = handle_company.delete_from_changeble(access_id)
+    except Exception as ex:
+        print(ex)
+        messages.error(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse(
+            "get_company_details",
+            kwargs={
+                "company_id": company.id,
+            },
         )
     )

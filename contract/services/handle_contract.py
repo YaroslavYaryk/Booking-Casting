@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from company.models import CompanyAccess
 from artist.models import ArtistAccess
 from venue.models import VenueAccess
 from contract.models import Contract, ContractEventTeam
@@ -278,8 +279,11 @@ def get_contracts_for_user(user, visible=True):
     customer_ids = [
         el.customer.id for el in CustomerAccess.objects.filter(access=user, admin=True)
     ]
+    contract_ids = [
+        el.contract.id for el in ContractEventTeam.objects.filter(user=user)
+    ]
 
-    return Contract.objects.filter(customer__id__in=customer_ids, visible=visible)
+    return Contract.objects.filter(id__in=contract_ids, visible=visible)
 
 
 def artist_taken_for_date(artist, date, contract_id):
@@ -431,13 +435,21 @@ def add_perm_to_event_to_all_users_of_venue(venue, contract):
 
 def add_perm_to_event_company_creator(company, contract):
 
-    event_team_user = ContractEventTeam.objects.filter(
-        contract=contract, user=company.creator
-    )
-    if not event_team_user:
-        ContractEventTeam.objects.get_or_create(
-            contract=contract, user=company.creator, role="admin"
+    company_access_obj = CompanyAccess.objects.filter(company=company)
+
+    for elem in company_access_obj:
+        event_team_user = ContractEventTeam.objects.filter(
+            contract=contract, user=elem.access
         )
+        if not event_team_user:
+            if elem.admin:
+                ContractEventTeam.objects.create(
+                    contract=contract, user=elem.access, role="admin"
+                )
+            else:
+                ContractEventTeam.objects.create(
+                    contract=contract, user=elem.access, role="user"
+                )
 
 
 def add_permission_participants_to_contract_event(contract):
@@ -451,6 +463,53 @@ def add_permission_participants_to_contract_event(contract):
     add_perm_to_event_to_all_users_of_customer(customer, contract)
     add_perm_to_event_to_all_users_of_venue(venue, contract)
     add_perm_to_event_company_creator(company, contract)
+
+
+def add_perm_to_company_to_all_users_of_artist(artist, company):
+    artist_access_obj = ArtistAccess.objects.filter(artist=artist)
+    for elem in artist_access_obj:
+        event_team_user = CompanyAccess.objects.filter(
+            company=company, access=elem.access
+        )
+        if not event_team_user:
+            CompanyAccess.objects.create(
+                company=company, access=elem.access, admin=False
+            )
+
+
+def add_perm_to_company_to_all_users_of_customer(customer, company):
+    customer_access_obj = CustomerAccess.objects.filter(customer=customer)
+    for elem in customer_access_obj:
+        event_team_user = CompanyAccess.objects.filter(
+            company=company, access=elem.access
+        )
+        if not event_team_user:
+            CompanyAccess.objects.create(
+                company=company, access=elem.access, admin=False
+            )
+
+
+def add_perm_to_company_to_all_users_of_venue(venue, company):
+    venue_access_obj = VenueAccess.objects.filter(venue=venue)
+    for elem in venue_access_obj:
+        event_team_user = CompanyAccess.objects.filter(
+            company=company, access=elem.access
+        )
+        if not event_team_user:
+            CompanyAccess.objects.create(
+                company=company, access=elem.access, admin=False
+            )
+
+
+def add_contract_members_access(contract_artist):
+    artist = contract_artist.artist
+    customer = contract_artist.customer
+    venue = contract_artist.venue
+    company = contract_artist.company
+
+    add_perm_to_company_to_all_users_of_artist(artist, company)
+    add_perm_to_company_to_all_users_of_customer(customer, company)
+    add_perm_to_company_to_all_users_of_venue(venue, company)
 
 
 def is_allowed_to_change_contract(contract_id, user):

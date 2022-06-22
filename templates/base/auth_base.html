@@ -122,14 +122,14 @@
                     </div>
                     {% endif %}
 
-                    {% if user|user_has_customer_or_can_create_contract %}
+                    {% if user|user_hass_access_to_contract %}
                     
                       <a class="nav-link" href="{% url 'get_visible_contracts_for_user' user.id %}" role="button" data-bs-toggle="" aria-expanded="false">
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-store"></span></span><span class="nav-link-text ps-1">My Contracts</span>
                         </div>
                       </a>
                     {% endif %}
-                    {% if user.is_staff %}
+                    {% if user.is_staff or user|has_access_to_company %}
                       <a class="nav-link" href="{% url 'get_my_companies' %}" role="button" data-bs-toggle="" aria-expanded="false">
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-store"></span></span><span class="nav-link-text ps-1">My Companies</span>
                         </div>

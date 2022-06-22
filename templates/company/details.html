@@ -101,22 +101,69 @@
                             <label class="form-label" for="email1">Terms - </label>
                             <a href="{% url 'load_company_terms' company.id %}">Terms</a>
                           </div>
-
-                          <div style=" width: 90%" class="button-edit-delete d-flex justify-content-start">                    
-                            <div class="col-12 ">
-                              <a class="btn btn-danger" href="{% url 'completely_delete_company' company.id %}" type="submit">Delete </a>
+                          {% if user|has_access_full_to_company %}
+                            <div style=" width: 90%" class="button-edit-delete d-flex justify-content-start">                    
+                              <div class="col-12 ">
+                                <a class="btn btn-danger" href="{% url 'completely_delete_company' company.id %}" type="submit">Delete </a>
+                              </div>
+                              <div class="col-12 ">
+                                <a class="btn btn-primary" href="{% url 'change_company_details' company.id %}" type="submit">Edit </a>
+                              </div>
                             </div>
-                            <div class="col-12 ">
-                              <a class="btn btn-primary" href="{% url 'change_company_details' company.id %}" type="submit">Edit </a>
-                            </div>
-                          </div>
-
+                          {% endif %}
                   </form>
                 </div>
                 
               </div>
              
-              
+              {% if user|has_access_full_to_company and users_has_access %}          
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h5 class="mb-0">Users that has access</h5>
+                  </div>
+                  <div class="card-body bg-light">
+                    <table class="table table-bordered ">
+                      <thead>
+                        <tr>
+                          <th scope="col">User</th>
+                          <th class="" style="width:13%" scope="col">Can edit</th>
+                          <th class="text-center">Change</th>
+                          <th class="text-center">Delete</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for user_for in users_has_access %}
+
+                          <tr class="table-has-access-row table-hover" >
+                            <td><a href="{% url 'user_profile_view' user %}">{{user_for.access.email}}</a></td>
+                            <td class="text-center">
+                              {% if user_for.admin %}
+                                <div class="align-center form-check form-switch"><input class="form-check-input" checked id={{user_for.id}} type="checkbox"  /><label class="form-check-label" for="flexSwitchCheckChecked"></label></div>
+                              {% else %}
+                                <div class="align-center form-check form-switch"><input class="form-check-input" id={{user_for.id}} type="checkbox"  /><label class="form-check-label" for="flexSwitchCheckChecked"></label></div>
+                              {% endif %} 
+                            </td>
+                            <td>
+
+                              <div class="my-box text-center" id="userChange" name={{user_for.id}} style="width:100%">
+                                <a class="btn btn-info" name={{user_for.id}} href="#popup1">Change</a>
+                              </div>
+                              
+                            </td>
+                            <td><div class="my-box text-center" style="width:100%">
+                              
+                              <a href="{% url 'delete_user_from_changeble_company' user_for.id %}" class="btn btn-danger">Delete</a>
+                            </div></td>
+                            
+                          </tr>
+                          
+                          {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                
+                </div>
+              {% endif %}  
           </div>
           <div class="col-lg-4 ps-lg-2 customer_events">
             <div class="sticky-sidebar">
@@ -162,7 +209,7 @@
 
     <script type="text/javascript">
       // add user to ones who can change
-      var  artist_id = "{{ artist.id }}"
+      {% comment %} var  artist_id = "{{ artist.id }}"
       var myForm = document.querySelector(".form_add_user")
       myForm.onsubmit = (e) =>{
         e.preventDefault()
@@ -171,14 +218,14 @@
         var url = "{% url 'add_user_permission_to_change_or_see' %}";
         document.location.href = url + artist_id + '/' + addedUserEmail + "/" + radioInputChecked + "/"
         
-      }
+      } {% endcomment %}
 
     // change user permissions
     var changeButtons = document.querySelectorAll("#userChange")
     for(var i=0; i<changeButtons.length; i++){
       changeButtons[i].onclick = (e) =>{
         var checkInput = document.getElementById(e.target.name)
-        var url = "{% url 'change_user_permission_to_change_or_see' %}"
+        var url = "{% url 'change_user_permission_to_change_or_see_company' %}"
         document.location.href = url + e.target.name + '/' + checkInput.checked + '/'
         }
     }

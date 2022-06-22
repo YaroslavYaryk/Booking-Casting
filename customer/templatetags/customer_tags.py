@@ -1,5 +1,6 @@
 from customer.models import CustomerAccess
 from django import template
+from contract.models import ContractEventTeam
 
 register = template.Library()
 
@@ -11,6 +12,6 @@ def has_access_to_customer(user):
 
 
 @register.filter
-def user_has_customer_or_can_create_contract(user):
+def user_hass_access_to_contract(user):
     if user.is_authenticated:
-        return CustomerAccess.objects.filter(access=user, admin=True)
+        return ContractEventTeam.objects.filter(user=user)

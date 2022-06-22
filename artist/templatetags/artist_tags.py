@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+from company.models import CompanyAccess
 from artist.models import ArtistAccess, ArtistAssets, ArtistUserStatus
 from django import template
 from venue.models import VenueAccess, VenuePictures
@@ -49,6 +50,16 @@ def get_image(venue):
 @register.filter
 def artist_contracts_count(artist):
     return artist.contract_set.all().count()
+
+
+@register.filter
+def has_access_to_company(user):
+    return CompanyAccess.objects.filter(access=user)
+
+
+@register.filter
+def has_access_full_to_company(user):
+    return CompanyAccess.objects.filter(access=user, admin=True)
 
 
 @register.filter
@@ -120,6 +131,7 @@ def artist_event_team_exists(contract):
 
 @register.filter
 def is_allowed_to_change(user, contract):
+
     return ContractEventTeam.objects.filter(contract=contract, user=user, role="admin")
 
 
@@ -136,6 +148,11 @@ def is_allowed_to_change_customer(user, customer):
 @register.filter
 def is_allowed_to_change_venue(user, venue):
     return VenueAccess.objects.filter(venue=venue, access=user, admin=True)
+
+
+@register.filter
+def user_company_admin(user):
+    return CompanyAccess.objects.filter(access=user, admin=True)
 
 
 @register.inclusion_tag("tags/message_extractor.html")

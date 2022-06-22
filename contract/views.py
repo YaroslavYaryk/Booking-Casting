@@ -190,6 +190,7 @@ def save_artist_contract_data(
     contract_artist.comment = comment
 
     try:
+        handle_contract.add_contract_members_access(contract_artist)
         contract_artist.contract_pdf_url = handle_contract.create_pdf_contract(
             contract_artist, page_heights
         )
@@ -394,8 +395,8 @@ def get_hidden_contracts_list(request, customer_id):
 
 def get_visible_contracts_for_user(request, user_id):
 
-    if not user_handle.is_allowed_to_create_contract(user_id):
-        return render(request, "dashboard/page_blocked.html")
+    # if not user_handle.is_allowed_to_create_contract(user_id):
+    #     return render(request, "dashboard/page_blocked.html")
 
     user = user_handle.get_user_by_id(user_id)
 

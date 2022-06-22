@@ -201,7 +201,7 @@
               </div>
               {% endif %}
 
-              {% if is_allowed_to_change and users_has_access %}          
+              {% if is_allowed_to_change and users_has_access %}      
                 <div class="card mb-3">
                   <div class="card-header">
                     <h5 class="mb-0">Users that has access</h5>
@@ -214,7 +214,6 @@
                           <th class="" style="width:13%" scope="col">Can edit</th>
                           <th class="text-center">Action</th>
                           <th class="text-center">Delete</th>
-                          <th class="text-center">Info</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -240,9 +239,7 @@
                               
                               <a href="{% url 'delete_user_from_changeble' artist.id user_for.access.id %}" class="btn btn-danger">Delete</a>
                             </div></td>
-                            <td>
-                              <a class="btn btn-secondary" href="">Info</a>
-                            </td>
+                            
                           </tr>
                           
                           {% endfor %}
