@@ -21,6 +21,7 @@ from .forms import (
 from .models import Artist, ArtistAccess
 from .services import request_user_to_change, user_artists, constants
 from contract.services import handle_contract
+from django.utils.translation import gettext as _
 
 
 class MyArtistListView(LoginRequiredMixin, ListView):
@@ -504,3 +505,8 @@ def unhide_artist_contract(request, contract_id):
             kwargs={"artist_id": contract.artist.id},
         )
     )
+
+
+def index(request):
+    print(request, "code")
+    return render(request, "languages/index.html", context={"hello": _("Hello")})

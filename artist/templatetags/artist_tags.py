@@ -155,6 +155,36 @@ def user_company_admin(user):
     return CompanyAccess.objects.filter(access=user, admin=True)
 
 
+@register.filter
+def get_company_prods(product):
+    return product.products.all()
+
+
+@register.filter
+def get_prod_images(prod):
+    return prod.product_image.all()
+
+
+@register.filter
+def get_prod_image_url(prod, num):
+    return prod.product_image.all()[num].image.url
+
+
+@register.filter
+def get_hidden_block_id(prod):
+    return f"hidden_images_block_{prod.id}"
+
+
+@register.filter
+def get_prod_id(prod):
+    return f"image_preview_{prod.id}"
+
+
+@register.filter
+def get_hidden_id(image_obj):
+    return f"hidden_image_{image_obj.id}"
+
+
 @register.inclusion_tag("tags/message_extractor.html")
 def message_creator(message, user, type_of_user, link, message_type_id):
 

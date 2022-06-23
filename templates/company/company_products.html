@@ -1,0 +1,158 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static  'css/artist_events.css' %}">
+{% endblock link %}
+
+{% block title %}
+      <title>Products: {{event.name}}</title>
+{% endblock title %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="row flex-between-center">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0" style="display: flex; width:98%; justify-content: space-between; align-items: center">
+        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">All Products</h5>
+        {% if user|has_access_full_to_company %}
+            <a class="btn btn-falcon-primary me-1 mb-1" href="{% url 'add_company_product' company.id %}">Add Product</a>
+        {% endif %}
+      </div>
+    
+  
+    </div>
+  </div>
+  <div class="card-body bg-light pb-0">
+    
+    <div class="table-responsive scrollbar">
+      {% if products|length %}
+      <div class="container">
+        <div class="row products_block" id="main">
+            {% for product in products %}
+            <div class="block" style="display: flex; justify-content: space-between;">
+                <div class="block_inner"></div>
+                <div class="product_type_block">
+                    <p class="btn btn-secondary disabled mb-1">{{product.product_type}}</p>
+                </div>
+            </div>  
+                {% for prod in product|get_company_prods %}
+                    <div class="card mb-3 " style="max-width: 1800px;">
+                        <div class="row g-0 product_visible_block" id="{{prod.id}}">
+                            <div class="col-md-4 col_header_image" id="col_header col_header_image " style="margin-bottom: 30px;">
+                                <div class="card-header">
+                                </div>
+                                <div class="col_image">
+                                    <img src="{{ prod|get_prod_image_url:0 }}" width="600px"   class="img-fluid rounded-start image_preview" alt="...">
+                                </div>
+                            </div>
+                    
+                            <div class="col-md-8">
+                    
+                                <div class="card-body" >
+                                    <h5 class="card-title">{{product.rental_products.name}}</h5>
+                                    <br>
+                                    <div class="block" style=" margin-top: -20px;">
+                                        <div class="col-lg-12">
+                                            <label style=" color:black" class="form-label" for="show_duration">Name:</label>
+                                            <p>$ {{prod.product_name}}</p>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <label style=" color:black" class="form-label" for="show_duration">Price:</label>
+                                            <p>$ {{prod.price}}</p>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label style=" color:black" class="form-label" for="price">Count:</label>
+                                            {% if prod.in_stock != 0 %}
+                                                <p>{{prod.in_stock}}</p>
+                                            {% else %}
+                                                <p>out of stock</p>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <a class="btn btn-primary" href="">Read more</a>
+                                            {% if user|has_access_full_to_company %}
+                                                <a class="btn btn-info" href="">Edit</a>
+                                                <a class="btn btn-danger" href="">Delete</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden_images_block mb-3" id="{{prod|get_hidden_block_id}}" style="display: none;">
+                            <div class="image_block" style="display: flex; justify-content:center; gap:20px">
+                                {% for image in prod|get_prod_images %}
+                                    <img height="100" class="hidden_image_preview" id="{{image|get_hidden_id}}" src="{{prod|get_prod_image_url:forloop.counter0}}" alt="">
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+      {% else %}
+        <p>This event does not have any product</p>
+
+      {% endif %}
+    </div>
+  </div>
+  
+  </div>
+
+
+  <script>
+
+        const HEIGHT = 200;
+        const WIDTH = 375;
+        
+        var products_block = document.querySelector(".products_block")
+        if (products_block){
+            products_block.onclick = (e) =>{
+                e.preventDefault()
+                if (!e.target.classList.contains("image_preview")){
+                    return
+                }
+                var product_visible_block = e.target.closest(".product_visible_block")
+                var hidden_images_block = document.querySelector(`#hidden_images_block_${product_visible_block.id}`)
+
+                hidden_images_block.onclick = (event) =>{
+                    event.preventDefault()
+                    var hidden_image = event.target
+                    if (hidden_image.classList.contains("hidden_image_preview")){
+                        e.target.src = hidden_image.src
+                        e.target.width *= HEIGHT/e.target.height;
+                        e.target.height = WIDTH;
+                    }
+                }
+
+
+                if (hidden_images_block.style.display == "block"){
+                    hidden_images_block.style.display = "none"
+                }else{
+                    hidden_images_block.style.display = "block"
+                }
+            }
+        }
+        var image_preview = document.querySelectorAll(".image_preview")
+         image_preview.forEach(element =>{
+            
+            var elHeight = element.height
+            element.width *= HEIGHT/element.height;
+            element.height = WIDTH;
+            if (elHeight > HEIGHT){
+                let imageBlock = element.closest(".col_image")
+                imageBlock.style.cssText = `
+                  text-align: center;
+                `;
+              }
+        }) 
+  </script>
+
+
+{% endblock %}

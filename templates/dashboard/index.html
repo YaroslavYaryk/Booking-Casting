@@ -1,12 +1,13 @@
 {% extends 'base/auth_base.html' %} {% load static %}
+{% load i18n %}
 
 {% block content %}
 
 <div class="block" style="text-align: center;">
     {% if user.is_staff %}
-        <p>You have access to create whatever you want</p>
+        <p>{% trans "You have access to create whatever you want" %}</p>
     {% else %}
-        <p>You can't create anything, just wait some time till admin add you permissions</p>
+        <p>{% trans message2 %}</p>
     {% endif %}
 </div>
 

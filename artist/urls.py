@@ -20,6 +20,7 @@ from .views import (
     get_hiden_artist_contracts,
     hide_artist_contract,
     unhide_artist_contract,
+    index,
 )
 
 urlpatterns = [
@@ -98,4 +99,5 @@ urlpatterns = [
         unhide_artist_contract,
         name="unhide_artist_contract",
     ),
+    path("index/", index),
 ]

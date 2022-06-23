@@ -17,22 +17,32 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls.i18n import i18n_patterns
+from artist.views import index as ind
 from users.views import index
+from django.utils.translation import gettext_lazy as _
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("users/", include("users.urls")),
-    path("artist/", include("artist.urls")),
-    path("company/", include("company.urls")),
-    path("contract/", include("contract.urls")),
-    path("customer/", include("customer.urls")),
-    path("event/", include("event.urls")),
-    path("venue/", include("venue.urls")),
-    path("admin_site/", include("admin_app.urls")),
-    path("", index, name="home"),
-    path("ckeditor/", include("ckeditor_uploader.urls")),
-    path("api-auth/", include("rest_framework.urls")),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns = (
+    [
+        path(_("admin/"), admin.site.urls),
+        # path("i18n/", include("django.conf.urls.i18n")),
+    ]
+    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    + i18n_patterns(
+        # path("i/", ind, name="ind"),
+        path("users/", include("users.urls")),
+        path("artist/", include("artist.urls")),
+        path("company/", include("company.urls")),
+        path("contract/", include("contract.urls")),
+        path("customer/", include("customer.urls")),
+        path("event/", include("event.urls")),
+        path("venue/", include("venue.urls")),
+        path("admin_site/", include("admin_app.urls")),
+        path("", index, name="home"),
+        path("ckeditor/", include("ckeditor_uploader.urls")),
+        path("api-auth/", include("rest_framework.urls")),
+    )
+)
 
 
 handler403 = "users.views.handler_forbiden"

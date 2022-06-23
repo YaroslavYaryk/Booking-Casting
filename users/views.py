@@ -12,6 +12,8 @@ from django.views.generic.edit import CreateView
 from .forms import ChangeForm, LoginUserForm, RegisterUserForm
 from .models import User
 from .services import user_actions, user_handle
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, activate, gettext
 
 
 @login_required(login_url="login")
@@ -19,8 +21,12 @@ def index(request):
 
     if request.user.is_admin:
         return HttpResponseRedirect(reverse("admin_dashboard"))
-
-    context = {}
+    context = {
+        "message1": _("You have access to create whatever you want"),
+        "message2": _(
+            "You can't create anything, just wait some time till admin add you permissions"
+        ),
+    }
     return render(request, "dashboard/index.html", context)
 
 

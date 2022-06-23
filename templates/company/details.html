@@ -198,8 +198,22 @@
                 {% endif %}
               </div>
             </div>
+            <div class="mt-3" >
+              <div class="sticky-sidebar">
+                <div class="card   overflow-hidden">
+                  <div class="card-header" style="display: flex; justify-content:space-between; align-items: center">
+                    <h5 class="mb-0">Company Products</h5>
+                    <a class="btn btn-info inviteUserSwitch" href="{% url 'get_company_provided_products' company.id %}">Products</a>
+                  </div>
+
+                 
+                
+              </div>
+            </div>
           </div>
+          
         </div>
+        
       </div>
     </main>
     <!-- ===============================================-->

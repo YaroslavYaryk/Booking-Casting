@@ -15,6 +15,7 @@ django-cors-headers==3.13.0
 django-filter==21.1
 django-js-asset==2.0.0
 django-multiselectfield==0.1.12
+django-multiupload==0.6.1
 django-widget-tweaks==1.4.12
 djangorestframework==3.13.1
 fonttools==4.33.3

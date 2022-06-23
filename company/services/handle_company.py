@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-from os import access
 from company.models import Company, CompanyAccess
 from event.models import Event
+from contract.models import CompanyRentalProduct, CRentalProduct, RentalProductImage
 
 
 def get_company_by_id(id):
@@ -66,3 +66,38 @@ def delete_from_changeble(access_id):
     company = company_access.company
     company_access.delete()
     return company
+
+
+def get_company_products(company):
+    return CompanyRentalProduct.objects.filter(company=company)
+
+
+def create_company_product(cleaned_data):
+    product_name = cleaned_data["product_name"]
+    in_stock = cleaned_data["in_stock"]
+    price = cleaned_data["price"]
+
+    return CRentalProduct.objects.create(
+        product_name=product_name, in_stock=in_stock, price=price
+    )
+
+
+def add_images_to_product(product, files):
+    for elem in files.getlist("images"):
+        el = RentalProductImage.objects.create(image=elem)
+        product.product_image.add(el)
+
+
+def add_product_to_its_product_type(product, company_id, product_type):
+    company = get_company_by_id(company_id)
+    company_rental_prod_obj = CompanyRentalProduct.objects.filter(
+        company=company, product_type=product_type.lower()
+    )
+    if company_rental_prod_obj:
+        company_rental_prod_obj_elem = company_rental_prod_obj.first()
+        company_rental_prod_obj_elem.products.add(product)
+    else:
+        c_rental_product = CompanyRentalProduct.objects.create(
+            company=company, product_type=product_type
+        )
+        c_rental_product.products.add(product)

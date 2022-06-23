@@ -16,7 +16,7 @@ from users.services import user_actions, user_handle
 from company.models import Company
 from company.services import handle_company
 
-from .forms import CompanyForm, TermsForm
+from .forms import CompanyForm, TermsForm, CompanyProductsForm
 from artist.services import user_artists, constants as artist_constants
 from contract.services import handle_contract
 
@@ -262,7 +262,6 @@ def change_user_permission_to_change_or_see_company(request, access_id, perm_typ
 
 @login_required(login_url="login")
 def delete_user_from_changeble(request, access_id):
-
     try:
         company = handle_company.delete_from_changeble(access_id)
     except Exception as ex:
@@ -277,3 +276,60 @@ def delete_user_from_changeble(request, access_id):
             },
         )
     )
+
+
+@login_required(login_url="login")
+def get_company_provided_products(request, company_id):
+    products = []
+    try:
+        company = handle_company.get_company_by_id(company_id)
+        products = handle_company.get_company_products(company)
+    except Exception as ex:
+        print(ex)
+        messages.error(request, "Something went wrong")
+
+    context = {"products": products, "company": company}
+
+    return render(request, "company/company_products.html", context)
+
+
+@login_required(login_url="login")
+def add_company_product(request, company_id):
+    if request.method == "POST":
+        form = CompanyProductsForm(request.POST)
+        if form.is_valid():
+
+            if not request.FILES.get("images"):
+                messages.error(request, "image cannot be empty")
+                return HttpResponseRedirect(
+                    reverse(
+                        "add_company_product",
+                        kwargs={
+                            "company_id": company_id,
+                        },
+                    )
+                )
+
+            try:
+                product = handle_company.create_company_product(form.cleaned_data)
+                handle_company.add_images_to_product(product, request.FILES)
+                handle_company.add_product_to_its_product_type(
+                    product, company_id, form.cleaned_data["product_type"]
+                )
+            except Exception as er:
+                print(er)
+                messages.error(request, er)
+
+            return HttpResponseRedirect(
+                reverse(
+                    "get_company_provided_products",
+                    kwargs={
+                        "company_id": company_id,
+                    },
+                )
+            )
+        else:
+            messages.error(request, "Opps, there are some problems")
+    else:
+        form = CompanyProductsForm()
+    return render(request, "company/add_company_product.html", {"form": form})
