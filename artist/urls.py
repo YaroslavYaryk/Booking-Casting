@@ -21,13 +21,21 @@ from .views import (
     hide_artist_contract,
     unhide_artist_contract,
     index,
+    artist_add_busy_date,
+    artist_delete_busy_date,
+    edit_artist_busy_date,
+    get_all_artist_busy_dates,
 )
 
 urlpatterns = [
     # path("all/", ArtistListView.as_view(), name="all_actors"),
     path("my_artists/", MyArtistListView.as_view(), name="all_my_actors"),
     path("add_new_artist/", add_new_artist, name="add_artist"),
-    path("<artist_id>/artist_details/", get_artist_details, name="artist_details"),
+    path(
+        "<artist_id>/artist_details/<busy_date_id>/",
+        get_artist_details,
+        name="artist_details",
+    ),
     path("<artist_id>/update/", change_details_artist, name="change_artist"),
     path(
         "<artist_id>/send_request_to_change/",
@@ -98,6 +106,26 @@ urlpatterns = [
         "<contract_id>/unhide_contract/",
         unhide_artist_contract,
         name="unhide_artist_contract",
+    ),
+    path(
+        "<artist_id>/add_busy_date/<redirect_link>/",
+        artist_add_busy_date,
+        name="artist_add_busy_date",
+    ),
+    path(
+        "<artist_id>/delete_busy_date/<busy_date_id>/<redirect_link>",
+        artist_delete_busy_date,
+        name="artist_delete_busy_date",
+    ),
+    path(
+        "<artist_id>/edit_busy_date/<busy_date_id>/<redirect_link>/",
+        edit_artist_busy_date,
+        name="edit_artist_busy_date",
+    ),
+    path(
+        "<artist_id>/artist_busy_dates/<busy_date_id>/",
+        get_all_artist_busy_dates,
+        name="get_all_artist_busy_dates",
     ),
     path("index/", index),
 ]

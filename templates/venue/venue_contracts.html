@@ -122,7 +122,7 @@
                                     <td>{{contract.date}}</td>
                                     
                                     <td><div class="block">
-                                        <a href="{% url 'artist_details' contract.artist.id %}">{{contract.artist.name}}</a>
+                                        <a href="{% url 'artist_details' contract.artist.id -1 %}">{{contract.artist.name}}</a>
                                     </div></td>
                                     <td><div class="block">
                                         <a href="{% url 'customer_details' contract.customer.id %}">{{contract.customer.name}}</a>
@@ -191,7 +191,7 @@
                                                 <a href="{% url 'customer_details' contract.customer.id %}">{{contract.customer.name}}</a>
                                             </div></td>
                                             <td><div class="block">
-                                                <a href="{% url 'artist_details' contract.artist.id %}">{{contract.artist.name}}</a>
+                                                <a href="{% url 'artist_details' contract.artist.id -1 %}">{{contract.artist.name}}</a>
                                             </div></td>
                                             <td><div class="block">
                                                 <a href="{% url 'get_venue_details' contract.venue.id %}">{{contract.venue.name}}</a>

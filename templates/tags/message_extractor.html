@@ -17,8 +17,14 @@
                 <div class="col"><a class="d-block inbox-link" ><span class="fw-bold">Sent request to {{message.owner.get_full_name}}</span><span class="mx-1">&ndash;</span><span>Request to change {{type_of_user}} '{{message.artist.name}}'...</span></a>
                 </div>
             {% elif message.requester == user and  message.done and message.granted %}
+            {% if type_of_user == "artist" %}
+                <div class="col"><a href="{% url link message_type_id -1 %}" class="d-block inbox-link" ><span class="fw-bold"> Request to {{message.owner.get_full_name}} is granted</span></a>
+                </div>
+            {% else %}
                 <div class="col"><a href="{% url link message_type_id %}" class="d-block inbox-link" ><span class="fw-bold"> Request to {{message.owner.get_full_name}} is granted</span></a>
                 </div>
+            {% endif %}
+                
             
             {% elif message.requester == user and  message.done and not message.granted %}
                 <div class="col"><a class="d-block inbox-link" ><span class="fw-bold"> Unfortunatelly request to {{message.owner.get_full_name}} is disclaimed</span></a>
@@ -29,8 +35,14 @@
                 </div>
 
             {% elif message.owner == user  %}
-                <div class="col"><a class="d-block inbox-link" href="{% url link message_type_id %}"><span class="fw-bold">Request from {{message.requester.email}}</span><span class="mx-1">&ndash;</span><span>Request to change artist '{{message.artist.name}}'...</span></a>
-                </div>
+                {% if type_of_user == "artist" %}
+                    <div class="col"><a class="d-block inbox-link" href="{% url link message_type_id -1 %}"><span class="fw-bold">Request from {{message.requester.email}}</span><span class="mx-1">&ndash;</span><span>Request to change artist '{{message.artist.name}}'...</span></a>
+                    </div>
+                {% else %}
+                    <div class="col"><a class="d-block inbox-link" href="{% url link message_type_id %}"><span class="fw-bold">Request from {{message.requester.email}}</span><span class="mx-1">&ndash;</span><span>Request to change artist '{{message.artist.name}}'...</span></a>
+                    </div>
+                {% endif %}
+                
 
             
             {% endif %}

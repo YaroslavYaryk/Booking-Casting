@@ -111,7 +111,7 @@
                   <td><a href="{% url 'get_event_details' team.contract.id -1 %}">{{team.contract.date}}</a></td>
                   <td class="text-nowrap">
                       <div class="d-flex align-items-center">
-                      <div class="ms-2"><a href="{% url 'artist_details' team.contract.artist.id %}">{{team.contract.artist.name}}</a></div>
+                      <div class="ms-2"><a href="{% url 'artist_details' team.contract.artist.id -1 %}">{{team.contract.artist.name}}</a></div>
                       </div>
                   </td>
                   <td><div class="block">
@@ -154,7 +154,7 @@
                                     <td><a href="{% url 'get_event_details' team.contract.id -1 %}">{{team.contract.date}}</a></td>
                                     <td class="text-nowrap">
                                         <div class="d-flex align-items-center">
-                                        <div class="ms-2"><a href="{% url 'artist_details' team.contract.artist.id %}">{{team.contract.artist.name}}</a></div>
+                                        <div class="ms-2"><a href="{% url 'artist_details' team.contract.artist.id -1 %}">{{team.contract.artist.name}}</a></div>
                                         </div>
                                     </td>
                                     <td><div class="block">

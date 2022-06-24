@@ -14,6 +14,7 @@ from django.utils.text import slugify
 from .static_function import get_company_image
 import time
 import json
+from artist.models import ArtistBusyDates
 
 
 def get_contract_artist_by_id(id):
@@ -564,4 +565,15 @@ def get_contract_artist_date(contract_artist):
                 id=contract_artist.id
             )
         ]
+    )
+
+
+def add_date_to_user_busy(contract_artist):
+    company_name = contract_artist.company.name
+
+    ArtistBusyDates.objects.create(
+        artist=contract_artist.artist,
+        start_date=contract_artist.date,
+        end_date=contract_artist.date,
+        busy_action=f"Event in {company_name}",
     )

@@ -1,3 +1,4 @@
+from email import message
 from customer.services.request_user_to_change import get_customer_messages_for_user
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -9,11 +10,13 @@ from django.urls.base import reverse
 from django.views.generic.list import ListView
 from users.services import user_handle
 from venue.services import handle_venue
-from datetime import datetime
+from datetime import date, datetime
 from .decorators import user_has_perm_to_change
 from .forms import (
     ArtistAddForm,
     ArtistAssetsForm,
+    ArtistBusyDatesForm,
+    ArtistEditForm,
     HospRiderForm,
     RequestForm,
     TechRiderForm,
@@ -59,18 +62,18 @@ def add_new_artist(request):
         form = ArtistAddForm(request.POST)
 
         if form.is_valid():
-            artist = form.save()
+            artist = form.save(commit=False)
+            artist.date_created = date.today()
+            artist.save()
             try:
                 user_artists.add_artist_access(artist, request.user)
-                artist.save()
+                # artist.save()
             except Exception as er:
                 print(er)
             return HttpResponseRedirect(
                 reverse(
                     "artist_details",
-                    kwargs={
-                        "artist_id": artist.id,
-                    },
+                    kwargs={"artist_id": artist.id, "busy_date_id": -1},
                 )
             )
         else:
@@ -81,7 +84,7 @@ def add_new_artist(request):
 
 
 @login_required(login_url="login")
-def get_artist_details(request, artist_id):
+def get_artist_details(request, artist_id, busy_date_id):
 
     try:
         user_artists.is_allowed_to_change(artist_id, request.user)
@@ -104,9 +107,7 @@ def get_artist_details(request, artist_id):
             return HttpResponseRedirect(
                 reverse(
                     "artist_details",
-                    kwargs={
-                        "artist_id": artist_id,
-                    },
+                    kwargs={"artist_id": artist_id, "busy_date_id": -1},
                 )
             )
         except Exception as ex:
@@ -116,6 +117,20 @@ def get_artist_details(request, artist_id):
     except:
         artist = None
 
+    form_edit_busy_date = (
+        ArtistBusyDatesForm(instance=user_artists.get_busy_date(busy_date_id))
+        if int(busy_date_id) > 0
+        else 0
+    )
+    if user_artists.get_artist_busy_dates(artist):
+        artist_busy_dates = user_artists.get_artist_busy_dates(artist)[:3]
+    else:
+        artist_busy_dates = []
+
+    if user_artists.get_all_artist_contracts(artist):
+        my_contracts = user_artists.get_all_artist_contracts(artist)[:5]
+    else:
+        my_contracts = []
     context = {
         "artist": artist,
         "is_allowed_to_change": user_artists.is_allowed_to_change(
@@ -126,11 +141,40 @@ def get_artist_details(request, artist_id):
         "users_has_access": user_artists.get_users_have_access(artist_id, request.user),
         "aval_users": user_artists.get_avaluable_users(artist),
         "smth": [1, 11, 111, 2, 22, 222],
-        "my_contracts": user_artists.get_all_artist_contracts(artist),
+        "my_contracts": my_contracts,
         "date": str(datetime.today().date()),
+        "artist_busy_dates": artist_busy_dates,
+        "busy_form": ArtistBusyDatesForm(),
+        "busy_date_id": int(busy_date_id),
+        "form_edit_busy_date": form_edit_busy_date,
     }
 
     return render(request, "artist/artist_detailes.html", context=context)
+
+
+@login_required(login_url="login")
+def get_all_artist_busy_dates(request, artist_id, busy_date_id):
+
+    form_edit_busy_date = (
+        ArtistBusyDatesForm(instance=user_artists.get_busy_date(busy_date_id))
+        if int(busy_date_id) > 0
+        else 0
+    )
+
+    artist = user_artists.get_artist_by_id(artist_id)
+
+    context = {
+        "artist": artist,
+        "is_allowed_to_change": user_artists.is_allowed_to_change(
+            artist_id, request.user
+        ),
+        "artist_busy_dates": user_artists.get_artist_busy_dates(artist),
+        "busy_form": ArtistBusyDatesForm(),
+        "busy_date_id": int(busy_date_id),
+        "form_edit_busy_date": form_edit_busy_date,
+    }
+
+    return render(request, "artist/artist_busy_dates.html", context=context)
 
 
 @login_required(login_url="login")
@@ -141,21 +185,18 @@ def change_details_artist(request, artist_id):
 
     artist = user_artists.get_artist_by_id(artist_id)
     if request.method == "POST":
-        form = ArtistAddForm(request.POST, instance=artist)
+        form = ArtistEditForm(request.POST, instance=artist)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(
                 reverse(
                     "artist_details",
-                    kwargs={
-                        "artist_id": artist_id,
-                    },
+                    kwargs={"artist_id": artist_id, "busy_date_id": -1},
                 )
             )
-        else:
-            messages.error(request, "Opps, there are some problems")
+
     else:
-        form = ArtistAddForm(instance=artist)
+        form = ArtistEditForm(instance=artist)
     return render(request, "artist/change_artist.html", {"form": form})
 
 
@@ -248,9 +289,7 @@ def delete_artist_file(request, artist_id, file_id):
     return HttpResponseRedirect(
         reverse(
             "artist_details",
-            kwargs={
-                "artist_id": artist_id,
-            },
+            kwargs={"artist_id": artist_id, "busy_date_id": -1},
         )
     )
 
@@ -267,9 +306,7 @@ def delete_user_from_changeble(request, artist_id, user_id):
     return HttpResponseRedirect(
         reverse(
             "artist_details",
-            kwargs={
-                "artist_id": artist_id,
-            },
+            kwargs={"artist_id": artist_id, "busy_date_id": -1},
         )
     )
 
@@ -280,7 +317,6 @@ def add_user_permission_to_change_or_see(request, artist_id, user_phone, perm_ty
     try:
         user_artists.add_permission_to_change(artist_id, user_phone, perm_type)
     except Exception as er:
-        raise er
         print(er)
         # if er == "Can't add user that already exists":
         messages.error(request, er)
@@ -289,9 +325,7 @@ def add_user_permission_to_change_or_see(request, artist_id, user_phone, perm_ty
     return HttpResponseRedirect(
         reverse(
             "artist_details",
-            kwargs={
-                "artist_id": artist_id,
-            },
+            kwargs={"artist_id": artist_id, "busy_date_id": -1},
         )
     )
 
@@ -310,9 +344,7 @@ def change_user_permission_to_change_or_see(request, access_id, perm_type):
     return HttpResponseRedirect(
         reverse(
             "artist_details",
-            kwargs={
-                "artist_id": artist.id,
-            },
+            kwargs={"artist_id": artist.id, "busy_date_id": -1},
         )
     )
 
@@ -329,9 +361,7 @@ def load_tech_rider(request, artist_id):
             return HttpResponseRedirect(
                 reverse(
                     "artist_details",
-                    kwargs={
-                        "artist_id": artist.id,
-                    },
+                    kwargs={"artist_id": artist.id, "busy_date_id": -1},
                 )
             )
 
@@ -356,9 +386,7 @@ def load_hosp_rider(request, artist_id):
             return HttpResponseRedirect(
                 reverse(
                     "artist_details",
-                    kwargs={
-                        "artist_id": artist.id,
-                    },
+                    kwargs={"artist_id": artist.id, "busy_date_id": -1},
                 )
             )
 
@@ -378,9 +406,7 @@ def invite_user(request, artist_id, user_email):
         return HttpResponseRedirect(
             reverse(
                 "artist_details",
-                kwargs={
-                    "artist_id": artist_id,
-                },
+                kwargs={"artist_id": artist_id, "busy_date_id": -1},
             )
         )
 
@@ -400,9 +426,7 @@ def invite_user(request, artist_id, user_email):
     return HttpResponseRedirect(
         reverse(
             "artist_details",
-            kwargs={
-                "artist_id": artist_id,
-            },
+            kwargs={"artist_id": artist_id, "busy_date_id": -1},
         )
     )
 
@@ -505,6 +529,80 @@ def unhide_artist_contract(request, contract_id):
             kwargs={"artist_id": contract.artist.id},
         )
     )
+
+
+@login_required(login_url="login")
+def artist_add_busy_date(request, artist_id, redirect_link):
+
+    artist = user_artists.get_artist_by_id(artist_id)
+    if request.method == "POST":
+        form = ArtistBusyDatesForm(request.POST)
+
+        if form.is_valid():
+            try:
+                busy_date = form.save(commit=False)
+                busy_date.artist = artist
+                busy_date.save()
+            except Exception as err:
+                print(err)
+                messages.error(request, err)
+
+            return HttpResponseRedirect(
+                reverse(
+                    redirect_link,
+                    kwargs={"artist_id": artist_id, "busy_date_id": -1},
+                )
+            )
+        else:
+            messages.error(request, form.errors)
+            return HttpResponseRedirect(
+                reverse(
+                    redirect_link,
+                    kwargs={"artist_id": artist_id, "busy_date_id": -1},
+                )
+            )
+
+
+@login_required(login_url="login")
+def artist_delete_busy_date(request, artist_id, busy_date_id, redirect_link):
+
+    try:
+        user_artists.delete_busy_date(busy_date_id)
+    except Exception as err:
+        print(err)
+        messages.error(request, err)
+
+    return HttpResponseRedirect(
+        reverse(
+            redirect_link,
+            kwargs={"artist_id": artist_id, "busy_date_id": -1},
+        )
+    )
+
+
+@login_required(login_url="login")
+def edit_artist_busy_date(request, artist_id, busy_date_id, redirect_link):
+
+    if request.method == "POST":
+        form = ArtistBusyDatesForm(
+            request.POST, instance=user_artists.get_busy_date(busy_date_id)
+        )
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(
+                reverse(
+                    redirect_link,
+                    kwargs={"artist_id": artist_id, "busy_date_id": -1},
+                )
+            )
+        else:
+            messages.error(request, form.errors)
+            return HttpResponseRedirect(
+                reverse(
+                    redirect_link,
+                    kwargs={"artist_id": artist_id, "busy_date_id": -1},
+                )
+            )
 
 
 def index(request):

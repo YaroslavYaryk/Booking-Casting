@@ -1,5 +1,5 @@
 from ckeditor.fields import RichTextField
-
+from datetime import date
 from django.db import models
 from users.models import User
 
@@ -12,6 +12,9 @@ class Artist(models.Model):
     technical_raider = RichTextField("technical raider")
     hospitality_raider = RichTextField("technical raider")
     active = models.BooleanField(default=True)
+    date_created = models.DateField(
+        "Date created",
+    )
 
     def __str__(self):
         return self.name
@@ -125,3 +128,16 @@ class ArtistUserStatus(models.Model):
 
     def __str__(self):
         return f"{self.user_access.artist.name}"
+
+
+class ArtistBusyDates(models.Model):
+
+    artist = models.ForeignKey(
+        Artist, verbose_name=("Artist"), on_delete=models.CASCADE
+    )
+    start_date = models.DateField("start_date")
+    end_date = models.DateField("end_date")
+    busy_action = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return f"{self.artist.name} - {self.start_date} - {self.end_date} - {self.busy_action}"

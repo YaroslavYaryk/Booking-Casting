@@ -191,6 +191,7 @@ def save_artist_contract_data(
 
     try:
         handle_contract.add_contract_members_access(contract_artist)
+        handle_contract.add_date_to_user_busy(contract_artist)
         contract_artist.contract_pdf_url = handle_contract.create_pdf_contract(
             contract_artist, page_heights
         )

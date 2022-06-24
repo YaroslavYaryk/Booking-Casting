@@ -41,7 +41,7 @@
           <tr class="align-middle">
             <td class="text-nowrap">
               <div class="d-flex align-items-center">
-                <div class="ms-2"><a href="{% url 'artist_details' artist_access.artist.id %}">{{artist_access.artist.name}}</a></div>
+                <div class="ms-2"><a href="{% url 'artist_details' artist_access.artist.id -1 %}">{{artist_access.artist.name}}</a></div>
               </div>
             </td>
             <td>{{artist_access.artist|artist_contracts_count}}</td>

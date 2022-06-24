@@ -95,7 +95,7 @@
                     </div>
                     <div class="col-lg-6" style="align-items: center" >
                       <label class="form-label" for="name">Artist </label>
-                      <p><a href="{% url 'artist_details' event.artist.id %}">{{ event.artist.name }}</a></p>
+                      <p><a href="{% url 'artist_details' event.artist.id -1 %}">{{ event.artist.name }}</a></p>
                     </div>
                     <div class="col-lg-6">
                       <label class="form-label" for="phone">Venue</label>

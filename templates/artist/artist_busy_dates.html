@@ -1,0 +1,121 @@
+{% extends 'base/auth_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load artist_tags %}
+
+{% comment %} {% block messages %}{% endblock messages %} {% endcomment %}
+
+
+{% block content %}
+<form action="{% url 'artist_add_busy_date' artist.id 'get_all_artist_busy_dates' %}" method="POST">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-lg-3" style="align-items: center" >
+          <label class="form-label" for="name">Start </label>
+          <p>{{busy_form.start_date|add_class:'form-control datetimepicker'}}</p>
+      </div>
+      <div class="col-lg-3" style="align-items: center" >
+        <label class="form-label" for="name">End </label>
+        <p>{{busy_form.end_date|add_class:'form-control datetimepicker'}}</p>
+      </div>
+      <div class="col-lg-4" style="align-items: center" >
+        <label class="form-label" for="name">Comment </label>
+        {{busy_form.busy_action|add_class:'form-control'}}
+      </div>
+      <div class="col-lg-2" style="align-items: center; margin-top: 8px;" >
+        <label for="d"> </label>
+        <button style="display: block;" class="btn btn-success" type="submit">Add</button>
+      </div>
+    </div>
+</form>
+
+<div class="card">
+  <div class="card-header">
+    <div class="row flex-between-center">
+      <div class="col-4 col-sm-auto d-flex align-items-center pe-0">
+        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Artist Busy Dates</h5>
+      </div>
+    
+  
+    </div>
+  </div>
+  <div class="card-body bg-light pb-0">
+    <div class="table-responsive scrollbar">
+      {% if artist_busy_dates|length %}
+      
+              <table class="table table-bordered ">
+                <thead>
+                  <tr>
+                    <th scope="col">Start</th>
+                    <th class="" scope="col">End</th>
+                    <th >Comment</th>
+                    <th class="text-center">Change</th>
+                    <th class="text-center">Delete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for busy_dates in artist_busy_dates %}
+                    {% if busy_dates.id == busy_date_id %}
+                        <tr class=" " >
+                          <td colspan="6">
+                            <form action="{% url 'edit_artist_busy_date' artist.id busy_dates.id 'get_all_artist_busy_dates' %}" method="POST">
+                              {% csrf_token %}
+                              <div class="block" style="display: flex; justify-content: space-between; gap:30px; align-items: center">
+                                <div style="align-items: center; "  >
+                                  <p style="width:220px" >{{form_edit_busy_date.start_date|add_class:'form-control datetimepicker'}}</p>
+                                </div>
+                                <div  style="align-items: center; margin-left: -55px;" >
+                                  <p style="width:200px">{{form_edit_busy_date.end_date|add_class:'form-control datetimepicker'}}</p>
+                                </div>
+                                <div  style="align-items: center; margin-left: -40px;" >
+                                  <p style="width: 475px" >{{form_edit_busy_date.busy_action|add_class:'form-control'}}</p>
+                                </div>
+                                <div style="margin-top: -40px;" >
+                                  <label for="d"> </label>
+                                  <button style="display: block;" class="btn btn-info" type="submit">Change</button>
+                                </div>
+                              </div>
+                            </form>
+                          </td>
+                        </tr>
+                        
+                    {% else %}
+
+                      <tr class="table-has-access-row table-hover" >
+                        <td><p>{{busy_dates.start_date|date:"d.m.Y"}}</p></td>
+                        <td><p>{{busy_dates.end_date|date:"d.m.Y"}}</p></td>
+                        <td><p>{{busy_dates.busy_action}}</p></td>
+
+                        <td>
+                          <div class="my-box text-center" id="userChange" name={{user_for.id}} style="width:100%">
+                            <a class="btn" href="{% url 'get_all_artist_busy_dates' artist.id busy_dates.id %}"><span class="fas fa-exchange-alt" ></span></a>
+                          </div>
+                          
+                        </td>
+                        <td><div class="my-box text-center" style="width:100%">
+                          
+                          <a href="{% url 'artist_delete_busy_date' artist.id busy_dates.id 'get_all_artist_busy_dates' %}" class="btn "><span class="fas fa-times" style="color:red; font-size: 20px;"></span></a>
+                        </div></td>
+                        
+                      </tr>
+                      {% endif %}
+                    
+                    {% endfor %}
+                    
+        </tbody>
+      </table>
+
+      {% else %}
+      {% if has_perm %}
+        <p>There is no artist yet, try to <span><a href="{% url 'add_artist' %}">add</a></span> some</p>
+        
+        {% else %}
+          <p>There is no artist yet</p>
+        {% endif %}
+
+      {% endif %}
+    </div>
+  </div>
+  
+  </div>
+{% endblock %}

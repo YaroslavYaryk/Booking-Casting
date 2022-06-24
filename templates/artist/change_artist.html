@@ -24,13 +24,7 @@
         </div>
     {% endfor %}
 {% endif %}
-{% if messages %}
- {% for message in messages %}
-       <div class="alert alert-primary">
-           <strong>{{ message }}</strong>
-       </div>
- {% endfor %}
-{% endif %}
+
 
 <form method="POST" enctype="multipart/form-data">{% csrf_token %}
   {{form.media}}
@@ -61,11 +55,14 @@
               {{ form.hospitality_raider|add_class:'form-control text-lowercase'}}
             </div>
             <div class="col-12 mb-3">
-              <div class="form-check form-switch">{{ form.active|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active artist</label></div>
-
-              
+              <div class="form-check form-switch">{{ form.active|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active artist</label></div>              
             </div>
             
+            <div class="col-12 mb-3">
+              <label class="form-label" for="email">Play Since</label>
+              {{ form.date_created|add_class:'form-control datetimepicker'}}
+            </div>
+
             <button class="btn btn-primary me-1 mb-1" type="submit">Save</button>
           </div>
       </div>

@@ -399,7 +399,7 @@
                       <tbody>
                         {% for contract in my_contracts %}
                         <tr class="btn-reveal-trigger">
-                          <td><a href="{% url 'artist_details' contract.artist.id %}">{{contract.artist.name}}</a></td>
+                          <td><a href="{% url 'artist_details' contract.artist.id -1 %}">{{contract.artist.name}}</a></td>
                           <td><a href="{% url 'customer_details' contract.customer.id %}">{{contract.customer.name}}</a></td>
                           {% comment %} <td><a href="{% url 'get_company_details' contract.company.id %}">{{contract.company.name}}</a></td> {% endcomment %}
                         </tr>

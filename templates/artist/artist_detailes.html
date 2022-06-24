@@ -92,14 +92,11 @@
                       <label class="form-label" for="first-name">Name</label>
                       <p>{{artist.name}}</p>
                     </div>
-                    <div class="col-lg-6" style="align-items: center" >
-                          <label class="form-label" for="last-name">Active - </label>
-                        {% if artist.active %}
-                            <span style="color: green; font-size: 20px;" class="far fa-check-circle"></span>
-                        {% else %}
-                            <span style="color: red; font-size: 20px;" class="far fa-times-circle"></span>
-                        {% endif %}
+                    <div class="col-lg-6">
+                      <label class="form-label" >Showtime</label>
+                      <div><p>{{artist.date_created|timesince}}</p></div>
                     </div>
+                    
                     <div class="col-lg-6">
                       <label class="form-label" for="email1">Technical Raider</label>
                       <div><a href="{% url 'load_tech_rider' artist.id %}">technical rider</a></div>
@@ -107,6 +104,14 @@
                     <div class="col-lg-6">
                       <label class="form-label" >Hospitality Raider</label>
                       <div><a href="{% url 'load_hosp_rider' artist.id %}">hospitality raider</a></div>
+                    </div>
+                    <div class="col-lg-6" style="align-items: center" >
+                      <label class="form-label" for="last-name">Active - </label>
+                      {% if artist.active %}
+                          <span style="color: green; font-size: 20px;" class="far fa-check-circle"></span>
+                      {% else %}
+                          <span style="color: red; font-size: 20px;" class="far fa-times-circle"></span>
+                      {% endif %}
                     </div>
                     {% if user.is_staff or is_allowed_to_change %}
                     <div style=" width: 90%" class="button-edit-delete d-flex justify-content-start">                    
@@ -131,7 +136,7 @@
                 <div class="card-body bg-light">
                   
                   {% if is_allowed_to_change %}
-                  <form action="{% url 'artist_details' artist.id %}" method="POST" enctype="multipart/form-data">
+                  <form action="{% url 'artist_details' artist.id -1 %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="col-12 mb-3" id="file-picker">
                       <label class="form-label" for="picture">Files:</label>
@@ -249,6 +254,110 @@
                 
                 </div>
               {% endif %}  
+              {% if is_allowed_to_change and users_has_access %}      
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h5 class="mb-0">Artist Busy Dates</h5>
+                  </div>
+                  <div class="card-body bg-light">
+                    <table class="table table-bordered ">
+                      <thead>
+                        <tr>
+                          <th scope="col">Start</th>
+                          <th class="" scope="col">End</th>
+                          <th >Comment</th>
+                          <th class="text-center">Change</th>
+                          <th class="text-center">Delete</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for busy_dates in artist_busy_dates %}
+                          {% if busy_dates.id == busy_date_id %}
+                              <tr class=" " >
+                                <td colspan="6">
+                                  <form action="{% url 'edit_artist_busy_date' artist.id busy_dates.id 'artist_details' %}" method="POST">
+                                    {% csrf_token %}
+                                    <div class="block" style="display: flex; justify-content: space-between; gap:30px; align-items: center">
+                                      <div style="align-items: center; margin-left: -15px;"  >
+                                        <p style="width:130px" >{{form_edit_busy_date.start_date|add_class:'form-control datetimepicker'}}</p>
+                                      </div>
+                                      <div  style="align-items: center; margin-left: -15px;" >
+                                        <p style="width:130px">{{form_edit_busy_date.end_date|add_class:'form-control datetimepicker'}}</p>
+                                      </div>
+                                      <div  style="align-items: center; margin-left: -15px;" >
+                                        <p  >{{form_edit_busy_date.busy_action|add_class:'form-control'}}</p>
+                                      </div>
+                                      <div style="margin-top: -40px;" >
+                                        <label for="d"> </label>
+                                        <button style="display: block;" class="btn btn-info" type="submit">Change</button>
+                                      </div>
+                                    </div>
+                                  </form>
+                                </td>
+                              </tr>
+                              
+                          {% else %}
+
+                            <tr class="table-has-access-row table-hover" >
+                              <td><p>{{busy_dates.start_date|date:"d.m.Y"}}</p></td>
+                              <td><p>{{busy_dates.end_date|date:"d.m.Y"}}</p></td>
+                              <td><p>{{busy_dates.busy_action}}</p></td>
+
+                              <td>
+                                <div class="my-box text-center" id="userChange" name={{user_for.id}} style="width:100%">
+                                  <a class="btn" href="{% url 'artist_details' artist.id busy_dates.id %}"><span class="fas fa-exchange-alt" ></span></a>
+                                </div>
+                                
+                              </td>
+                              <td><div class="my-box text-center" style="width:100%">
+                                
+                                <a href="{% url 'artist_delete_busy_date' artist.id busy_dates.id 'artist_details' %}" class="btn "><span class="fas fa-times" style="color:red; font-size: 20px;"></span></a>
+                              </div></td>
+                              
+                            </tr>
+                            {% endif %}
+                          
+                          {% endfor %}
+                          {% if artist_busy_dates|length > 1 %}
+                            <tr>
+                              <td colspan="5" style=" text-align: center; font-size: 30px; margin-top: -50px; padding-top: 0;">
+                                <a href="{% url 'get_all_artist_busy_dates' artist.id -1 %}" style="text-decoration: none;">
+                                  <span class="far fa-arrow-alt-circle-down"></span>
+                                  <span class="far fa-arrow-alt-circle-down"></span>
+                                  <span class="far fa-arrow-alt-circle-down"></span>
+                                </a>
+
+                              </td>
+                            </tr>
+                          {% endif %}
+                      </tbody>
+                    </table>
+                    <form action="{% url 'artist_add_busy_date' artist.id 'artist_details' %}" method="POST">
+                      {% csrf_token %}
+                      <div class="row">
+                        <div class="col-lg-3" style="align-items: center" >
+                            <label class="form-label" for="name">Start </label>
+                            <p>{{busy_form.start_date|add_class:'form-control datetimepicker'}}</p>
+                        </div>
+                        <div class="col-lg-3" style="align-items: center" >
+                          <label class="form-label" for="name">End </label>
+                          <p>{{busy_form.end_date|add_class:'form-control datetimepicker'}}</p>
+                        </div>
+                        <div class="col-lg-4" style="align-items: center" >
+                          <label class="form-label" for="name">Comment </label>
+                          {{busy_form.busy_action|add_class:'form-control'}}
+                        </div>
+                        <div class="col-lg-2" style="align-items: center; margin-top: 8px;" >
+                          <label for="d"> </label>
+                          <button style="display: block;" class="btn btn-success" type="submit">Add</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                
+                </div>
+              {% endif %}  
+
           </div>
             {% if is_allowed_to_change %}
             <div class="col-lg-4 ps-lg-2">

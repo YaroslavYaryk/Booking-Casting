@@ -201,10 +201,10 @@ class CompanyContractRentalProduct(models.Model):
     def __str__(self):
         return f"{self.company.name} - {self.contract.id} - {self.product.product_name}"
 
-    def save(self, *args, **kwargs):
-        if self.count and self.count > self.product.in_stock:
-            raise ValidationError("There are no as many of this product")
-        else:
-            self.product.in_stock -= self.count
-            self.product.save()
-        super(CompanyContractRentalProduct, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.count and self.count > self.product.in_stock:
+    #         raise ValidationError("There are no as many of this product")
+    #     else:
+    #         self.product.in_stock -= self.count
+    #         self.product.save()
+    #     super(CompanyContractRentalProduct, self).save(*args, **kwargs)

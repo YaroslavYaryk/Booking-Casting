@@ -7,6 +7,7 @@ from .models import (
     ArtistFile,
     ArtistRequestsStorage,
     ArtistUserStatus,
+    ArtistBusyDates,
 )
 
 # Register your models here.
@@ -16,3 +17,4 @@ admin.site.register(ArtistAssets)
 admin.site.register(ArtistRequestsStorage)
 admin.site.register(ArtistFile)
 admin.site.register(ArtistUserStatus)
+admin.site.register(ArtistBusyDates)

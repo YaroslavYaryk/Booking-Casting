@@ -6,6 +6,7 @@ from artist.models import (
     ArtistFile,
     ArtistRequestsStorage,
     ArtistUserStatus,
+    ArtistBusyDates,
 )
 from users.models import User
 from users.services import user_handle
@@ -222,3 +223,15 @@ def get_upcoming_artists(artist, date):
 
 def is_allowed_to_change_artist(artist_id, user):
     return ArtistAccess.objects.get(artist__id=artist_id, access=user, admin=True)
+
+
+def get_artist_busy_dates(artist):
+    return ArtistBusyDates.objects.filter(artist=artist)
+
+
+def delete_busy_date(busy_date_id):
+    ArtistBusyDates.objects.get(pk=busy_date_id).delete()
+
+
+def get_busy_date(busy_date_id):
+    return ArtistBusyDates.objects.get(pk=busy_date_id)

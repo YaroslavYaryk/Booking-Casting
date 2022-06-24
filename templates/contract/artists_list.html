@@ -95,7 +95,7 @@
                 {% if not hidden %}
                 
                     <a class="btn btn-light" href="{% url 'get_hidden_contracts_list' customer.id %}">Hidden</a>
-                    {% if user|user_has_customer_or_can_create_contract %}
+                    {% if user|has_access_full_to_company %}
                         <a class="btn btn-outline-primary  me-1 mb-1"   href="{% url 'customer_create_contract' customer.id %}">Make Contract</a>
                     {% endif %}
                 {% endif %}
@@ -129,7 +129,7 @@
                                 <td>{{contract.date}}</td>
                                 
                                 <td><div class="block">
-                                    <a href="{% url 'artist_details' contract.artist.id %}">{{contract.artist.name}}</a>
+                                    <a href="{% url 'artist_details' contract.artist.id -1 %}">{{contract.artist.name}}</a>
                                 </div></td>
                                 <td><div class="block">
                                     <a href="{% url 'get_company_details' contract.company.id %}">{{contract.company.name}}</a>
@@ -195,7 +195,7 @@
                                             <td>{{contract.date}}</td>
                                             
                                             <td><div class="block">
-                                                <a href="{% url 'artist_details' contract.artist.id %}">{{contract.artist.name}}</a>
+                                                <a href="{% url 'artist_details' contract.artist.id -1 %}">{{contract.artist.name}}</a>
                                             </div></td>
                                             <td><div class="block">
                                                 <a href="{% url 'get_company_details' contract.company.id %}">{{contract.company.name}}</a>
