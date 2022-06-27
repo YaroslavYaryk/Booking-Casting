@@ -17,8 +17,9 @@
     <div class="row flex-between-center">
       <div class="col-4 col-sm-auto d-flex align-items-center pe-0" style="display: flex; width:98%; justify-content: space-between; align-items: center">
         <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">All Products</h5>
-        <a class="btn btn-falcon-success me-1 mb-1" href="{% url 'get_event_details' event.id -1 %}">To Event</a>
-
+        {% if user|has_access_full_to_company %}
+          <a class="btn btn-falcon-primary me-1 mb-1 create_product" href="{% url 'get_event_details' event.id -1 %}">Choose Product</a>
+        {% endif %}
       </div>
     
   
@@ -26,40 +27,82 @@
   </div>
   <div class="card-body bg-light pb-0">
     <div class="table-responsive scrollbar">
+      <div class="block_form_create">
+        <div class="container">
+          <div class="row" id="main">
+            <div class="card mb-3" style="max-width: 1800px;">
+              <form action="" method="POST">
+                {% csrf_token %}
+                <div class="row gx-2">
+                  <div class="mb-3 col-sm-5">
+                    <label class="form-label" for="name">Product</label>
+                    {{ form.product|add_class:'form-control'  }}
+                    <div class="form-error">
+                      {{ form.product.errors }}
+                    </div>
+                  </div>
+                  <div class="mb-3 col-sm-5">
+                    <label class="form-label" for="name">Count</label>
+                    {{ form.count|add_class:'form-control'  }}
+                    <div class="form-error">
+                      {{ form.count.errors }}
+                    </div>
+                  </div>
+                  <div class=" col-sm-2">
+                    <button style="margin-top: 32px;" type="submit" class="btn btn-success">Create</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
       {% if products|length %}
       <div class="container">
         <div class="row" id="main">
             {% for product in products %}
             <div class="card mb-3" style="max-width: 1800px;">
                 <div class="row g-0" id="row_row">
-                    <div class="col-md-4 col_header_image" id="col_header col_header_image " style="margin-bottom: 30px;">
+                    <div class="col-md-4 col_header_image" id="col_header col_header_image " style="margin-bottom: 30px; width:26%">
                         <div class="card-header">
                         </div>
                         <div class="col_image">
-                            <img src="{{ product.rental_products.picture.url }}" width="600px"  class="img-fluid rounded-start image_preview" alt="...">
+                            <img src={{ product.product|get_prod_image_url:0 }}  class="img-fluid rounded-start image_preview" alt="...">
                         </div>
                     </div>
             
-                    <div class="col-md-8">
+                    <div class="col-md-8 item_right_part">
+                        
             
                         <div class="card-body" >
-                            <h5 class="card-title">{{product.rental_products.name}}</h5>
-                            <br>
-                            <div class="block">
+                            <div class="block_header" style="display: flex; justify-content:space-between">
+                              <h5 class="card-title mb-3">{{product.product.product_name}}</h5>
+                              {% if product.confirmed %}
+                                <p style="color:green">Confirmed</p>
+                              {% else %}
+                                <p style="color:red">Unconfirmed</p>
+                              {% endif %}
+                            </div>
+                            <div class="block" style="">
+                                
+                              <div class="col-lg-6">
+                                  <label style=" color:black" class="form-label" for="price">Count:</label>
+                                  <p>{{product.count}}</p>
+                                </div>
                                 <div class="col-lg-12">
                                     <label style=" color:black" class="form-label" for="show_duration">Price:</label>
-                                    <p>{{product.price}}</p>
-                                  </div>
-                                  <div class="col-lg-6">
-                                    <label style=" color:black" class="form-label" for="price">Count:</label>
-                                    <p>{{product.count}}</p>
-                                  </div>
+                                    <p>{{product.total_price}}</p>
+                                </div>
                                   
                                   <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                     <a class="btn btn-primary" href="{% url 'get_event_details' product.contract.id -1 %}">Read more</a>
-                                    {% if user|is_allowed_to_change:event %}
-                                      <a class="btn btn-info" href="{% url 'edit_event_product' product.contract.id product.id %}">Edit</a>
-                                      <a class="btn btn-danger" href="{% url 'delete_event_product' product.contract.id product.rental_products.id %}">Delete</a>
+                                    {% if user|is_allowed_to_change:event and user|has_access_full_to_company %}
+                                      <a class="btn btn-info" href="">Edit</a>
+                                      <a class="btn btn-danger" href="">Delete</a>
+                                      {% if not product.confirmed and user|is_allowed_to_change_customer:product.contract.customer %}
+                                        <a class="btn btn-success" href="{% url 'load_product_confirmation_page' event.id product.id %}">Confirm</a>
+                                      {% endif %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -83,11 +126,11 @@
 
   <script>
 
-        const HEIGHT = 250;
-        const WIDTH = 375;
+        const HEIGHT = 200;
+        const WIDTH = 300;
         
         var image_preview = document.querySelectorAll(".image_preview")
-        {% comment %} image_preview.forEach(element =>{
+        image_preview.forEach(element =>{
             var elHeight = element.height
             element.width *= HEIGHT/element.height;
             element.height = WIDTH;
@@ -97,7 +140,15 @@
                   text-align: center;
                 `;
               }
-        }) {% endcomment %}
+        })
+
+        //create product
+        var create_product = document.querySelector(".create_product")
+        console.log("{{errors|escape}}")
+        create_product.onclick = (e) => {
+          e.preventDefault()
+          console.log("click")
+        }
   </script>
 
 

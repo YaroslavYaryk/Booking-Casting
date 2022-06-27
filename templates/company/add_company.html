@@ -7,30 +7,9 @@
       <title>Create company</title>
 {% endblock title %}
 
+{% block messages %}{% endblock messages %}
 
 {% block content %}
-
-{% if form.errors %}
-    {% for field in form %}
-        {% for error in field.errors %}
-            <div class="alert alert-danger">
-                <strong>{{ error|escape }}</strong>
-            </div>
-        {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-danger">
-            <strong>{{ error|escape }}</strong>
-        </div>
-    {% endfor %}
-{% endif %}
-{% if messages %}
- {% for message in messages %}
-       <div class="alert alert-primary">
-           <strong>{{ message }}</strong>
-       </div>
- {% endfor %}
-{% endif %}
 
 <form method="POST" enctype="multipart/form-data">{% csrf_token %}
 <div class="row g-0">
@@ -49,33 +28,54 @@
             <div class="col-12 mb-3">
               <label class="form-label" for="name">Organization Number</label>
               {{ form.organization_number|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.organization_number.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="first_name">Name</label>
               {{ form.name|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.name.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="last_name">Adddress</label>
               {{ form.address|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.address.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="email">Zip Code</label>
               {{ form.zip_code|add_class:'form-control text-lowercase'}}
+              <div class="form-error">
+                {{ form.zip_code.errors }}
+              </div>
             </div>
 
             <div class="col-12 mb-3">
                 <label class="form-label" for="email">City</label>
                 {{ form.city|add_class:'form-control '}}
+                <div class="form-error">
+                  {{ form.city.errors }}
+                </div>
             </div>
 
             <div class="col-12 mb-3">
               <label class="form-label" for="email">Terms</label>
               {{ form.terms|add_class:'form-control '}}
+              <div class="form-error">
+                {{ form.terms.errors }}
+              </div>
             </div>
 
             <div class="col-12 mb-3">
               <label class="form-label" for="email">Icon</label>
               {{ form.icon|add_class:'form-control '}}
+              <div class="form-error">
+                {{ form.icon.errors }}
+              </div>
             </div>
 
             <div class="col-12 mb-3">

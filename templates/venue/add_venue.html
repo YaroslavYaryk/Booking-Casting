@@ -10,27 +10,7 @@
 
 {% block content %}
 
-{% if form.errors %}
-    {% for field in form %}
-        {% for error in field.errors %}
-            <div class="alert alert-danger">
-                <strong>{{ error|escape }}</strong>
-            </div>
-        {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-danger">
-            <strong>{{ error|escape }}</strong>
-        </div>
-    {% endfor %}
-{% endif %}
-{% if messages %}
- {% for message in messages %}
-       <div class="alert alert-primary">
-           <strong>{{ message }}</strong>
-       </div>
- {% endfor %}
-{% endif %}
+{% block messages %}{% endblock messages %}
 
 <form method="POST" enctype="multipart/form-data">{% csrf_token %}
 <div class="row g-0">
@@ -49,63 +29,103 @@
                 <div class="mb-3 col-sm-6">
                     <label class="form-label" for="name">Name</label>
                     {{ form.name|add_class:'form-control'  }}
+                    <div class="form-error">
+                        {{ form.name.errors }}
+                    </div>
                 </div>
                 <div class="mb-3 col-sm-6">
                     <label class="form-label" for="address">Address</label>
                     {{ form.address|add_class:'form-control'  }}
+                    <div class="form-error">
+                        {{ form.address.errors }}
+                    </div>
                  </div>
             </div>
             <div class="row gx-2">
                 <div class="mb-3 col-sm-6">
                     <label class="form-label" for="zip_code">Zip Code</label>
                     {{ form.zip_code|add_class:'form-control'  }}
+                    <div class="form-error">
+                        {{ form.zip_code.errors }}
+                    </div>
                 </div>
                 <div class="mb-3 col-sm-6">
                     <label class="form-label" for="city">City</label>
                     {{ form.city|add_class:'form-control'  }}
+                    <div class="form-error">
+                        {{ form.city.errors }}
+                    </div>
                  </div>
             </div>
             <div class="row gx-2">
                 <div class="mb-3 col-sm-6">
                     <label class="form-label" for="phone">Phone</label>
                     {{ form.phone|add_class:'form-control'  }}
+                    <div class="form-error">
+                        {{ form.phone.errors }}
+                    </div>
                 </div>
                 <div class="mb-3 col-sm-6">
                     <label class="form-label" for="email">Email</label>
                     {{ form.email|add_class:'form-control'  }}
+                    <div class="form-error">
+                        {{ form.email.errors }}
+                    </div>
                  </div>
             </div>
             <div class="row gx-2">
                 <div class="mb-3 col-sm-6">
                     <label class="form-label" for="capacity">Capacity</label>
                     {{ form.capacity|add_class:'form-control'  }}
+                    <div class="form-error">
+                        {{ form.capacity.errors }}
+                    </div>
                 </div>
                 <div class="mb-3 col-sm-6">
                     <label class="form-label" for="age_limit">Age limit</label>
                     {{ form.age_limit|add_class:'form-control'  }}
+                    <div class="form-error">
+                        {{ form.age_limit.errors }}
+                    </div>
                  </div>
+                 
             </div>
             <div class="row gx-2">
                 <div class="mb-3 col-sm-6">
                     <label class="form-label" for="opening">Opening</label>
                     {{ form.opening|add_class:'form-control '  }}
+                    <div class="form-error">
+                        {{ form.opening.errors }}
+                    </div>
                 </div>
                 <div class="mb-3 col-sm-6">
                     <label class="form-label" for="closing">Closing</label>
                     {{ form.closing|add_class:'form-control'  }}
+                    <div class="form-error">
+                        {{ form.closing.errors }}
+                    </div>
                  </div>
             </div>
             <div class="col-12 mb-3">
                 <label class="form-label" for="comment">Comment</label>
                 {{ form.comment|add_class:'form-control'  }}
+                <div class="form-error">
+                    {{ form.comment.errors }}
+                </div>
             </div>
             <div class="col-12 mb-3">
                 <label class="form-label" for="equipment">Equipment</label>
                 {{ form.equipment|add_class:'form-control'  }}
+                <div class="form-error">
+                    {{ form.equipment.errors }}
+                </div>
             </div>
             <div class="col-12 mb-3 ва">
                 <label class="form-label" for="power">Power</label>
-                    {{ form.power}}
+                {{ form.power}}
+                <div class="form-error">
+                    {{ form.power.errors }}
+                </div>
             </div>
 
             <div class="col-12 mb-3">

@@ -10,27 +10,7 @@
 
 {% block content %}
 
-{% if form.errors %}
-    {% for field in form %}
-        {% for error in field.errors %}
-            <div class="alert alert-danger">
-                <strong>{{ error|escape }}</strong>
-            </div>
-        {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-danger">
-            <strong>{{ error|escape }}</strong>
-        </div>
-    {% endfor %}
-{% endif %}
-{% if messages %}
- {% for message in messages %}
-       <div class="alert alert-primary">
-           <strong>{{ message }}</strong>
-       </div>
- {% endfor %}
-{% endif %}
+{% block messages %}{% endblock messages %}
 
 <form method="POST" enctype="multipart/form-data">{% csrf_token %}
 <div class="row g-0">
@@ -50,22 +30,37 @@
             <div class="col-12 mb-3">
               <label class="form-label" for="name">Organization Number</label>
               {{ form.organization_number|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.organization_number.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="name">Name</label>
               {{ form.name|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.name.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="address">Address</label>
               {{ form.address|add_class:'form-control text-lowercase'}}
+              <div class="form-error">
+                {{ form.address.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
                 <label class="form-label" for="zip_code">Zip Code</label>
                 {{ form.zip_code|add_class:'form-control text-lowercase'}}
+                <div class="form-error">
+                  {{ form.zip_code.errors }}
+                </div>
               </div>
             <div class="col-12 mb-3">
                 <label class="form-label" for="city">City</label>
                 {{ form.city|add_class:'form-control text-lowercase'}}
+                <div class="form-error">
+                  {{ form.city.errors }}
+                </div>
               </div>
               
             <div class="col-12 mb-3">

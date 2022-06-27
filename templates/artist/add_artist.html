@@ -13,28 +13,8 @@
 
 {% block content %}
 
+{% block messages %}{% endblock messages %}
 
-{% if form.errors %}
-    {% for field in form %}
-        {% for error in field.errors %}
-            <div class="alert alert-danger">
-                <strong>{{ error|escape }}</strong>
-            </div>
-        {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-danger">
-            <strong>{{ error|escape }}</strong>
-        </div>
-    {% endfor %}
-{% endif %}
-{% if messages %}
- {% for message in messages %}
-       <div class="alert alert-primary">
-           <strong>{{ message }}</strong>
-       </div>
- {% endfor %}
-{% endif %}
 
 <form method="POST" enctype="multipart/form-data">{% csrf_token %}
 <div class="row g-0">
@@ -55,14 +35,23 @@
             <div class="col-12 mb-3">
               <label class="form-label" for="first_name">Name</label>
               {{ form.name|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.name.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="last_name">Technical raider</label>
               {{ form.technical_raider|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.technical_raider.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="email">Hospitality raider</label>
               {{ form.hospitality_raider|add_class:'form-control text-lowercase'}}
+              <div class="form-error">
+                {{ form.hospitality_raider.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <div class="form-check form-switch">{{ form.active|add_class:'form-check-input'}}<label class="form-check-label" for="flexSwitchCheckDefault">Active artist</label></div>

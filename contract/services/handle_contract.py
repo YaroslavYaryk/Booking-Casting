@@ -291,11 +291,40 @@ def artist_taken_for_date(artist, date, contract_id):
     return artist.contract_set.filter(date=date).exclude(id=contract_id)
 
 
+def date_range(start, end):
+    delta = end - start  # as timedelta
+    days = [start + timedelta(days=i) for i in range(delta.days + 1)]
+    return days
+
+
+def get_artist_busy_dates(artist):
+    arr = []
+    busy_dates_storage = {}
+    for busy_date in artist.artistbusydates_set.all():
+        if busy_date.start_date != busy_date.end_date:
+            element = [
+                (busy_date.busy_action, elem)
+                for elem in date_range(busy_date.start_date, busy_date.end_date)
+            ]
+        else:
+            element = [(busy_date.busy_action, busy_date.start_date)]
+        arr += element
+
+    for elem in arr:
+        if busy_dates_storage.get(elem[1]):
+            busy_dates_storage[elem[1]] += f", {elem[0]}"
+        else:
+            busy_dates_storage[elem[1]] = elem[0]
+
+    return busy_dates_storage
+
+
 def handle_artist_taken(contract_obj, edit=False):
 
     response = ""
 
-    if artist_taken_for_date(contract_obj.artist, contract_obj.date, contract_obj.id):
+    busy_date = get_artist_busy_dates(contract_obj.artist).get(contract_obj.date)
+    if busy_date:
 
         response = HttpResponseRedirect(
             reverse(
@@ -307,9 +336,7 @@ def handle_artist_taken(contract_obj, edit=False):
         )
         if edit:
             response.set_cookie("from_edit", True)
-        response.set_cookie(
-            "error_message", "This artist already has event for this date"
-        )
+        response.set_cookie("error_message", busy_date)
     return response
 
 
@@ -346,7 +373,8 @@ def get_upcoming_events(customer, date):
 
 def handle_artist_taken_from_user(contract_obj, edit=False):
     response = ""
-    if artist_taken_for_date(contract_obj.artist, contract_obj.date, contract_obj.id):
+    busy_date = get_artist_busy_dates(contract_obj.artist).get(contract_obj.date)
+    if busy_date:
 
         response = HttpResponseRedirect(
             reverse(
@@ -358,9 +386,7 @@ def handle_artist_taken_from_user(contract_obj, edit=False):
         )
         if edit:
             response.set_cookie("from_edit_user", True)
-        response.set_cookie(
-            "error_message_from_user", "This artist already has event for this date"
-        )
+        response.set_cookie("error_message_from_user", busy_date)
     return response
 
 
@@ -525,10 +551,8 @@ def get_artist_taken_dates(contract_artist):
 
     return json.dumps(
         [
-            int(time.mktime(el.date.timetuple())) * 1000
-            for el in Contract.objects.filter(artist=artist).exclude(
-                id=contract_artist.id
-            )
+            int(time.mktime(key.timetuple())) * 1000
+            for key in get_artist_busy_dates(artist)
         ]
     )
 

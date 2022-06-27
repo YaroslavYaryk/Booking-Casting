@@ -16,6 +16,8 @@ from users.services import user_handle
 from venue.services import handle_venue
 from .forms import (
     ArtistEventTeamForm,
+    CompanyContractProduct,
+    ConfirmEventProductForm,
     EventForm,
     EventProductForm,
     TimeClockForm,
@@ -76,7 +78,6 @@ def get_my_events(request, date):
             request.user, event_date
         ),
     }
-    print(handle_event.get_upcoming_events(request.user, event_date))
     return render(request, "event/my_events_list.html", context)
 
 
@@ -402,25 +403,14 @@ def delete_user_from_team(request, event_id, user_email):
 def add_event_product(request, event_id):
 
     if request.method == "POST":
-        form = EventProductForm(request.POST, request.FILES)
+        form = CompanyContractProduct([], request.POST)
         if form.is_valid():
-            try:
-                name = form.cleaned_data["name"]
-                picture = form.cleaned_data["picture"]
-                price = form.cleaned_data["price"]
-                count = form.cleaned_data["count"]
-                rental_product = handle_event.create_rental_product(name, picture)
-                handle_event.add_event_rental_product(
-                    event_id, rental_product, price, count
-                )
-            except Exception as er:
-                print(er)
-                messages.error(request, "Something went wrong")
+            print(form.cleaned_data)
         else:
-            messages.error(request, "Form is invalid")
+            print(form.errors)
 
     return HttpResponseRedirect(
-        reverse("get_event_details", kwargs={"event_id": event_id, "time_clock_id": -1})
+        reverse("get_event_products_list", kwargs={"event_id": event_id})
     )
 
 
@@ -428,11 +418,28 @@ def add_event_product(request, event_id):
 def get_event_products_list(request, event_id):
     event_products = handle_event.get_event_products(event_id)
     contract = handle_contract.get_contract_artist_by_id(event_id)
-    print(contract)
+    errors = ""
+    if request.method == "POST":
+        form = CompanyContractProduct([], request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+        else:
+            print(form.data)
+            errors = "Error"
+
+    com_products = []
+
+    try:
+        com_products = handle_event.get_company_products(contract.company)
+    except Exception as err:
+        print(err)
+        messages.error(request, "Something went wrong")
+    form = CompanyContractProduct(com_products)
+
     return render(
         request,
         "event/event_products_list.html",
-        {"products": event_products, "event": contract},
+        {"products": event_products, "event": contract, "form": form, "errors": errors},
     )
 
 
@@ -484,3 +491,39 @@ def edit_event_product(request, event_id, product_id):
     context = {"product": product}
 
     return render(request, "event/edit_event_product.html", context=context)
+
+
+@login_required(login_url="login")
+def load_product_confirmation_page(request, event_id, product_id):
+
+    event = handle_contract.get_contract_artist_by_id(event_id)
+
+    if request.method == "POST":
+        form = ConfirmEventProductForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect(
+                reverse(
+                    "confirm_event_product_from_customer",
+                    kwargs={"event_id": event_id, "product_id": product_id},
+                )
+            )
+    form = ConfirmEventProductForm()
+
+    context = {"company": event.company, "event": event, "form": form}
+
+    return render(request, "event/customer_confirm_event_product.html", context)
+
+
+@login_required(login_url="login")
+def confirm_event_product_from_customer(request, event_id, product_id):
+    print("here")
+
+    try:
+        handle_event.confirm_product(product_id)
+    except Exception as ex:
+        print(ex)
+        messages.error(request, ex)
+
+    return HttpResponseRedirect(
+        reverse("get_event_products_list", kwargs={"event_id": event_id})
+    )

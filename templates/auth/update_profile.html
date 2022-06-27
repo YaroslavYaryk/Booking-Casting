@@ -23,31 +23,52 @@
             <div class="col-12 mb-3">
               <label class="form-label" for="first_name">First name</label>
               {{ form.first_name|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.first_name.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="last_name">Last name</label>
               {{ form.last_name|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.last_name.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="email">Email</label>
               {{ form.email|add_class:'form-control text-lowercase'}}
+              <div class="form-error">
+                {{ form.email.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="first_name">Phone</label>
               {{ form.phone|add_class:'form-control'}}
+              <div class="form-error">
+                {{ form.phone.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3">
               <label class="form-label" for="first_name">Driver licens classes</label>
               {{ form.driver_licens_classes|add_class:'form-control'}}
+              <div class="form-error">
+                  {{ form.driver_licens_classes.errors }}
+              </div>
             </div>
             <div class="col-12 mb-3" id="image-picker">
                 <label class="form-label" for="picture">Picture</label>
                 <br>
                 {{ form.picture|add_class:'form-control' }}
+                <div class="form-error">
+                  {{ form.picture.errors }}
+                </div>
               </div>
               <div class="col-12 mb-3" id="date-picker">
                 <label class="form-label" for="birthdate">birth date</label>
                 {{ form.birthdate|add_class:'form-control datetimepicker'}}
+                <div class="form-error">
+                  {{ form.birthdate.errors }}
+                </div>
               </div>
             <button class="btn btn-primary me-1 mb-1" type="submit">Save</button>
           </div>

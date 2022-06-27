@@ -16,7 +16,7 @@ class ContractArtistForm(forms.ModelForm):
         self.fields["venue"].empty_label = "Please select your venue"
 
         self.fields["company"].queryset = companies
-        self.fields["company"].required = False
+        # self.fields["company"].required = False
         self.fields["company"].empty_label = "Select company if you need"
 
         self.fields["artist"].queryset = artists
@@ -59,7 +59,7 @@ class ContractArtistForm(forms.ModelForm):
         self.fields["venue"].empty_label = "Please select your venue"
 
         self.fields["company"].queryset = companies
-        self.fields["company"].required = False
+        # self.fields["company"].required = False
         self.fields["company"].empty_label = "Select company if you need"
 
         self.fields["artist"].queryset = artists
@@ -105,7 +105,7 @@ class UserContractArtistForm(forms.ModelForm):
         self.fields["venue"].empty_label = "Please select your venue"
 
         self.fields["company"].queryset = companies
-        self.fields["company"].required = False
+        # self.fields["company"].required = False
         self.fields["company"].empty_label = "Select company if you need"
 
         self.fields["artist"].queryset = artists
@@ -154,7 +154,7 @@ class ContractArtistEditForm(forms.ModelForm):
         self.fields["venue"].empty_label = "Please select your venue"
 
         self.fields["company"].queryset = companies
-        self.fields["company"].required = False
+        # self.fields["company"].required = False
         self.fields["company"].empty_label = "Select company if you need"
 
     def clean(self):
@@ -190,7 +190,7 @@ class UserContractArtistEditForm(forms.ModelForm):
         self.fields["venue"].empty_label = "Please select your venue"
 
         self.fields["company"].queryset = companies
-        self.fields["company"].required = False
+        # self.fields["company"].required = False
         self.fields["company"].empty_label = "Select company if you need"
 
     def clean(self):

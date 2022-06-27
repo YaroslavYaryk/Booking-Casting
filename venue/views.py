@@ -65,8 +65,6 @@ def add_new_venue(request):
                     },
                 )
             )
-        else:
-            messages.error(request, "Opps, there are some problems")
     else:
         form = VenueAddForm()
     return render(request, "venue/add_venue.html", {"form": form})
@@ -204,7 +202,7 @@ def delete_venue(request, venue_id):
     if not (request.user.is_staff or VenueAccess.objects.filter(access=request.user)):
         return HttpResponseRedirect(reverse("home"))
 
-    return HttpResponseRedirect(reverse("my_customers"))
+    return HttpResponseRedirect(reverse("get_my_venues"))
 
 
 def delete_user_from_venue_changeble(request, venue_id, user_id):

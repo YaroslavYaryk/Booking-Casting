@@ -18,6 +18,8 @@ django-multiselectfield==0.1.12
 django-multiupload==0.6.1
 django-widget-tweaks==1.4.12
 djangorestframework==3.13.1
+dnspython==2.2.1
+email-validator==1.2.1
 fonttools==4.33.3
 future==0.18.2
 html5lib==1.1
@@ -31,6 +33,7 @@ oscrypto==1.3.0
 pathspec==0.9.0
 pdfcrowd==5.6.0
 pdfkit==1.0.0
+phonenumbers==8.12.50
 Pillow==9.1.1
 platformdirs==2.5.2
 pycparser==2.21

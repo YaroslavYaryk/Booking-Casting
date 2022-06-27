@@ -76,8 +76,6 @@ def add_new_artist(request):
                     kwargs={"artist_id": artist.id, "busy_date_id": -1},
                 )
             )
-        else:
-            messages.error(request, "Opps, there are some problems")
     else:
         form = ArtistAddForm()
     return render(request, "artist/add_artist.html", {"form": form})
@@ -100,7 +98,6 @@ def get_artist_details(request, artist_id, busy_date_id):
             raise PermissionDenied
 
         try:
-            print(request.POST)
             user_artists.save_artist_assets(
                 artist_assets, request.POST.get("credit"), request.FILES
             )
@@ -246,7 +243,6 @@ def handle_change_request(request, r_from, r_to, artist_id):
         else:
             messages.error(request, "Opps, there are some problems")
     else:
-        print("get")
         form = RequestForm()
 
     context = {
@@ -441,7 +437,6 @@ def get_artist_contracts(request, artist_id, date):
     except Exception as err:
         print(err)
         messages(request, "Something went wrong")
-    print(date)
     context = {
         "artist": artist,
         "contracts": artist_contracts,
@@ -606,5 +601,4 @@ def edit_artist_busy_date(request, artist_id, busy_date_id, redirect_link):
 
 
 def index(request):
-    print(request, "code")
     return render(request, "languages/index.html", context={"hello": _("Hello")})

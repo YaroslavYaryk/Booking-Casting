@@ -363,45 +363,7 @@
                       <h5 class="mb-0">Rental Products</h5>
                       <a class="btn btn-success" href="{% url 'get_event_products_list' event.id %}">All Products</a>
                     </div>
-                    {% if user|is_allowed_to_change:event %}
-                      <form class="form_add_user" enctype="multipart/form-data" method="POST" action="{% url 'add_event_product' event.id %}" style="height:220px; align-items:center; padding:20px" >
-                        {% csrf_token %}
-                        {% comment %} <input placeholder="Name" type="text" name="product_name" id="" style="margin-top: -10px;" class=" mb-2 form-control"> {% endcomment %}
-                        {% comment %} {{form.file_field|add_class:'form-control'}} {% endcomment %}
-                        <div class="col-lg-12 mb-2"  >
-                          {{form_event.name|add_class:'form-control'}}
-                          <div class="form-error" style="color: red;">
-                            {{ form_event.name.errors }}
-                          </div>
-                        </div>
-                        <div class="col-lg-12" >
-                          {{form_event.picture|add_class:'form-control'}}
-                          <div class="form-error" style="color: red;">
-                            {{ form_event.picture.errors }}
-                          </div>
-                        </div>
-                        
-                        <div class="block mb-3" style="margin-top: 8px; width:100%; display: flex; justify-content:space-between">  
-                          <div class="col-lg-5" >
-                            {{form_event.price|add_class:'form-control'}}
-                            <div class="form-error" style="color: red;">
-                              {{ form_event.price.errors }}
-                            </div>
-                          </div>
-                          <div class="col-lg-5" >
-                            {{form_event.count|add_class:'form-control'}}
-                            <div class="form-error" style="color: red;">
-                              {{ form_event.count.errors }}
-                            </div>
-                          </div>
-                        </div> 
-
-                        <div class="block_add_user" style="display: flex; justify-content:space-between; margin-top: 10px;">
-                          <div></div>
-                          <button type="submit" class='btn btn-primary' >ADD</button>
-                        </div>
-                      </form>
-                  {% endif %}
+                   
                 </div>
               </div>
                 {% if user|artist_admin:event.artist %}

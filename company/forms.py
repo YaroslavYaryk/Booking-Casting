@@ -7,7 +7,28 @@ from multiupload.fields import MultiFileField, MultiMediaField, MultiImageField
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        exclude = ("creator",)
+        fields = "__all__"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        organization_number = cleaned_data.get("organization_number")
+        zip_code = cleaned_data.get("zip_code")
+
+        try:
+            int(organization_number)
+        except:
+            msg = "Should be all integers"
+            self.add_error("organization_number", msg)
+
+        if Company.objects.filter(organization_number=organization_number):
+            msg = "This organization_number already exists"
+            self.add_error("organization_number", msg)
+
+        try:
+            int(zip_code)
+        except:
+            msg = "Should be all integers"
+            self.add_error("zip_code", msg)
 
 
 class TermsForm(forms.Form):

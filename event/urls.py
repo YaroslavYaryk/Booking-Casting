@@ -22,6 +22,8 @@ from .views import (
     edit_time_clock_to_event,
     edit_event_artist_team,
     get_my_events,
+    confirm_event_product_from_customer,
+    load_product_confirmation_page,
 )
 from .api import urls as event_api
 
@@ -57,8 +59,8 @@ urlpatterns = [
         delete_user_from_team,
         name="delete_user_from_team",
     ),
-    path("<event_id>/add_event_product/", add_event_product, name="add_event_product"),
     # event products
+    path("<event_id>/add_event_product/", add_event_product, name="add_event_product"),
     path(
         "<event_id>/products_list/",
         get_event_products_list,
@@ -73,6 +75,16 @@ urlpatterns = [
         "<event_id>/edit_event_product/<product_id>/",
         edit_event_product,
         name="edit_event_product",
+    ),
+    path(
+        "<event_id>/confirmation_page/<product_id>/",
+        load_product_confirmation_page,
+        name="load_product_confirmation_page",
+    ),
+    path(
+        "<event_id>/customer_confirm_product/<product_id>/",
+        confirm_event_product_from_customer,
+        name="confirm_event_product_from_customer",
     ),
     # time clock
     path(

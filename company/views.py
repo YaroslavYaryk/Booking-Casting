@@ -55,8 +55,6 @@ def add_new_company(request):
                     },
                 )
             )
-        else:
-            messages.error(request, "Opps, there are some problems")
     else:
         form = CompanyForm()
     return render(request, "company/add_company.html", {"form": form})
@@ -179,7 +177,6 @@ def get_company_contracts(request, company_id, date):
         "visible": True,
         "upcoming_contracts": handle_company.get_upcoming_contracts(company, date),
     }
-    print(handle_company.get_upcoming_contracts(company, date))
     return render(request, "company/company_contracts.html", context)
 
 

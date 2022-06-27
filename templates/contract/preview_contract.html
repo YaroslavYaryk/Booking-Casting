@@ -151,12 +151,11 @@
                 block_critical2.style.display = "block"
                 return 
             }
-
             var artistDates = JSON.parse("{{taken_artist_dates}}")
             var artistTakenDates = artistDates.map(el => {
                 return (new Date(el)).toISOString().substring(0, 10);
             })
-
+            console.log(artistTakenDates)
             var venueDates = JSON.parse("{{taken_venues_dates}}")
             var venueTakenDates = venueDates.map(el => {
                 return (new Date(el)).toISOString().substring(0, 10);
@@ -229,7 +228,7 @@
                 var btn = document.getElementById("myBtn");
 
                 if (!venueTakenDates.filter(elem => elem == date).length){
-                    contentPopup.querySelector(".message_text").innerText = "This artist is taken for this date"
+                    contentPopup.querySelector(".message_text").innerText = "This date is marked as 'busy' for this artist"
                 }else{
                     contentPopup.querySelector(".message_text").innerText = "This venue is taken for this date"
                 }
@@ -239,9 +238,9 @@
                 contentPopup.style.display = "block";
                 return
             }else{
-                document.location.href = url + eventArtistId + "/" + date + 
+                {% comment %} document.location.href = url + eventArtistId + "/" + date + 
                                         '/' + honorar + "/" + batailing + "/" + comment + "/" + 
-                                        "page_height/" + `${block_width[0]}_${block_width[1]}_${block_width[2]}_${block_width[3]}` + "/"
+                                        "page_height/" + `${block_width[0]}_${block_width[1]}_${block_width[2]}_${block_width[3]}` + "/" {% endcomment %}
             }
 
 

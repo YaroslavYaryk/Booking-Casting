@@ -123,7 +123,7 @@
                     </div>
                     {% endif %}
 
-                    {% if user|user_hass_access_to_contract %}
+                    {% if user|has_access_full_to_company %}
                     
                       <a class="nav-link" href="{% url 'get_visible_contracts_for_user' user.id %}" role="button" data-bs-toggle="" aria-expanded="false">
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-store"></span></span><span class="nav-link-text ps-1">My Contracts</span>

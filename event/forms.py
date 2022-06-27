@@ -1,5 +1,5 @@
 from django import forms
-from contract.models import ContractTimeClock, TimeClock, ArtistTeamEvent
+from contract.models import ContractTimeClock, TimeClock, CompanyContractRentalProduct
 
 from event.models import Event
 
@@ -76,3 +76,36 @@ class ArtistEventTeamForm(forms.Form):
     def __init__(self, team_users, *args, **kwargs):
         super(ArtistEventTeamForm, self).__init__(*args, **kwargs)
         self.fields["artist_team"].choices = team_users
+
+
+class ConfirmEventProductForm(forms.Form):
+
+    accept = forms.BooleanField(required=True)
+
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     accept = cleaned_data.get("accept")
+
+    #     if not accept:
+    #         msg = "You should accept all company Terms"
+    #         self.add_error("accept", msg)
+
+
+class CompanyContractProduct(forms.ModelForm):
+    class Meta:
+        model = CompanyContractRentalProduct
+        exclude = ("company", "contract", "total_price", "confirmed")
+
+    def __init__(self, company_products, *args, **kwargs):
+        super(CompanyContractProduct, self).__init__(*args, **kwargs)
+        if company_products:
+            self.fields["product"].queryset = company_products
+
+    def clean(self):
+        cleaned_data = super().clean()
+        product = cleaned_data.get("product")
+        count = cleaned_data.get("count")
+        print(count, product.in_stock)
+        if count > product.in_stock:
+            msg = "Count is nore than products in stock"
+            self.add_error("count", msg)

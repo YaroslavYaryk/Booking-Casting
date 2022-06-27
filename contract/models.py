@@ -163,7 +163,7 @@ class CRentalProduct(models.Model):
     price = models.FloatField(("Price"))
 
     def __str__(self):
-        return self.product_name
+        return f"{self.product_name} - ${self.price} (in stock {self.in_stock})"
 
     class Meta:
 
@@ -197,6 +197,8 @@ class CompanyContractRentalProduct(models.Model):
         CRentalProduct, verbose_name=("Product"), on_delete=models.CASCADE
     )
     count = models.IntegerField(("Product Count"))
+    total_price = models.FloatField("Total product price", null=True)
+    confirmed = models.BooleanField(("Confirmed"), default=False, null=True)
 
     def __str__(self):
         return f"{self.company.name} - {self.contract.id} - {self.product.product_name}"

@@ -11,13 +11,15 @@ from users.services import user_handle
 from venue.models import Venue, VenueAccess
 from event.services import constants
 from contract.models import (
+    CRentalProduct,
     Contract,
-    ContractEventRentalProducts,
+    CompanyContractRentalProduct,
     ContractEventTeam,
     ContractRentalProducts,
     ContractTimeClock,
     TimeClock,
     ArtistTeamEvent,
+    CompanyRentalProduct,
 )
 from contract.services import handle_contract
 from datetime import datetime, timedelta
@@ -199,7 +201,7 @@ def update_rental_product(name, picture, product):
 def add_event_rental_product(contract_id, rental_product, price, count):
     contract = handle_contract.get_contract_artist_by_id(contract_id)
 
-    ContractEventRentalProducts.objects.create(
+    CompanyContractRentalProduct.objects.create(
         contract=contract, rental_products=rental_product, price=price, count=count
     )
 
@@ -212,8 +214,8 @@ def update_event_rental_product(product, rental_product, price, count):
 
 
 def get_event_products(contract_id):
-    print(ContractEventRentalProducts.objects.filter(contract__id=contract_id))
-    return ContractEventRentalProducts.objects.filter(contract__id=contract_id)
+
+    return CompanyContractRentalProduct.objects.filter(contract__id=contract_id)
 
 
 def delete_event_product(product_id):
@@ -221,7 +223,7 @@ def delete_event_product(product_id):
 
 
 def get_event_product_by_id(product_id):
-    return ContractEventRentalProducts.objects.get(pk=product_id)
+    return CompanyContractRentalProduct.objects.get(pk=product_id)
 
 
 def validate_product(post):
@@ -258,7 +260,7 @@ def delete_rental_product(rental_product_id):
 
 
 def get_event_rental_product_by_id(event_product_id):
-    return ContractEventRentalProducts.objects.get(pk=event_product_id)
+    return CompanyContractRentalProduct.objects.get(pk=event_product_id)
 
 
 def delete_event_rental_product(event_product_id):
@@ -367,3 +369,22 @@ def edit_event_artist_team(contract, artist_users_team):
 #     for artist in events_artists:
 #         if not ArtistAccess.objects.filter(artist=artist, access=user):
 #             ArtistAccess.objects.create(artist=artist, access=user, admin=False)
+
+
+def confirm_product(product_id):
+    product = CompanyContractRentalProduct.objects.get(id=product_id)
+    product.confirmed = True
+    product.save()
+
+
+def get_company_products(company):
+
+    try:
+        c_rental_products = CompanyRentalProduct.objects.filter(company=company)
+        prod_ids = [
+            y.id for x in c_rental_products for y in x.products.filter(in_stock__gte=1)
+        ]
+        return CRentalProduct.objects.filter(id__in=prod_ids)
+    except Exception as err:
+        print(err)
+        return []

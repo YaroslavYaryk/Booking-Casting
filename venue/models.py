@@ -11,7 +11,9 @@ class Venue(models.Model):
     zip_code = models.CharField("Zip Code", max_length=255)
     city = models.CharField("City", max_length=255)
     phone = models.CharField("Phone", max_length=255)
-    email = models.EmailField("Email", max_length=255)
+    email = models.EmailField(
+        "Email", max_length=255, error_messages={"key": "Invalid email"}
+    )
     capacity = models.CharField("Capacity", max_length=255)
     opening = models.TimeField(("Opening Time"), auto_now=False, auto_now_add=False)
     closing = models.TimeField(("Closing Time"), auto_now=False, auto_now_add=False)
@@ -41,9 +43,9 @@ class VenueContacts(models.Model):
     """class of single product"""
 
     venue = models.ForeignKey(Venue, verbose_name=("Venue"), on_delete=models.CASCADE)
-    first_name = models.CharField("first name", max_length=255, unique=True)
+    first_name = models.CharField("first name", max_length=255)
     last_name = models.CharField("last name", max_length=255)
-    phone = models.CharField("phone", max_length=255, unique=True)
+    phone = models.CharField("phone", max_length=255)
     epost = models.EmailField("email", max_length=255)
     role = models.CharField("role", max_length=255)
     active = models.BooleanField(default=True)

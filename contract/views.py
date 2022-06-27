@@ -17,8 +17,10 @@ from .services import handle_contract, constants, static_function
 from users.services import user_handle
 from artist.services import user_artists, constants as art_constants
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 
 
+@login_required(login_url="login")
 def create_contract(request, customer_id):
 
     customer = handle_customer.get_customer_by_id(customer_id)
@@ -79,6 +81,7 @@ def create_contract(request, customer_id):
     return render(request, "contract/make_contract.html", context=context)
 
 
+@login_required(login_url="login")
 def create_contract_with_errors(request, contract_id):
 
     companies = handle_event.get_company_queryset(request.user)
@@ -97,6 +100,7 @@ def create_contract_with_errors(request, contract_id):
     return render(request, "contract/make_contract_with_error.html", context=context)
 
 
+@login_required(login_url="login")
 def create_contract_with_errors_from_user(request, contract_id):
 
     companies = handle_event.get_company_queryset(request.user)
@@ -117,6 +121,7 @@ def create_contract_with_errors_from_user(request, contract_id):
     )
 
 
+@login_required(login_url="login")
 def get_contract(request, contract_id):
 
     try:
@@ -145,6 +150,7 @@ def get_contract(request, contract_id):
     return render(request, "contract/contract.html", context)
 
 
+@login_required(login_url="login")
 def preview_artist_contract(request, contract_id):
     contract_artist = handle_contract.get_contract_artist_by_id(contract_id)
     contract = handle_contract.rerender_contract(
@@ -180,6 +186,7 @@ def preview_artist_contract(request, contract_id):
     )
 
 
+@login_required(login_url="login")
 def save_artist_contract_data(
     request, event_artist_id, date, honorar, payment_methods, comment, page_heights
 ):
@@ -210,11 +217,11 @@ def save_artist_contract_data(
     )
 
 
+@login_required(login_url="login")
 def get_visible_contracted_artists(request, customer_id, date):
 
     customer = handle_customer.get_customer_by_id(customer_id)
     artists = handle_contract.get_contracted_artists(customer, date)
-    print(artists)
     context = {
         "contracts": artists,
         "customer": customer,
@@ -233,6 +240,7 @@ def get_visible_contracted_artists(request, customer_id, date):
     return render(request, "contract/artists_list.html", context=context)
 
 
+@login_required(login_url="login")
 def cancel_contract(request, contract_id, redirect_link):
 
     try:
@@ -244,6 +252,7 @@ def cancel_contract(request, contract_id, redirect_link):
     return handle_contract.get_responce_redirect(customer_id, redirect_link)
 
 
+@login_required(login_url="login")
 def edit_contract(request, contract_id):
 
     if not handle_contract.user_has_access_to_customer(contract_id, request.user):
@@ -307,6 +316,7 @@ def edit_contract(request, contract_id):
     return response
 
 
+@login_required(login_url="login")
 def get_contract_view(request, contract_id):
 
     rendered_template = handle_contract.get_rendered_contract(contract_id)
@@ -340,6 +350,7 @@ def get_contract_view(request, contract_id):
 #     )
 
 
+@login_required(login_url="login")
 def hide_contract(request, contract_id, date):
 
     contract = handle_contract.get_contract_artist_by_id(contract_id)
@@ -360,6 +371,7 @@ def hide_contract(request, contract_id, date):
     )
 
 
+@login_required(login_url="login")
 def unhide_contract(request, contract_id):
     contract = handle_contract.get_contract_artist_by_id(contract_id)
     try:
@@ -375,6 +387,7 @@ def unhide_contract(request, contract_id):
     )
 
 
+@login_required(login_url="login")
 def get_hidden_contracts_list(request, customer_id):
 
     try:
@@ -394,6 +407,7 @@ def get_hidden_contracts_list(request, customer_id):
     return render(request, "contract/artists_list.html", context=context)
 
 
+@login_required(login_url="login")
 def get_visible_contracts_for_user(request, user_id):
 
     # if not user_handle.is_allowed_to_create_contract(user_id):
@@ -414,6 +428,7 @@ def get_visible_contracts_for_user(request, user_id):
     )
 
 
+@login_required(login_url="login")
 def get_hidden_contracts_for_user(request, user_id):
 
     user = user_handle.get_user_by_id(user_id)
@@ -431,6 +446,7 @@ def get_hidden_contracts_for_user(request, user_id):
     )
 
 
+@login_required(login_url="login")
 def customer_create_contract_from_user(request, user_id):
 
     try:
@@ -487,6 +503,7 @@ def customer_create_contract_from_user(request, user_id):
     return render(request, "contract/user_make_contract.html", context=context)
 
 
+@login_required(login_url="login")
 def user_edit_contract(request, contract_id):
 
     if not handle_contract.user_has_access_to_customer(contract_id, request.user):
@@ -508,7 +525,6 @@ def user_edit_contract(request, contract_id):
         if form.is_valid():
             try:
                 contr = form.save()
-                print(contr)
                 contr.customer = customer
                 contr.artist = contract.artist
                 contr.contract = handle_contract.rerender_contract(contr)
@@ -551,6 +567,7 @@ def user_edit_contract(request, contract_id):
     return response
 
 
+@login_required(login_url="login")
 def hide_contract_from_user(request, contract_id):
 
     contract = handle_contract.get_contract_artist_by_id(contract_id)
@@ -565,6 +582,7 @@ def hide_contract_from_user(request, contract_id):
     )
 
 
+@login_required(login_url="login")
 def unhide_contract_from_user(request, contract_id):
     contract = handle_contract.get_contract_artist_by_id(contract_id)
     try:

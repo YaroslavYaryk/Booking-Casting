@@ -80,8 +80,6 @@ def add_new_customer(request):
                     },
                 )
             )
-        else:
-            messages.error(request, "Opps, there are some problems")
     else:
         form = CustomerAddForm()
 
