@@ -5,6 +5,7 @@
 
 {% block link %}
     <link rel="stylesheet" href="{% static  'css/artist_events.css' %}">
+    
 {% endblock link %}
 
 {% block title %}
@@ -12,6 +13,8 @@
 {% endblock title %}
 
 {% block content %}
+{{errors}}
+
 <div class="card">
   <div class="card-header">
     <div class="row flex-between-center">
@@ -27,7 +30,7 @@
   </div>
   <div class="card-body bg-light pb-0">
     <div class="table-responsive scrollbar">
-      <div class="block_form_create">
+      <div class="block_form_create" style="display: none;">
         <div class="container">
           <div class="row" id="main">
             <div class="card mb-3" style="max-width: 1800px;">
@@ -48,8 +51,8 @@
                       {{ form.count.errors }}
                     </div>
                   </div>
-                  <div class=" col-sm-2">
-                    <button style="margin-top: 32px;" type="submit" class="btn btn-success">Create</button>
+                  <div class=" col-sm-2" style="text-align: center;">
+                    <button style="margin-top: 32px; width:120px" type="submit" class="btn btn-success">Add</button>
                   </div>
                 </div>
               </form>
@@ -62,54 +65,86 @@
       <div class="container">
         <div class="row" id="main">
             {% for product in products %}
-            <div class="card mb-3" style="max-width: 1800px;">
-                <div class="row g-0" id="row_row">
-                    <div class="col-md-4 col_header_image" id="col_header col_header_image " style="margin-bottom: 30px; width:26%">
-                        <div class="card-header">
-                        </div>
-                        <div class="col_image">
-                            <img src={{ product.product|get_prod_image_url:0 }}  class="img-fluid rounded-start image_preview" alt="...">
-                        </div>
-                    </div>
-            
-                    <div class="col-md-8 item_right_part">
-                        
-            
-                        <div class="card-body" >
-                            <div class="block_header" style="display: flex; justify-content:space-between">
-                              <h5 class="card-title mb-3">{{product.product.product_name}}</h5>
-                              {% if product.confirmed %}
-                                <p style="color:green">Confirmed</p>
-                              {% else %}
-                                <p style="color:red">Unconfirmed</p>
-                              {% endif %}
+              {% if product.id == product_id %}
+                <div class="container">
+                  <div class="row" id="main">
+                    <div class="card mb-3" style="max-width: 1800px;">
+                      <form action="{% url 'edit_event_product' event.id product.id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="row gx-2">
+                          <div class="mb-3 col-sm-5">
+                            <label class="form-label" for="name">Product</label>
+                            {{ form_edit.product|add_class:'form-control'  }}
+                            <div class="form-error">
+                              {{ form_edit.product.errors }}
                             </div>
-                            <div class="block" style="">
-                                
-                              <div class="col-lg-6">
-                                  <label style=" color:black" class="form-label" for="price">Count:</label>
-                                  <p>{{product.count}}</p>
+                          </div>
+                          <div class="mb-3 col-sm-5">
+                            <label class="form-label" for="name">Count</label>
+                            {{ form_edit.count|add_class:'form-control'  }}
+                            <div class="form-error">
+                              {{ form_edit.count.errors }}
+                            </div>
+                          </div>
+                          <div class=" col-sm-2" style="text-align: center;">
+                            <button style="margin-top: 32px; width:120px" type="submit" class="btn btn-success">Change</button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% else %}
+                <div class="card mb-3" style="max-width: 1800px;">
+                    <div class="row g-0" id="row_row">
+                        <div class="col-md-4 col_header_image" id="col_header col_header_image " style="margin-bottom: 30px; width:26%">
+                            <div class="card-header">
+                            </div>
+                            <div class="col_image">
+                                <img src={{ product.product|get_prod_image_url:0 }}  class="img-fluid rounded-start image_preview" alt="...">
+                            </div>
+                        </div>
+                
+                        <div class="col-md-8 item_right_part">
+                            
+                
+                            <div class="card-body" >
+                                <div class="block_header" style="display: flex; justify-content:space-between">
+                                  <h5 class="card-title mb-3">{{product.product.product_name}} (${{product.product.price}})</h5>
+                                  {% if product.confirmed %}
+                                    <p style="color:green">Confirmed</p>
+                                  {% else %}
+                                    <p style="color:red">Unconfirmed</p>
+                                  {% endif %}
                                 </div>
-                                <div class="col-lg-12">
-                                    <label style=" color:black" class="form-label" for="show_duration">Price:</label>
-                                    <p>{{product.total_price}}</p>
-                                </div>
-                                  
-                                  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <a class="btn btn-primary" href="{% url 'get_event_details' product.contract.id -1 %}">Read more</a>
-                                    {% if user|is_allowed_to_change:event and user|has_access_full_to_company %}
-                                      <a class="btn btn-info" href="">Edit</a>
-                                      <a class="btn btn-danger" href="">Delete</a>
-                                      {% if not product.confirmed and user|is_allowed_to_change_customer:product.contract.customer %}
-                                        <a class="btn btn-success" href="{% url 'load_product_confirmation_page' event.id product.id %}">Confirm</a>
-                                      {% endif %}
-                                    {% endif %}
+                                <div class="block" style="">
+                                    
+                                  <div class="col-lg-6">
+                                      <label style=" color:black" class="form-label" for="price">Count:</label>
+                                      <p>{{product.count}}</p>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label style=" color:black" class="form-label" for="show_duration">Total Price:</label>
+                                        <p>{{product.total_price}}</p>
+                                    </div>
+                                      
+                                      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <a class="btn btn-primary" href="{% url 'get_event_details' product.contract.id -1 %}">Read more</a>
+                                        {% if user|is_allowed_to_change:event and user|has_access_full_to_company %}
+                                          <a class="btn btn-info" href="{% url 'get_event_products_list' event.id product.id %}">Edit</a>
+                                          <a class="btn btn-danger" href="">Delete</a>
+                                          {% if not product.confirmed and user|is_allowed_to_change_customer:product.contract.customer %}
+                                            <a class="btn btn-success" href="{% url 'load_product_confirmation_page' event.id product.id %}">Confirm</a>
+                                          {% endif %}
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+              {% endif %}
             {% endfor %}
         </div>
     </div>
@@ -120,7 +155,18 @@
       {% endif %}
     </div>
   </div>
+
   
+  <div id="contentPopup" class="popup-wrapper">
+
+    <!-- Modal content -->
+    <div class="popup-content">
+      <a href="" class="ok">Okay</a>
+      <h2 class="popupTitle">Error</h2>
+      <p >{{errors}}</p>
+    </div>
+  
+  </div>
   </div>
 
 
@@ -144,11 +190,39 @@
 
         //create product
         var create_product = document.querySelector(".create_product")
-        console.log("{{errors|escape}}")
-        create_product.onclick = (e) => {
+
+        create_product.onclick = (e) =>{
           e.preventDefault()
-          console.log("click")
+          var block_form_create = document.querySelector(".block_form_create")
+          if (block_form_create.style.display == "block"){
+            block_form_create.style.display = "none"
+          }else{
+            block_form_create.style.display = "block"
+          }
         }
+
+        if (errors){
+          var contentPopup = document.getElementById('contentPopup');
+
+        // Get the button that opens the contentPopup
+
+          // Get the <span> element that closes the contentPopup
+          var span = document.getElementsByClassName("close")[0];
+
+          // When the user clicks the button, open the contentPopup
+          contentPopup.style.display = "block";
+            
+          okButton = document.querySelector(".ok")
+          okButton.onclick = () =>{
+            contentPopup.style.display = "none";
+          }
+
+          }
+        //error 
+        
+
+        // When the user clicks on <span> (x), close the contentPopup
+
   </script>
 
 

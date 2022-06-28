@@ -99,13 +99,38 @@ class CompanyContractProduct(forms.ModelForm):
     def __init__(self, company_products, *args, **kwargs):
         super(CompanyContractProduct, self).__init__(*args, **kwargs)
         if company_products:
+            # self.fields["product"].initial = company_products.first()
             self.fields["product"].queryset = company_products
 
     def clean(self):
         cleaned_data = super().clean()
         product = cleaned_data.get("product")
         count = cleaned_data.get("count")
-        print(count, product.in_stock)
+
+        if count > product.in_stock:
+            msg = "Count is nore than products in stock"
+            self.add_error("count", msg)
+
+
+class CompanyContractProductEdit(forms.Form):
+    product = forms.ModelChoiceField(
+        queryset=CompanyContractRentalProduct.objects.filter(id__lt=1),
+    )
+    count = forms.IntegerField()
+
+    def __init__(self, product, company_products, count, *args, **kwargs):
+        super(CompanyContractProductEdit, self).__init__(*args, **kwargs)
+        self.fields["product"].initial = product
+        self.fields["count"].initial = count
+
+        if company_products:
+            self.fields["product"].queryset = company_products
+
+    def clean(self):
+        cleaned_data = super().clean()
+        product = cleaned_data.get("product")
+        count = cleaned_data.get("count")
+
         if count > product.in_stock:
             msg = "Count is nore than products in stock"
             self.add_error("count", msg)

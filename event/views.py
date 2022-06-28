@@ -17,6 +17,7 @@ from venue.services import handle_venue
 from .forms import (
     ArtistEventTeamForm,
     CompanyContractProduct,
+    CompanyContractProductEdit,
     ConfirmEventProductForm,
     EventForm,
     EventProductForm,
@@ -415,17 +416,31 @@ def add_event_product(request, event_id):
 
 
 @login_required(login_url="login")
-def get_event_products_list(request, event_id):
+def get_event_products_list(request, event_id, product_id):
     event_products = handle_event.get_event_products(event_id)
     contract = handle_contract.get_contract_artist_by_id(event_id)
     errors = ""
     if request.method == "POST":
         form = CompanyContractProduct([], request.POST)
         if form.is_valid():
-            print(form.cleaned_data)
+            con_com_prod = form.save(commit=False)  # contract company product
+            avaluable_product_count = handle_event.get_product_aval_count(
+                con_com_prod.product, contract
+            )
+            if avaluable_product_count < con_com_prod.count:
+                errors = (
+                    "Unfortunatelly for this date this count of product is unavaluable"
+                )
+            else:
+                con_com_prod.contract = contract
+                con_com_prod.total_price = (
+                    con_com_prod.count * con_com_prod.product.price
+                )
+                con_com_prod.save()
+
         else:
             print(form.data)
-            errors = "Error"
+            errors = "Unfortunatelly this count of product is out of stock"
 
     com_products = []
 
@@ -435,12 +450,30 @@ def get_event_products_list(request, event_id):
         print(err)
         messages.error(request, "Something went wrong")
     form = CompanyContractProduct(com_products)
-
-    return render(
+    form_edit_c_c_product = (
+        CompanyContractProduct(
+            com_products,
+            instance=handle_event.get_c_c_product(product_id),
+        )
+        if int(product_id) > 0
+        else 0
+    )
+    cookies_errors = request.COOKIES.get("product_form_error")
+    response = render(
         request,
         "event/event_products_list.html",
-        {"products": event_products, "event": contract, "form": form, "errors": errors},
+        {
+            "products": event_products,
+            "event": contract,
+            "form": form,
+            "errors": errors or cookies_errors,
+            "form_edit": form_edit_c_c_product,
+            "product_id": int(product_id),
+        },
     )
+    response.delete_cookie("product_form_error")
+    print(errors or cookies_errors)
+    return response
 
 
 @login_required(login_url="login")
@@ -453,44 +486,46 @@ def delete_event_product(request, event_id, product_id):
         messages.error(request, "Something went wrong")
 
     return HttpResponseRedirect(
-        reverse("get_event_products_list", kwargs={"event_id": event_id})
+        reverse(
+            "get_event_products_list", kwargs={"event_id": event_id, "product_id": -1}
+        )
     )
 
 
 @login_required(login_url="login")
 def edit_event_product(request, event_id, product_id):
-
-    product = handle_event.get_event_product_by_id(product_id)
+    contract = handle_contract.get_contract_artist_by_id(event_id)
+    errors = ""
     if request.method == "POST":
-        try:
-            if not handle_event.validate_product(request.POST):
-                messages.error(request, "Form is invalid")
-                return HttpResponseRedirect(
-                    reverse(
-                        "edit_event_product",
-                        kwargs={"event_id": event_id, "product_id": product_id},
-                    )
-                )
-            name = request.POST["name"]
-            picture = request.FILES.get("picture")
-            price = request.POST["price"]
-            count = request.POST["count"]
-
-            rental_product = handle_event.update_rental_product(name, picture, product)
-            handle_event.update_event_rental_product(
-                product, rental_product, price, count
-            )
-        except Exception as er:
-            raise (er)
-            messages.error(request, "Something went wrong")
-
-        return HttpResponseRedirect(
-            reverse("get_event_products_list", kwargs={"event_id": event_id})
+        form = CompanyContractProduct(
+            [], instance=handle_event.get_c_c_product(product_id)
         )
+        if form.is_valid():
+            print("Nice")
+            con_com_prod = form.save(commit=False)  # contract company product
+            avaluable_product_count = handle_event.get_product_aval_count(
+                con_com_prod.product, contract
+            )
+            if avaluable_product_count < con_com_prod.count:
+                errors = (
+                    "Unfortunatelly for this date this count of product is unavaluable"
+                )
+            else:
 
-    context = {"product": product}
+                con_com_prod.save()
 
-    return render(request, "event/edit_event_product.html", context=context)
+        else:
+            print(form.data)
+            errors = "Unfortunatelly this count of product is out of stock"
+
+        response = HttpResponseRedirect(
+            reverse(
+                "get_event_products_list",
+                kwargs={"event_id": event_id, "product_id": -1},
+            )
+        )
+        response.set_cookie("product_form_error", errors)
+        return response
 
 
 @login_required(login_url="login")
@@ -525,5 +560,7 @@ def confirm_event_product_from_customer(request, event_id, product_id):
         messages.error(request, ex)
 
     return HttpResponseRedirect(
-        reverse("get_event_products_list", kwargs={"event_id": event_id})
+        reverse(
+            "get_event_products_list", kwargs={"event_id": event_id, "product_id": -1}
+        )
     )

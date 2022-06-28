@@ -388,3 +388,20 @@ def get_company_products(company):
     except Exception as err:
         print(err)
         return []
+
+
+def get_product_aval_count(product, event):
+    in_stock = product.in_stock
+    all_contracts_for_same_date = Contract.objects.filter(date=event.date)
+    for elem in all_contracts_for_same_date:
+        c_c_product = CompanyContractRentalProduct.objects.filter(
+            contract=elem, product=product
+        )
+        if c_c_product:
+            in_stock -= c_c_product.first().count
+
+    return in_stock
+
+
+def get_c_c_product(product_id):
+    return CompanyContractRentalProduct.objects.get(pk=product_id)

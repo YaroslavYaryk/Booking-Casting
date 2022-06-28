@@ -62,7 +62,7 @@ urlpatterns = [
     # event products
     path("<event_id>/add_event_product/", add_event_product, name="add_event_product"),
     path(
-        "<event_id>/products_list/",
+        "<event_id>/products_list/<product_id>/",
         get_event_products_list,
         name="get_event_products_list",
     ),

@@ -187,9 +187,9 @@ class CompanyRentalProduct(models.Model):
 
 class CompanyContractRentalProduct(models.Model):
 
-    company = models.ForeignKey(
-        Company, verbose_name=("Company"), on_delete=models.CASCADE
-    )
+    # company = models.ForeignKey(
+    #     Company, verbose_name=("Company"), on_delete=models.CASCADE
+    # )
     contract = models.ForeignKey(
         Contract, verbose_name=("Contract"), on_delete=models.CASCADE
     )
