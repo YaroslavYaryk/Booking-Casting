@@ -82,8 +82,13 @@
             <div class="col-lg-8 pe-lg-2">
               <div class="card mb-3">
                 <div class="block d-flex justify-content-between align-items-center">
-                  <div class="card-header">
+                  <div class="card-header" style="display: flex; justify-content:space-between; width:100%">
                     <h5 class="mb-0">Event Settings</h5>
+                    <div class="block_expired">
+                      {% if tod_date > event.date %}
+                        <button class="btn btn-secondary me-1 mb-1 disabled" type="button">Passed</button>
+                      {% endif %}
+                    </div>
                   </div>
               </div>
                 <div class="card-body bg-light">

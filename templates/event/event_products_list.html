@@ -13,13 +13,15 @@
 {% endblock title %}
 
 {% block content %}
-{{errors}}
 
 <div class="card">
   <div class="card-header">
     <div class="row flex-between-center">
       <div class="col-4 col-sm-auto d-flex align-items-center pe-0" style="display: flex; width:98%; justify-content: space-between; align-items: center">
         <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">All Products</h5>
+        {% if tod_date > event.date %}
+          <button class="btn btn-secondary me-1 mb-1 disabled" type="button">Passed</button>
+        {% endif %}
         {% if user|has_access_full_to_company %}
           <a class="btn btn-falcon-primary me-1 mb-1 create_product" href="{% url 'get_event_details' event.id -1 %}">Choose Product</a>
         {% endif %}
@@ -100,8 +102,8 @@
                         <div class="col-md-4 col_header_image" id="col_header col_header_image " style="margin-bottom: 30px; width:26%">
                             <div class="card-header">
                             </div>
-                            <div class="col_image">
-                                <img src={{ product.product|get_prod_image_url:0 }}  class="img-fluid rounded-start image_preview" alt="...">
+                            <div class="col_image" style=" text-align: center;">
+                                <img src={{ product.product|get_prod_image_url:0 }} style="height:200px;"   class="img-fluid rounded-start image_preview" alt="...">
                             </div>
                         </div>
                 
@@ -132,10 +134,10 @@
                                         <a class="btn btn-primary" href="{% url 'get_event_details' product.contract.id -1 %}">Read more</a>
                                         {% if user|is_allowed_to_change:event and user|has_access_full_to_company %}
                                           <a class="btn btn-info" href="{% url 'get_event_products_list' event.id product.id %}">Edit</a>
-                                          <a class="btn btn-danger" href="">Delete</a>
-                                          {% if not product.confirmed and user|is_allowed_to_change_customer:product.contract.customer %}
-                                            <a class="btn btn-success" href="{% url 'load_product_confirmation_page' event.id product.id %}">Confirm</a>
-                                          {% endif %}
+                                          <a class="btn btn-danger" href="{% url 'delete_event_product' event.id product.id %}">Delete</a>
+                                        {% endif %}
+                                        {% if not product.confirmed and user|is_allowed_to_change_customer:product.contract.customer %}
+                                          <a class="btn btn-success" href="{% url 'load_product_confirmation_page' event.id product.id %}">Confirm</a>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -143,9 +145,16 @@
                         </div>
                     </div>
                 </div>
-
+             
               {% endif %}
             {% endfor %}
+            <div class="block_bottom" style="display: flex; justify-content:space-between">
+              <div class="el"></div>
+              <div class="block_total_price" style="font-size: 20px;">
+                <label for="">Total Price: </label>
+                ${{total_total_sum}}
+              </div>
+            </div>
         </div>
     </div>
 
@@ -176,7 +185,7 @@
         const WIDTH = 300;
         
         var image_preview = document.querySelectorAll(".image_preview")
-        image_preview.forEach(element =>{
+        {% comment %} image_preview.forEach(element =>{
             var elHeight = element.height
             element.width *= HEIGHT/element.height;
             element.height = WIDTH;
@@ -186,7 +195,7 @@
                   text-align: center;
                 `;
               }
-        })
+        }) {% endcomment %}
 
         //create product
         var create_product = document.querySelector(".create_product")
@@ -200,22 +209,22 @@
             block_form_create.style.display = "block"
           }
         }
+        var errors = "{{errors}}"
+        console.log(errors == "None")
+        if (errors == 'None' || errors == ""){
 
-        if (errors){
-          var contentPopup = document.getElementById('contentPopup');
+        }else{
+            var contentPopup = document.getElementById('contentPopup');
 
-        // Get the button that opens the contentPopup
+            var span = document.getElementsByClassName("close")[0];
 
-          // Get the <span> element that closes the contentPopup
-          var span = document.getElementsByClassName("close")[0];
-
-          // When the user clicks the button, open the contentPopup
-          contentPopup.style.display = "block";
-            
-          okButton = document.querySelector(".ok")
-          okButton.onclick = () =>{
-            contentPopup.style.display = "none";
-          }
+            contentPopup.style.display = "block";
+              
+            okButton = document.querySelector(".ok")
+            okButton.onclick = (e) =>{
+              e.preventDefault()
+              contentPopup.style.display = "none";
+            }
 
           }
         //error 

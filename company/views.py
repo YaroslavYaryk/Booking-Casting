@@ -16,7 +16,7 @@ from users.services import user_actions, user_handle
 from company.models import Company
 from company.services import handle_company
 
-from .forms import CompanyForm, TermsForm, CompanyProductsForm
+from .forms import CompanyForm, CompanyProductsEditForm, TermsForm, CompanyProductsForm
 from artist.services import user_artists, constants as artist_constants
 from contract.services import handle_contract
 
@@ -330,3 +330,84 @@ def add_company_product(request, company_id):
     else:
         form = CompanyProductsForm()
     return render(request, "company/add_company_product.html", {"form": form})
+
+
+@login_required(login_url="login")
+def edit_company_product(request, company_id, c_product_id, product_id):
+
+    c_product = handle_company.get_company_product_by_id(c_product_id)
+    product = handle_company.get_product_by_id(product_id)
+
+    if request.method == "POST":
+        form = CompanyProductsEditForm(
+            c_product.product_type,
+            product.product_name,
+            product.in_stock,
+            product.price,
+            request.POST,
+        )
+        if form.is_valid():
+            try:
+                handle_company.update_product(product, form.cleaned_data)
+                if request.FILES.get("images"):
+                    handle_company.add_images_to_product(product, request.FILES)
+                if form.cleaned_data["product_type"] != c_product.product_type:
+                    handle_company.delete_prod_prom_company_products_with_type(
+                        c_product, product
+                    )
+                    handle_company.add_product_to_its_product_type(
+                        product, company_id, form.cleaned_data["product_type"]
+                    )
+            except Exception as er:
+                print(er)
+                messages.error(request, er)
+
+            return HttpResponseRedirect(
+                reverse(
+                    "get_company_provided_products",
+                    kwargs={
+                        "company_id": company_id,
+                    },
+                )
+            )
+        else:
+            messages.error(request, "Opps, there are some problems")
+    else:
+        form = CompanyProductsEditForm(
+            c_product.product_type,
+            product.product_name,
+            product.in_stock,
+            product.price,
+        )
+    return render(
+        request,
+        "company/edit_company_product.html",
+        {"form": form, "images": product.product_image.all()},
+    )
+
+
+@login_required(login_url="login")
+def delete_company_product(request, company_id, c_product_id, product_id):
+
+    try:
+        handle_company.delete_product(c_product_id, product_id)
+    except Exception as err:
+        print(err)
+        messages.error(request, "Something went wrong")
+
+    return HttpResponseRedirect(
+        reverse("get_company_provided_products", kwargs={"company_id": company_id})
+    )
+
+
+@login_required(login_url="login")
+def delete_company_product_image(request, company_id, product_id, image_id):
+    try:
+        handle_company.delete_product_image(product_id, image_id)
+    except Exception as err:
+        print(err)
+        messages.error(request, err)
+
+    return HttpResponseRedirect(
+        reverse("get_company_provided_products", kwargs={"company_id": company_id})
+    )

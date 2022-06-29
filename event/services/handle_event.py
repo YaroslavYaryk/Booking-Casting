@@ -22,7 +22,7 @@ from contract.models import (
     CompanyRentalProduct,
 )
 from contract.services import handle_contract
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 
 def get_event_contracts_for_user(user, date):
@@ -219,7 +219,10 @@ def get_event_products(contract_id):
 
 
 def delete_event_product(product_id):
-    ContractRentalProducts.objects.get(pk=product_id).delete()
+    product = CompanyContractRentalProduct.objects.get(pk=product_id)
+    product.product.in_stock += product.count
+    product.product.save()
+    product.delete()
 
 
 def get_event_product_by_id(product_id):
@@ -377,10 +380,24 @@ def confirm_product(product_id):
     product.save()
 
 
-def get_company_products(company):
+def delete_all_expired_products(products):
+    for elem in products:
+        elem.product.in_stock += elem.count
+        elem.product.save()
+        elem.delete()
+
+
+def get_company_products(contract):
+
+    past_products_for_past_products = CompanyContractRentalProduct.objects.filter(
+        contract__date__lt=date.today()
+    )
+    delete_all_expired_products(past_products_for_past_products)
 
     try:
-        c_rental_products = CompanyRentalProduct.objects.filter(company=company)
+        c_rental_products = CompanyRentalProduct.objects.filter(
+            company=contract.company
+        )
         prod_ids = [
             y.id for x in c_rental_products for y in x.products.filter(in_stock__gte=1)
         ]
@@ -405,3 +422,14 @@ def get_product_aval_count(product, event):
 
 def get_c_c_product(product_id):
     return CompanyContractRentalProduct.objects.get(pk=product_id)
+
+
+def check_c_c_prod_exists(contract, product):
+    elem = CompanyContractRentalProduct.objects.filter(
+        contract=contract, product=product
+    )
+    return elem.first() if elem else None
+
+
+def get_all_products_price(event_products):
+    return sum(el.total_price for el in event_products)

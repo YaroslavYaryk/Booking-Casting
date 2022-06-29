@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from company.models import Company, CompanyAccess
 from event.models import Event
 from contract.models import CompanyRentalProduct, CRentalProduct, RentalProductImage
+from django.db.models.functions import Lower
 
 
 def get_company_by_id(id):
@@ -90,8 +91,11 @@ def add_images_to_product(product, files):
 
 def add_product_to_its_product_type(product, company_id, product_type):
     company = get_company_by_id(company_id)
-    company_rental_prod_obj = CompanyRentalProduct.objects.filter(
-        company=company, product_type=product_type.lower()
+    company_rental_prod_obj_annotate = CompanyRentalProduct.objects.annotate(
+        p_type=Lower("product_type")
+    )
+    company_rental_prod_obj = company_rental_prod_obj_annotate.filter(
+        company=company, p_type=product_type.lower()
     )
     if company_rental_prod_obj:
         company_rental_prod_obj_elem = company_rental_prod_obj.first()
@@ -101,3 +105,39 @@ def add_product_to_its_product_type(product, company_id, product_type):
             company=company, product_type=product_type
         )
         c_rental_product.products.add(product)
+
+
+def get_company_product_by_id(c_product_id):
+    return CompanyRentalProduct.objects.get(id=c_product_id)
+
+
+def get_product_by_id(product_id):
+    return CRentalProduct.objects.get(pk=product_id)
+
+
+def delete_prod_prom_company_products_with_type(c_product, product):
+    c_product.products.remove(product)
+
+
+def update_product(product, cleaned_data):
+    product.product_name = cleaned_data["product_name"]
+    product.in_stock = cleaned_data["in_stock"]
+    product.price = cleaned_data["price"]
+    product.save()
+
+
+def delete_product(c_product_id, product_id):
+
+    CRentalProduct.objects.get(pk=product_id).delete()
+    c_product_obj = CompanyRentalProduct.objects.get(pk=c_product_id)
+    if not c_product_obj.products.count():
+        c_product_obj.delete()
+
+
+def delete_product_image(product_id, image_id):
+    product = CRentalProduct.objects.get(pk=product_id)
+    image = RentalProductImage.objects.get(pk=image_id)
+    if product.product_image.count() > 1:
+        product.product_image.remove(image)
+    else:
+        raise Exception("Image of product cannot be empty")

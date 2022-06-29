@@ -16,6 +16,9 @@ from .views import (
     delete_user_from_changeble,
     get_company_provided_products,
     add_company_product,
+    edit_company_product,
+    delete_company_product,
+    delete_company_product_image,
 )
 
 urlpatterns = [
@@ -79,5 +82,20 @@ urlpatterns = [
         "<company_id>/add_company_product/",
         add_company_product,
         name="add_company_product",
+    ),
+    path(
+        "<company_id>/edit_company_product/<c_product_id>/<product_id>/",
+        edit_company_product,
+        name="edit_company_product",
+    ),
+    path(
+        "<company_id>/delete_company_product/<c_product_id>/<product_id>/",
+        delete_company_product,
+        name="delete_company_product",
+    ),
+    path(
+        "<company_id>/delete_company_product_image/<product_id>/<image_id>/",
+        delete_company_product_image,
+        name="delete_company_product_image",
     ),
 ]

@@ -201,7 +201,7 @@ class CompanyContractRentalProduct(models.Model):
     confirmed = models.BooleanField(("Confirmed"), default=False, null=True)
 
     def __str__(self):
-        return f"{self.company.name} - {self.contract.id} - {self.product.product_name}"
+        return f"{self.contract.id} - {self.product.product_name} - {self.count}"
 
     # def save(self, *args, **kwargs):
     #     if self.count and self.count > self.product.in_stock:

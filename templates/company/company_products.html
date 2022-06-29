@@ -35,7 +35,9 @@
             <div class="block" style="display: flex; justify-content: space-between;">
                 <div class="block_inner"></div>
                 <div class="product_type_block">
-                    <p class="btn btn-secondary disabled mb-1">{{product.product_type}}</p>
+                    {% if product|get_company_prods %}
+                        <p class="btn btn-secondary disabled mb-1">{{product.product_type}}</p>
+                    {% endif %}
                 </div>
             </div>  
                 {% for prod in product|get_company_prods %}
@@ -44,8 +46,8 @@
                             <div class="col-md-4 col_header_image" id="col_header col_header_image " style="margin-bottom: 30px;">
                                 <div class="card-header">
                                 </div>
-                                <div class="col_image">
-                                    <img src="{{ prod|get_prod_image_url:0 }}" width="600px"   class="img-fluid rounded-start image_preview" alt="...">
+                                <div class="col_image" style="text-align:center">
+                                    <img src="{{ prod|get_prod_image_url:0 }}" style="height:200px"   class="img-fluid rounded-start image_preview" alt="...">
                                 </div>
                             </div>
                     
@@ -57,7 +59,7 @@
                                     <div class="block" style=" margin-top: -20px;">
                                         <div class="col-lg-12">
                                             <label style=" color:black" class="form-label" for="show_duration">Name:</label>
-                                            <p>$ {{prod.product_name}}</p>
+                                            <p>{{prod.product_name}}</p>
                                         </div>
                                         <div class="col-lg-12">
                                             <label style=" color:black" class="form-label" for="show_duration">Price:</label>
@@ -73,10 +75,9 @@
                                         </div>
                                         
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                            <a class="btn btn-primary" href="">Read more</a>
                                             {% if user|has_access_full_to_company %}
-                                                <a class="btn btn-info" href="">Edit</a>
-                                                <a class="btn btn-danger" href="">Delete</a>
+                                                <a class="btn btn-info" href="{% url 'edit_company_product' company.id product.id prod.id %}">Edit</a>
+                                                <a class="btn btn-danger" href="{% url 'delete_company_product' company.id product.id prod.id %}">Delete</a>
                                             {% endif %}
                                         </div>
                                     </div>
@@ -84,9 +85,12 @@
                             </div>
                         </div>
                         <div class="hidden_images_block mb-3" id="{{prod|get_hidden_block_id}}" style="display: none;">
-                            <div class="image_block" style="display: flex; justify-content:center; gap:20px">
+                            <div class="image_block" style="display: flex; justify-content:center; gap:20px; ">
                                 {% for image in prod|get_prod_images %}
-                                    <img height="100" class="hidden_image_preview" id="{{image|get_hidden_id}}" src="{{prod|get_prod_image_url:forloop.counter0}}" alt="">
+                                    <div class="block" style="position: relative;">
+                                        <img height="100" class="hidden_image_preview"  id="{{image|get_hidden_id}}" src="{{prod|get_prod_image_url:forloop.counter0}}" alt="">
+                                        <a   style="position: absolute; top: 0; right:0; color:red; font-size: 22px; padding-right: 5px;" href="{% url 'delete_company_product_image' company.id prod.id image.id %}" ><span class="far fa-times-circle"></span></a>
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -114,7 +118,7 @@
         var products_block = document.querySelector(".products_block")
         if (products_block){
             products_block.onclick = (e) =>{
-                e.preventDefault()
+                {% comment %} e.preventDefault() {% endcomment %}
                 if (!e.target.classList.contains("image_preview")){
                     return
                 }
@@ -122,12 +126,11 @@
                 var hidden_images_block = document.querySelector(`#hidden_images_block_${product_visible_block.id}`)
 
                 hidden_images_block.onclick = (event) =>{
-                    event.preventDefault()
                     var hidden_image = event.target
                     if (hidden_image.classList.contains("hidden_image_preview")){
                         e.target.src = hidden_image.src
-                        e.target.width *= HEIGHT/e.target.height;
-                        e.target.height = WIDTH;
+                        {% comment %} e.target.width *= HEIGHT/e.target.height;
+                        e.target.height = WIDTH; {% endcomment %}
                     }
                 }
 
@@ -139,7 +142,7 @@
                 }
             }
         }
-        var image_preview = document.querySelectorAll(".image_preview")
+        {% comment %} var image_preview = document.querySelectorAll(".image_preview")
          image_preview.forEach(element =>{
             
             var elHeight = element.height
@@ -151,7 +154,7 @@
                   text-align: center;
                 `;
               }
-        }) 
+        })  {% endcomment %}
   </script>
 
 

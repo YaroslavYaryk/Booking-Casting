@@ -46,3 +46,18 @@ class CompanyProductsForm(forms.Form):
     product_name = forms.CharField(max_length=150)
     in_stock = forms.IntegerField()
     price = forms.FloatField()
+
+
+class CompanyProductsEditForm(forms.Form):
+
+    product_type = forms.CharField(max_length=150)
+    product_name = forms.CharField(max_length=150)
+    in_stock = forms.IntegerField()
+    price = forms.FloatField()
+
+    def __init__(self, p_type, p_name, p_in_stock, p_price, *args, **kwargs):
+        super(CompanyProductsEditForm, self).__init__(*args, **kwargs)
+        self.fields["product_type"].initial = p_type
+        self.fields["product_name"].initial = p_name
+        self.fields["in_stock"].initial = p_in_stock
+        self.fields["price"].initial = p_price
