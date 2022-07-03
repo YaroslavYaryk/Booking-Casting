@@ -1,5 +1,10 @@
 from django import forms
-from contract.models import ContractTimeClock, TimeClock, CompanyContractRentalProduct
+from contract.models import (
+    CompanyContractOneProduct,
+    ContractTimeClock,
+    TimeClock,
+    CompanyContractRentalProduct,
+)
 
 from event.models import Event
 
@@ -93,23 +98,23 @@ class ConfirmEventProductForm(forms.Form):
 
 class CompanyContractProduct(forms.ModelForm):
     class Meta:
-        model = CompanyContractRentalProduct
-        exclude = ("company", "contract", "total_price", "confirmed")
+        model = CompanyContractOneProduct
+        exclude = ("total_price",)
 
     def __init__(self, company_products, *args, **kwargs):
         super(CompanyContractProduct, self).__init__(*args, **kwargs)
-        if company_products:
-            # self.fields["product"].initial = company_products.first()
+        # self.fields["product"].initial = company_products.first()
+        if not isinstance(company_products, list):
             self.fields["product"].queryset = company_products
 
     def clean(self):
         cleaned_data = super().clean()
         product = cleaned_data.get("product")
         count = cleaned_data.get("count")
-
-        if count > product.in_stock:
-            msg = "Count is nore than products in stock"
-            self.add_error("count", msg)
+        print(product, "prodyct")
+        # if count > product.in_stock:
+        #     msg = "Count is nore than products in stock"
+        #     self.add_error("count", msg)
 
 
 class CompanyContractProductEdit(forms.Form):

@@ -422,19 +422,28 @@ def get_event_products_list(request, event_id, product_id):
     contract = handle_contract.get_contract_artist_by_id(event_id)
     errors = ""
     if request.method == "POST":
-        form = CompanyContractProduct([], request.POST)
+        form = CompanyContractProduct(
+            handle_event.get_company_products(contract), request.POST
+        )
         if form.is_valid():
             con_com_prod = form.save(commit=False)  # contract company product
             avaluable_product_count = handle_event.get_product_aval_count(
                 con_com_prod.product, contract
             )
-            if avaluable_product_count < con_com_prod.count:
+            if con_com_prod.product.in_stock < con_com_prod.count:
                 errors = (
                     "Unfortunatelly for this date this count of product is unavaluable"
                 )
             else:
-                product_for_cont_exists = handle_event.check_c_c_prod_exists(
-                    contract, con_com_prod.product
+                con_com_prod.save()
+                contract_product_obj = handle_contract.get_or_create_c_c_prod(contract)[
+                    0
+                ]
+                contract_product_obj.confirmed = False
+                product_for_cont_exists = (
+                    handle_event.check_prod_exists_in_contr_products(
+                        contract, con_com_prod.product
+                    )
                 )
                 if product_for_cont_exists:
                     product_for_cont_exists.count += con_com_prod.count
@@ -442,19 +451,22 @@ def get_event_products_list(request, event_id, product_id):
                         product_for_cont_exists.count * con_com_prod.product.price
                     )
                     con_com_prod.product.in_stock -= con_com_prod.count
-
                     product_for_cont_exists.save()
                 else:
-                    con_com_prod.contract = contract
                     con_com_prod.total_price = (
                         con_com_prod.count * con_com_prod.product.price
                     )
-                    con_com_prod.save()
+                    contract_product_obj.products.add(con_com_prod)
                     con_com_prod.product.in_stock -= con_com_prod.count
                 con_com_prod.product.save()
-
+                con_com_prod.save()
+                contract_product_obj.total_price += (
+                    con_com_prod.count * con_com_prod.product.price
+                )
+                contract_product_obj.count += con_com_prod.count
+                contract_product_obj.save()
         else:
-            print(form.data)
+            print(form.errors)
             errors = "Unfortunatelly this count of product is out of stock"
 
     com_products = []
@@ -468,19 +480,26 @@ def get_event_products_list(request, event_id, product_id):
     form_edit_c_c_product = (
         CompanyContractProduct(
             com_products,
-            instance=handle_event.get_c_c_product(product_id),
+            instance=handle_event.get_c_product_one(product_id),
         )
         if int(product_id) > 0
         else 0
     )
     cookies_errors = request.COOKIES.get("product_form_error")
+    print(event_products)
     response = render(
         request,
         "event/event_products_list.html",
         {
             "products": event_products,
-            "total_total_sum": handle_event.get_all_products_price(event_products),
+            "total_total_sum": handle_contract.get_or_create_c_c_prod(contract)[
+                0
+            ].total_price,
+            "total_count_sum": handle_contract.get_or_create_c_c_prod(contract)[
+                0
+            ].count,
             "event": contract,
+            "event_products_obj": handle_contract.get_or_create_c_c_prod(contract)[0],
             "form": form,
             "errors": errors or cookies_errors,
             "form_edit": form_edit_c_c_product,
@@ -497,7 +516,7 @@ def get_event_products_list(request, event_id, product_id):
 def delete_event_product(request, event_id, product_id):
 
     try:
-        handle_event.delete_event_product(product_id)
+        handle_event.delete_event_product(product_id, event_id)
     except Exception as er:
         print(er)
         messages.error(request, "Something went wrong")
@@ -519,21 +538,25 @@ def edit_event_product(request, event_id, product_id):
         form = CompanyContractProduct([], request.POST, instance=c_product)
         if form.is_valid():
             con_com_prod = form.save(commit=False)  # contract company product
-            avaluable_product_count = handle_event.get_product_aval_count(
-                con_com_prod.product, contract
-            )
-            con_com_prod.total_price = con_com_prod.count * con_com_prod.product.price
-
-            if avaluable_product_count < con_com_prod.count:
+            contract_product_obj = handle_contract.get_or_create_c_c_prod(contract)[0]
+            contract_product_obj.confirmed = False
+            if con_com_prod.product.in_stock < con_com_prod.count:
                 errors = (
                     "Unfortunatelly for this date this count of product is unavaluable"
                 )
             else:
+                con_com_prod.total_price = (
+                    con_com_prod.count * con_com_prod.product.price
+                )
                 con_com_prod.save()
-                con_com_prod.product.in_stock -= (
-                    form.cleaned_data["count"] - c_product_count
+                count_difference = form.cleaned_data["count"] - c_product_count
+                con_com_prod.product.in_stock -= count_difference
+                contract_product_obj.count += count_difference
+                contract_product_obj.total_price += (
+                    count_difference * con_com_prod.product.price
                 )
                 con_com_prod.product.save()
+                contract_product_obj.save()
 
         else:
             print(form.errors, form.is_bound)
@@ -550,7 +573,7 @@ def edit_event_product(request, event_id, product_id):
 
 
 @login_required(login_url="login")
-def load_product_confirmation_page(request, event_id, product_id):
+def load_product_confirmation_page(request, event_id):
 
     event = handle_contract.get_contract_artist_by_id(event_id)
 
@@ -560,7 +583,7 @@ def load_product_confirmation_page(request, event_id, product_id):
             return HttpResponseRedirect(
                 reverse(
                     "confirm_event_product_from_customer",
-                    kwargs={"event_id": event_id, "product_id": product_id},
+                    kwargs={"event_id": event_id},
                 )
             )
     form = ConfirmEventProductForm()
@@ -571,11 +594,11 @@ def load_product_confirmation_page(request, event_id, product_id):
 
 
 @login_required(login_url="login")
-def confirm_event_product_from_customer(request, event_id, product_id):
+def confirm_event_product_from_customer(request, event_id):
     print("here")
 
     try:
-        handle_event.confirm_product(product_id)
+        handle_event.confirm_product(event_id)
     except Exception as ex:
         print(ex)
         messages.error(request, ex)

@@ -185,6 +185,18 @@ class CompanyRentalProduct(models.Model):
         return f"{self.company.name} - {self.product_type}"
 
 
+class CompanyContractOneProduct(models.Model):
+
+    product = models.ForeignKey(
+        CRentalProduct, verbose_name=("Product"), on_delete=models.CASCADE
+    )
+    count = models.IntegerField(("Product Count"))
+    total_price = models.FloatField("Total product price", null=True)
+
+    def __str__(self):
+        return f"{self.product.product_name} - {self.count}"
+
+
 class CompanyContractRentalProduct(models.Model):
 
     # company = models.ForeignKey(
@@ -193,20 +205,12 @@ class CompanyContractRentalProduct(models.Model):
     contract = models.ForeignKey(
         Contract, verbose_name=("Contract"), on_delete=models.CASCADE
     )
-    product = models.ForeignKey(
-        CRentalProduct, verbose_name=("Product"), on_delete=models.CASCADE
+    products = models.ManyToManyField(
+        CompanyContractOneProduct, verbose_name=("Products")
     )
-    count = models.IntegerField(("Product Count"))
-    total_price = models.FloatField("Total product price", null=True)
+    count = models.IntegerField(("Product Count"), default=0)
+    total_price = models.FloatField("Total product price", default=0)
     confirmed = models.BooleanField(("Confirmed"), default=False, null=True)
 
     def __str__(self):
-        return f"{self.contract.id} - {self.product.product_name} - {self.count}"
-
-    # def save(self, *args, **kwargs):
-    #     if self.count and self.count > self.product.in_stock:
-    #         raise ValidationError("There are no as many of this product")
-    #     else:
-    #         self.product.in_stock -= self.count
-    #         self.product.save()
-    #     super(CompanyContractRentalProduct, self).save(*args, **kwargs)
+        return f"{self.contract.id}  - {self.count} - ${self.total_price}"

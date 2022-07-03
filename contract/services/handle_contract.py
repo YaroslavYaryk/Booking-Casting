@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from company.models import CompanyAccess
 from artist.models import ArtistAccess
 from venue.models import VenueAccess
-from contract.models import Contract, ContractEventTeam
+from contract.models import CompanyContractRentalProduct, Contract, ContractEventTeam
 from jinja2 import Template
 from .constants import BASE_CONTRACT, EDIT_CONTRACT, PDF_CONTRACT, additinal_staff_list
 from customer.models import CustomerAccess, CustomerContacts
@@ -601,3 +601,7 @@ def add_date_to_user_busy(contract_artist):
         end_date=contract_artist.date,
         busy_action=f"Event in {company_name}",
     )
+
+
+def get_or_create_c_c_prod(contract):
+    return CompanyContractRentalProduct.objects.get_or_create(contract=contract)

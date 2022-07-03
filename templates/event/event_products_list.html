@@ -21,6 +21,18 @@
         <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">All Products</h5>
         {% if tod_date > event.date %}
           <button class="btn btn-secondary me-1 mb-1 disabled" type="button">Passed</button>
+        {% elif user|is_allowed_to_change_customer:event.customer %}
+          <div class="block_confirmed" style="margin-top: ;">
+            {% if event_products_obj.confirmed %}
+              <p class="btn btn-success disabled">Confirmed</p>
+            {% else %}
+              {% if products|length %}
+                <a href="{% url 'load_product_confirmation_page' event.id %}" class="btn btn-danger">Confirm</a>
+              {% else %}
+                <p class="btn btn-danger disabled">Confirm</p>
+              {% endif %}
+            {% endif %}
+          </div> 
         {% endif %}
         {% if user|has_access_full_to_company %}
           <a class="btn btn-falcon-primary me-1 mb-1 create_product" href="{% url 'get_event_details' event.id -1 %}">Choose Product</a>
@@ -113,11 +125,6 @@
                             <div class="card-body" >
                                 <div class="block_header" style="display: flex; justify-content:space-between">
                                   <h5 class="card-title mb-3">{{product.product.product_name}} (${{product.product.price}})</h5>
-                                  {% if product.confirmed %}
-                                    <p style="color:green">Confirmed</p>
-                                  {% else %}
-                                    <p style="color:red">Unconfirmed</p>
-                                  {% endif %}
                                 </div>
                                 <div class="block" style="">
                                     
@@ -129,16 +136,13 @@
                                         <label style=" color:black" class="form-label" for="show_duration">Total Price:</label>
                                         <p>{{product.total_price}}</p>
                                     </div>
-                                      
                                       <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                        <a class="btn btn-primary" href="{% url 'get_event_details' product.contract.id -1 %}">Read more</a>
+                                        <a class="btn btn-primary" href="{% url 'get_event_details' event.id -1 %}">Read more</a>
                                         {% if user|is_allowed_to_change:event and user|has_access_full_to_company %}
                                           <a class="btn btn-info" href="{% url 'get_event_products_list' event.id product.id %}">Edit</a>
                                           <a class="btn btn-danger" href="{% url 'delete_event_product' event.id product.id %}">Delete</a>
                                         {% endif %}
-                                        {% if not product.confirmed and user|is_allowed_to_change_customer:product.contract.customer %}
-                                          <a class="btn btn-success" href="{% url 'load_product_confirmation_page' event.id product.id %}">Confirm</a>
-                                        {% endif %}
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -149,7 +153,10 @@
               {% endif %}
             {% endfor %}
             <div class="block_bottom" style="display: flex; justify-content:space-between">
-              <div class="el"></div>
+              <div class="block_total_price" style="font-size: 20px;">
+                <label for="">Total Products Count: </label>
+                {{total_count_sum}}
+              </div>
               <div class="block_total_price" style="font-size: 20px;">
                 <label for="">Total Price: </label>
                 ${{total_total_sum}}

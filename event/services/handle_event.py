@@ -20,6 +20,7 @@ from contract.models import (
     TimeClock,
     ArtistTeamEvent,
     CompanyRentalProduct,
+    CompanyContractOneProduct,
 )
 from contract.services import handle_contract
 from datetime import date, datetime, timedelta
@@ -215,14 +216,27 @@ def update_event_rental_product(product, rental_product, price, count):
 
 def get_event_products(contract_id):
 
-    return CompanyContractRentalProduct.objects.filter(contract__id=contract_id)
+    event_prod_obj = CompanyContractRentalProduct.objects.filter(
+        contract__id=contract_id
+    )
+    if event_prod_obj:
+        return event_prod_obj.first().products.all()
+    return CompanyContractOneProduct.objects.filter(id__lt=0)
 
 
-def delete_event_product(product_id):
-    product = CompanyContractRentalProduct.objects.get(pk=product_id)
+def delete_event_product(product_id, contract_id):
+
+    contr_products_obj = CompanyContractRentalProduct.objects.get(
+        contract__id=contract_id
+    )
+
+    product = CompanyContractOneProduct.objects.get(pk=product_id)
     product.product.in_stock += product.count
     product.product.save()
     product.delete()
+
+    if contr_products_obj.products.count() < 1:
+        contr_products_obj.delete()
 
 
 def get_event_product_by_id(product_id):
@@ -374,17 +388,20 @@ def edit_event_artist_team(contract, artist_users_team):
 #             ArtistAccess.objects.create(artist=artist, access=user, admin=False)
 
 
-def confirm_product(product_id):
-    product = CompanyContractRentalProduct.objects.get(id=product_id)
-    product.confirmed = True
-    product.save()
+def confirm_product(contract_id):
+    contract_products_obj = CompanyContractRentalProduct.objects.get(
+        contract__id=contract_id
+    )
+    contract_products_obj.confirmed = True
+    contract_products_obj.save()
 
 
 def delete_all_expired_products(products):
-    for elem in products:
-        elem.product.in_stock += elem.count
-        elem.product.save()
-        elem.delete()
+    for event_products_contracts in products:
+        for elem in event_products_contracts.products.all():
+            elem.product.in_stock += elem.count
+            elem.product.save()
+            elem.delete()
 
 
 def get_company_products(contract):
@@ -392,6 +409,7 @@ def get_company_products(contract):
     past_products_for_past_products = CompanyContractRentalProduct.objects.filter(
         contract__date__lt=date.today()
     )
+    print(past_products_for_past_products)
     delete_all_expired_products(past_products_for_past_products)
 
     try:
@@ -411,25 +429,31 @@ def get_product_aval_count(product, event):
     in_stock = product.in_stock
     all_contracts_for_same_date = Contract.objects.filter(date=event.date)
     for elem in all_contracts_for_same_date:
-        c_c_product = CompanyContractRentalProduct.objects.filter(
-            contract=elem, product=product
-        )
+        c_c_product = CompanyContractRentalProduct.objects.filter(contract=elem)
         if c_c_product:
-            in_stock -= c_c_product.first().count
+            for y in c_c_product.first().products.all():
+                pass
 
     return in_stock
 
 
 def get_c_c_product(product_id):
-    return CompanyContractRentalProduct.objects.get(pk=product_id)
+    return CompanyContractOneProduct.objects.get(pk=product_id)
 
 
-def check_c_c_prod_exists(contract, product):
-    elem = CompanyContractRentalProduct.objects.filter(
-        contract=contract, product=product
-    )
-    return elem.first() if elem else None
+def get_c_product_one(product_id):
+    return CompanyContractOneProduct.objects.get(pk=product_id)
+
+
+def check_prod_exists_in_contr_products(contract, product):
+    contract_products_obj = CompanyContractRentalProduct.objects.get(contract=contract)
+    contract_product = contract_products_obj.products.filter(product__id=product.id)
+    return contract_product.first() if contract_product else None
 
 
 def get_all_products_price(event_products):
     return sum(el.total_price for el in event_products)
+
+
+def get_all_products_count(event_products):
+    return sum(el.count for el in event_products)

@@ -77,12 +77,12 @@ urlpatterns = [
         name="edit_event_product",
     ),
     path(
-        "<event_id>/confirmation_page/<product_id>/",
+        "<event_id>/confirmation_page/",
         load_product_confirmation_page,
         name="load_product_confirmation_page",
     ),
     path(
-        "<event_id>/customer_confirm_product/<product_id>/",
+        "<event_id>/customer_confirm_product/",
         confirm_event_product_from_customer,
         name="confirm_event_product_from_customer",
     ),

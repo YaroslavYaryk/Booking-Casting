@@ -11,6 +11,7 @@ from .models import (
     CompanyContractRentalProduct,
     CompanyRentalProduct,
     RentalProductImage,
+    CompanyContractOneProduct,
 )
 
 # Register your models here.
@@ -26,3 +27,4 @@ admin.site.register(CRentalProduct)
 admin.site.register(CompanyContractRentalProduct)
 admin.site.register(CompanyRentalProduct)
 admin.site.register(RentalProductImage)
+admin.site.register(CompanyContractOneProduct)
